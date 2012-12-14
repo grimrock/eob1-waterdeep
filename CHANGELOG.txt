@@ -1,0 +1,67 @@
+v0.02.12 (2012-11-23)
+New object - rounded Pit/Ceiling shaft
+New low-poly ladder with texture
+Spellbook with AD&D spells
+Bug fix: alcoves, rations
+New spells - testing: ( magic_missile, shield, burning_hands, armor, invisibility, visibility_10_radius, melfs_acid_arrow, hold_monster )
+
+v0.02.11
+New textures for sewer floor
+New decorations, floor rocks, pipes
+First part of level 3
+
+v0.02.9
+Added new 3D model of sewer ladder
+Script code cleaning
+Texture / Model materials fixing
+Minor details, Bug fixes
+
+0.02.8
+Completed Level 2
+Added Wently's Notes - to deepen atmosphere
+Added new item Potion of Giant Strength
+Minor details, Lot of Bug fixes
+
+0.02.7
+Updated scripts for pits in Level 2
+Added throwable portcullis in Level 2
+Rockfall sound, dust and shakeCamera at start
+
+0.02.6
+Scripts changes with support of function destroy()
+First 3 sections of level 2 are ready for testing
+Added teleport to level2 in the starting location
+SQ1 reward - Guinsoo is now throwing dagger
+
+0.02.5
+Introduction added
+New textures for slimes (kobold substitution :-)
+
+0.02.4
+Added high-resolution textures
+New texture for runes Entrance and Travel
+Illusionary walls
+
+0.02.3
+New textures for floor and ceilings, complete wallset
+Added particles object for sewers fog
+New textures for all objects in Level 1
+
+0.02.2
+Added custom portraits and default party
+Added scripts for diferent walltext for Runes
+Lizardman race substitute the Gnome
+Added rotation script for level 2
+
+0.02.1
+Created map of Level 2
+Test custom textures (created from original EOB sewers), using Antti's models and my diff, specular and normal maps for walls and ceiling
+Script spawn buttons for routes A/B
+
+0.01.2
+Fix some error for choosing route A/B through the sewers
+Added monsters with loot items
+Added secrets
+
+0.01.1
+Created map of Level 1 and simple script mechanics, using default dungeon wallset
