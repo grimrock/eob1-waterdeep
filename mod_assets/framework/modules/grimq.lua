@@ -941,8 +941,21 @@ function copyItem(item)
 	return loadItem(saveItem(item))
 end
 
-function respawnItem(item,x,y,facing,id)
-	loadItem(saveItem())
+-- Respawns an item (original id can be used)
+-- If level == nil the item will be respawned to object space
+function respawnItem(item,level,x,y,facing,id)
+	if not id then
+		id = item.id
+	end
+    -- if id is numeric then create a new unique id for item
+    -- for some reason numeric id's are not allowed as a spawn-function argument
+   if (id and string.find(id, "^%d+$")) then
+      id = nil
+   end
+
+   local copy = saveItem(item)
+   item:destroy()
+   return loadItem(copy,level,x,y,facing,id)
 end
 
 -- Moves an item to a container/alcove

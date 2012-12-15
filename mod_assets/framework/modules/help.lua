@@ -253,7 +253,7 @@ function modifyChampion(def)
 				champ:insertItem(slot,item)
 			elseif type(item) == 'table' then
 			   
-				item = recreateItem(item)
+				item = grimq.respawnItem(item)
 				if item then
 					champ:insertItem(slot,item)
 				end
