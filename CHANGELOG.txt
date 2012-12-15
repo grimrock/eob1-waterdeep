@@ -1,5 +1,6 @@
 
 v0.02.13 (unreleased yet)
+- (JKos) added script entity "t" for testing purposes. Located on lower right corner of the 1st level. (see comments from the script)
 - (Thomson) added teleporters to levels 4-12 (useful for testing)
 - (JKos) Updated LoG Framework to the latest version (includes Xanathars GrimQ library)
 - (JKos) New spells: Stoneskin, cone of cold, fireball, lightning bolt, ice storm, haste
