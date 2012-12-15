@@ -20,19 +20,19 @@ mapDesc([[
 ##########.#####.##.....########
 ##########.###.....###..########
 ##########.###.###.#.#.#########
-#######.##.##..#...#.#.#########
-#####...........#..#...#########
-######.######..##.#..#.#########
-##########...##.#.#..#.#########
-########..........#.#...#.######
-########.#...##.##..##.#...#####
-########.#######....#...#.######
-######...........##.#...#.######
-######.#.##########..#.#..######
-######.#...........#.....#######
-######.#...###...#####.#########
-######.#...#.#.##......#########
-#####...###.......##############
+##########.##..#...#.#.#########
+###.............#..#...#########
+##..#########..##.#..#.#########
+##..######...##.#.#..#.#########
+##..####..........#.#...#.######
+##..####.#...##.##..##.#...#####
+##..####.#######....#...#.######
+##..##...........##.#...#.######
+##..##.#.##########..#.#..######
+##..##.#...........#.....#######
+##..##.#...###...#####.#########
+##..##.#...#.#.##......#########
+##..#...###.......##############
 #####.......####################
 #####...########################
 ################################
@@ -477,14 +477,14 @@ function getStrongestMember()\
 \9return m\
 end\
 ")
-spawn("teleporter", 7,14,3, "teleporter_7")
+spawn("teleporter", 2,16,3, "teleporter_7")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
 	:setTeleportTarget(19,23,3,2)
-spawn("eob_sewers_wall_text_long", 7,15,2, "eob_sewers_wall_text_long_3")
+spawn("eob_sewers_wall_text_long", 3,16,1, "eob_sewers_wall_text_long_3")
 	:setWallText("Teleport to Level 2")
-spawn("eob_sewers_wall_text_long", 8,15,2, "eob_sewers_wall_text_long_5")
+spawn("eob_sewers_wall_text_long", 3,15,3, "eob_sewers_wall_text_long_5")
 	:setWallText("This room is for the Testing only, you can teleport to lower levels.")
 spawn("dungeon_ivy_1", 13,16,3, "dungeon_ivy_1_14")
 spawn("dungeon_ceiling_root_2", 13,16,2, "dungeon_ceiling_root_2_1")
@@ -2051,9 +2051,9 @@ function addSpellsToMonsters(monsterNamespace,spellName,amount,targets,range,pro
 \9\9onTurn = spellHook\
 \9})\
 end")
-spawn("eob_sewers_wall_text_long", 6,15,0, "eob_sewers_wall_text_long_14")
+spawn("eob_sewers_wall_text_long", 3,17,1, "eob_sewers_wall_text_long_14")
 	:setWallText("Teleport to Level 3")
-spawn("teleporter", 6,16,1, "teleporter_11")
+spawn("teleporter", 2,17,1, "teleporter_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
@@ -2068,6 +2068,82 @@ This is feature to testing AD&D Spells")
 spawn("eob_wall_button", 8,15,0, "eob_wall_button_13")
 	:addConnector("toggle", "script_entity_11", "levelUp")
 spawn("starting_location", 10,15,0, "starting_location_1")
+spawn("note", 9,14,3, "note_1")
+	:setScrollText("Hi!\
+We, developers of this mod, frequently test various\
+aspects of the dungeon. To make it easier, we've\
+put couple things here: experience button, teleports\
+to lower levels and possibly other cheaty stuff.\
+\
+We are currently under dark spell of forgetfullness,\
+so we forgot to hide our secret lair and it's open\
+now. Be a nice player and don't use any of those.\
+\
+                        Your friendly developers")
+spawn("eob_sewers_door_metal_force", 9,15,3, "eob_sewers_door_metal_force_5")
+spawn("teleporter", 2,18,2, "teleporter_12")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(16,20,2,4)
+spawn("teleporter", 2,19,3, "teleporter_14")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(10,24,3,5)
+spawn("teleporter", 2,20,1, "teleporter_15")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(17,22,1,6)
+spawn("teleporter", 2,21,0, "teleporter_16")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(1,19,0,7)
+spawn("teleporter", 2,22,3, "teleporter_17")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(7,28,3,8)
+spawn("teleporter", 2,23,1, "teleporter_18")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(21,4,1,9)
+spawn("teleporter", 2,24,2, "teleporter_19")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(1,11,2,10)
+spawn("teleporter", 2,25,2, "teleporter_20")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(14,10,2,11)
+spawn("teleporter", 2,26,0, "teleporter_21")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(15,11,0,12)
+spawn("eob_sewers_wall_text_long", 3,18,1, "eob_sewers_wall_text_long_16")
+	:setWallText("Teleport to Level 4")
+spawn("eob_sewers_wall_text_long", 3,19,1, "eob_sewers_wall_text_long_17")
+	:setWallText("Teleport to Level 5")
+spawn("eob_sewers_wall_text_long", 3,20,1, "eob_sewers_wall_text_long_18")
+	:setWallText("Teleport to Level 6")
+spawn("eob_sewers_wall_text_long", 3,21,1, "eob_sewers_wall_text_long_19")
+	:setWallText("Teleport to Level 7")
+spawn("eob_sewers_wall_text_long", 3,22,1, "eob_sewers_wall_text_long_20")
+	:setWallText("Teleport to Level 8")
+spawn("eob_sewers_wall_text_long", 3,23,1, "eob_sewers_wall_text_long_21")
+	:setWallText("Teleport to Level 9")
+spawn("eob_sewers_wall_text_long", 3,24,1, "eob_sewers_wall_text_long_22")
+	:setWallText("Teleport to Level 10")
+spawn("eob_sewers_wall_text_long", 3,25,1, "eob_sewers_wall_text_long_23")
+	:setWallText("Teleport to Level 11")
+spawn("eob_sewers_wall_text_long", 3,26,1, "eob_sewers_wall_text_long_24")
+	:setWallText("Teleport to Level 12")
 
 --- level 2 ---
 

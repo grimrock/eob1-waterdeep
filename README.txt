@@ -28,7 +28,7 @@ Tom - Texture modifications
 Bifrost, Thomson - EobConverter
 Thomson - maintenance and minor additions
 Wallasaurus - Slug (Leech) monster
-git montagneyaya - Breakable spider nets (level 4)
+montagneyaya - Breakable spider nets (level 4)
 
  Acknowledgements
 ------------------
