@@ -293,3 +293,18 @@ defineMaterial{
 	glossiness = 40,
 	depthBias = 0,
 }
+
+-- Slug by Wallasaurus
+defineMaterial{
+	name = "basic_slug_material",
+	diffuseMap = "mod_assets/textures/monsters/slug_dif.tga",
+	specularMap = "mod_assets/textures/monsters/slug_spec.tga",
+	normalMap = "mod_assets/textures/monsters/slug_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 50,
+	depthBias = 0,
+}

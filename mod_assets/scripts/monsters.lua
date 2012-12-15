@@ -15,9 +15,48 @@ cloneObject{
    lootDrop = { }
 }
 
+defineObject{
+	name = "slug",
+	class = "Monster",
+	model = "mod_assets/models/monsters/slug.fbx",
+	meshName = "slug_mesh003",
+	animations = {
+		idle = "assets/animations/monsters/snail/snail_idle.fbx",
+		moveForward = "assets/animations/monsters/snail/snail_walk.fbx",
+		turnLeft = "assets/animations/monsters/snail/snail_turn_left.fbx",
+		turnRight = "assets/animations/monsters/snail/snail_turn_right.fbx",
+		attack = "assets/animations/monsters/snail/snail_attack.fbx",
+		getHitFrontLeft = "assets/animations/monsters/snail/snail_get_hit_front_left.fbx",
+		getHitFrontRight = "assets/animations/monsters/snail/snail_get_hit_front_right.fbx",
+		getHitBack = "assets/animations/monsters/snail/snail_get_hit_back.fbx",
+		getHitLeft = "assets/animations/monsters/snail/snail_get_hit_left.fbx",
+		getHitRight = "assets/animations/monsters/snail/snail_get_hit_right.fbx",
+		fall = "assets/animations/monsters/snail/snail_get_hit_front_left.fbx",
+	},
+	moveSound = "snail_walk",
+	attackSound = "snail_attack",
+	hitSound = "snail_hit",
+	dieSound = "snail_die",
+	hitEffect = "hit_goo",
+	capsuleHeight = 0.2,
+	capsuleRadius = 0.7,
+	health = 90,
+	sight = 2.5,
+	attackPower = 6,
+	movementCoolDown = 4,
+	coolDown = { 0.5, 4 },
+	evasion = -10,
+	noRecoilInterval = { 0.1, 0.5 },
+	exp = 60,
+	lootDrop = { 75, "snail_slice", 10, "snail_slice" },
+	healthIncrement = 30,
+	attackPowerIncrement = 3,
+	brain = "Melee",
+}
+
 cloneObject{
    name = "eob_leech",
-   baseObject = "herder",
+   baseObject = "slug",
    health = 70,
    exp = 70,
    lootDrop = { }

@@ -27,6 +27,7 @@ JKos - LoG Framework, AD&D spells
 Tom - Texture modifications
 Bifrost, Thomson - EobConverter
 Thomson - maintenance and minor additions
+Wallasaurus - Slug (Leech) monster
 
  Acknowledgements
 ------------------

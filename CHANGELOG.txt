@@ -5,6 +5,7 @@ v0.02.13 (unreleased yet)
   - items placed in levels 4-12
   - monster definitions for all levels
   - monster placed in levels 4-12
+- Added slug (as leech) by Wallasaurus
 
 v0.02.12 (2012-11-23)
 New object - rounded Pit/Ceiling shaft
