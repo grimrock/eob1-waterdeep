@@ -308,3 +308,29 @@ defineMaterial{
 	glossiness = 50,
 	depthBias = 0,
 }
+
+-- Giant breakable spider webs
+-- by montagneyaya (http://grimrock.nexusmods.com/mods/120/)
+defineMaterial{
+	name = "giant_spider_web",
+	diffuseMap = "mod_assets/textures/props/giant_spider_web_dif.tga",
+	doubleSided = true,
+	lighting = false,
+	alphaTest = false,
+	blendMode = "Translucent",
+	textureAddressMode = "Wrap",
+	glossiness = 20,
+	depthBias = 0,
+}
+
+defineMaterial{
+	name = "giant_spider_web_broken",
+	diffuseMap = "mod_assets/textures/props/giant_spider_web_broken_dif.tga",
+	doubleSided = true,
+	lighting = false,
+	alphaTest = false,
+	blendMode = "Translucent",
+	textureAddressMode = "Wrap",
+	glossiness = 20,
+	depthBias = 0,
+}

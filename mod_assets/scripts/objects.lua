@@ -381,3 +381,32 @@ defineObject{
 	placement = "floor",
 	editorIcon = 92,
 }
+
+
+-- Imported things from external sources
+-- Please keep their original names for easy merging of possible new version
+-- author: montagneyaya
+-- link: http://grimrock.nexusmods.com/mods/120/
+
+defineObject{
+	name = "giant_spider_web",
+	class = "Blockage",
+	model = "mod_assets/models/env/giant_spider_web.fbx",
+	brokenModel = "mod_assets/models/env/giant_spider_web_broken.fbx",
+	placement = "floor",
+	health = 10,
+	evasion = -1000,
+	hitSound = "spider_eggs_hit",
+	editorIcon = 56,
+}
+
+cloneObject {
+	name = "eob_ruins_net",
+	baseObject = "giant_spider_web",
+}
+
+-- todo: I don't know how to set this to already broken state
+cloneObject {
+	name = "eob_ruins_net_torn",
+	baseObject = "giant_spider_web",
+}
