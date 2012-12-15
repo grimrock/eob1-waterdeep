@@ -6,6 +6,7 @@ v0.02.13 (unreleased yet)
   - monster definitions for all levels
   - monster placed in levels 4-12
 - Added slug (as leech) by Wallasaurus
+- Added breakable spider nets on level 4 (model by montagneyaya)
 
 v0.02.12 (2012-11-23)
 New object - rounded Pit/Ceiling shaft
