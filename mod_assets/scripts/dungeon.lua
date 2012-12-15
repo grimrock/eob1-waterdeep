@@ -706,30 +706,13 @@ spawn("eob_sewers_wall_drainage", 23,21,1, "eob_sewers_wall_drainage_7")
 spawn("eob_sewers_wall_drainage", 13,21,2, "eob_sewers_wall_drainage_8")
 spawn("eob_sewers_wall_drainage", 13,21,0, "eob_sewers_wall_drainage_9")
 spawn("script_entity", 21,0,2, "logfw_init")
-	:setSource("options = {}\
--- load modules\
-options.modules = {\
-\9monsters_can_open_doors = false,\
-\9damage_dealing_doors = false,\
-\9illusion_walls = true,\
-\9talk = false,\
-}\
-\
-spawn(\"LoGFramework\", 1,1,1,0,'fwInit')\
+	:setSource("spawn(\"LoGFramework\", 1,1,1,0,'fwInit')\
 fwInit:open()\
 \
--- timer will call this method automatically \
--- 0.5 second after the game is started\
--- activate loaded modules here\
--- you can also set debug-flag on here\
 function main()\
+\9timers:setLevels(12)\
 \9fw.debug.enabled = false\
-\
-\9illusion_walls.activate()\
-\
 \9fwInit:close() --must be called\
-\9\
-\9eob_spells:activate()\
 end\
 ")
 spawn("timer", 0,8,0, "timer_script_activation")
@@ -973,21 +956,296 @@ spawn("eob_sewers_wall_pipe", 6,24,1, "eob_sewers_wall_pipe_5")
 	:setEntityType("blob")
 spawn("eob_sewers_wall_pipe", 8,24,3, "eob_sewers_wall_pipe_6")
 	:setEntityType("blob")
-spawn("script_entity", 23,0,2, "eob_spells")
-	:setSource("useCasterLevelAsModifier = false\
+spawn("script_entity", 23,0,2, "add_spells")
+	:setSource("settings = {}\
 \
-settings = {}\
-settings.hold_monster = {}\
-settings.hold_monster.level = 5\
-settings.hold_monster.duration = 5 --seconds + (skill/2)\9\
-settings.hold_monster.immune= {\
-\9skeleton_archer=true,\
-\9skeleton_warrior=true\
-}\
+function activate()\
+\9fw_magic.enableSpellBook()\
+\9defineSpells()\
+\9\
+\9for i,champ in ipairs(help.getChampions()) do\
+\9\9if champ:getClass() == 'Mage' then\
+\9\9\9initChampion(champ)\
+\9\9end\
+\9end\
 \
-settings.magic_missile = {}\
-settings.magic_missile.level = 1\
-settings.magic_missile.damage = 5 -- damage * (skill / 2)\
+\
+\9\
+\9fw.setHook('items_spell_book.fw_magic.onLearnSpell',add_spells.onLearnSpell)\
+end\
+\
+function defineSpells()\
+\
+\
+\9fw_magic.defineSpell{\
+\9\9name='magic_missile',\
+\9\9level=1,\
+\9\9book_page=1,\
+\9\9skill='spellcraft',\
+\9\9projectile='spell_projectile',\
+\9\9sound='fireball_launch',\
+\9\9onHitSound='fireball_hit',\
+\9\9particleEffect='magic_missile',\
+\9\9onHitParticleEffect='magic_missile_hit',\
+\9\9speed=12,\
+\9\9damageType = 'physical',\
+\9\9calculateDamage=function(caster)\
+\9\9\9local damage = 5\
+\9\9\9local modifier = 2\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9modifier = math.ceil(caster:getLevel()/2)\
+\9\9\9\9damage = math.random(modifier*2,damage * modifier)\9\
+\9\9\9end\9\
+\9\9\9return damage\
+\9\9end\
+\9}\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='fireball',\
+\9\9level=3,\
+\9\9book_page=3,\
+\9\9projectile='spell_projectile',\
+\9\9sound='fireball_launch',\
+\9\9onHitSound='fireball_hit',\
+\9\9particleEffect='fireball',\
+\9\9onHitParticleEffect='fireball_hit',\
+\9\9speed=14,\
+\9\9damageType = 'fire',\
+\9\9calculateDamage=function(caster)\
+\9\9\9local damage = 6\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9damage = math.random(caster:getLevel()*2,damage * caster:getLevel())\
+\9\9\9end\
+\9\9\9return damage\
+\9\9end\
+\9}\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='flame_arrow',\
+\9\9level=3,\
+\9\9book_page=3,\
+\9\9projectile='arrow',\
+\9\9sound='frostbolt_launch',\
+\9\9onHitSound='fireball_hit',\
+\9\9particleEffect='fireball',\
+\9\9onHitParticleEffect='fireball_hit',\
+\9\9speed=14,\
+\9\9damageType = 'fire',\
+\9\9calculateDamage=function(caster)\
+\9\9\9local modifier = 1\9\9\9\
+\9\9\9local damage = 3\9\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9originator = 2 ^ (caster:getOrdinal()+1) \
+\9\9\9\9if caster:getLevel() > 9 then modifier = 2 end\
+\9\9\9end\
+\9\9\9damage = math.random(damage * modifier,damage * 10 * modifier)\
+\9\9\9return damage\
+\9\9end\
+\9}\9\9\
+\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='melfs_acid_arrow',\
+\9\9level=3,\
+\9\9book_page=3,\
+\9\9projectile='spell_projectile',\
+\9\9sound='poison_bolt_launch',\
+\9\9onHitSound='poison_bolt_hit',\
+\9\9particleEffect='poison_bolt',\
+\9\9onHitParticleEffect='hit_slime',\
+\9\9speed=14,\
+\9\9onHit = add_spells.melfs_acid_arrow_onHit\
+\9}\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='lightning_bolt',\
+\9\9level=3,\
+\9\9book_page=3,\
+\9\9projectile='spell_projectile',\
+\9\9sound='lightning_bolt_launch',\
+\9\9onHitSound='lightning_bolt_hit',\
+\9\9particleEffect='lightning_bolt',\
+\9\9onHitParticleEffect='lightning_bolt_hit',\
+\9\9speed=14,\
+\9\9area = {from={0,0},to={1,0}},\
+\9\9damageType = 'shock',\
+\9\9calculateDamage=function(caster)\
+\9\9\9local damage = 6\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9damage = math.random(caster:getLevel(),caster:getLevel()*damage)\9\
+\9\9\9end\9\
+\9\9\9return damage\
+\9\9end\9\9\
+\9}\9\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='cone_of_cold',\
+\9\9level=5,\
+\9\9book_page=3,\
+\9\9sound='frostbolt_launch',\
+\9\9onHitSound='frostbolt_hit',\
+\9\9particleEffect='frostbolt',\
+\9\9onHitParticleEffect='frostbolt_hit',\
+\9\9speed=14,\
+\9\9area = {from={0,0},to={2,0}},\
+\9\9damageType = 'cold',\
+\9\9calculateDamage=function(caster)\
+\9\9\9local damage = 5\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9damage = math.random(caster:getLevel()*2,caster:getLevel()*damage)\9\
+\9\9\9end\9\
+\9\9\9return damage\
+\9\9end,\9\9\
+\9\9onCast = function(caster)\
+\9\9\9local entity = caster\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9entity = party\
+\9\9\9end\
+\9\9\9local x,y = help.getCoordsOfTileAtDir(entity,entity.facing,1)\
+\9\9\9fw_magic.dealSpellDamage('cone_of_cold',caster,x,y)\
+\9\9end\
+\9}\9\9\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='ice_storm',\
+\9\9level=4,\
+\9\9book_page=4,\
+\9\9sound='frostbolt_launch',\
+\9\9onHitSound='frostbolt_hit',\
+\9\9particleEffect='ice_shards',\
+\9\9onHitParticleEffect='ice_shards',\
+\9\9speed=14,\
+\9\9area = {from={-1,-1},to={1,1}},\
+\9\9damageType = 'cold',\
+\9\9calculateDamage=function(caster)\
+\9\9\9return math.random(3,30)\
+\9\9end,\9\9\
+\9\9onCast = function(caster)\
+\9\9\9local range = 4 \
+\9\9\9local entity = caster\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9entity = party\
+\9\9\9\9range = caster:getLevel()\
+\9\9\9end\
+\9\9\9if range < 4 then range = 4 end\
+\9\9\9\
+\9\9\9local target = help.nextEntityAheadOf(entity, range,'monster',true)\9\
+\9\9\9local x,y = 0,0\9\
+\9\9\9if target then\
+\9\9\9\9x = target.x\
+\9\9\9\9y = target.y\
+\9\9\9else\
+\9\9\9\9x,y = help.getCoordsOfTileAtDir(entity,entity.facing,range)\
+\9\9\9end\
+\9\9\9-- cross shaped damage area hack --\
+\9\9\9fw_magic.spells['ice_storm'].area = {from={-1,0},to={1,0}}\
+\9\9\9fw_magic.dealSpellDamage('ice_storm',caster,x,y)\
+\9\9\9fw_magic.spells['ice_storm'].area = {from={0,1},to={0,1}}\
+\9\9\9fw_magic.dealSpellDamage('ice_storm',caster,x,y)\
+\9\9\9fw_magic.spells['ice_storm'].area = {from={0,-1},to={0,-1}}\
+\9\9\9fw_magic.dealSpellDamage('ice_storm',caster,x,y)\
+\9\9end\
+\9}\9\
+\9\9\
+\9fw_magic.defineSpell{\
+\9\9name='shield',\
+\9\9level=1,\
+\9\9book_page=1,\
+\9\9onCast = add_spells.shield\
+\9}\9\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='armor',\
+\9\9level=1,\
+\9\9book_page=1,\
+\9\9onCast = add_spells.armor\
+\9}\9\
+\9\9\
+\9fw_magic.defineSpell{\
+\9\9name='haste',\
+\9\9level=3,\
+\9\9book_page=3,\
+\9\9onCast = add_spells.haste\
+\9}\9\
+\
+\9fw_magic.defineSpell{\
+\9\9name='invisibility',\
+\9\9level=2,\
+\9\9book_page=2,\
+\9\9onCast = add_spells.invisibility\
+\9}\9\9\
+\9fw_magic.defineSpell{\
+\9\9name='invisibility_10_radius',\
+\9\9level=3,\
+\9\9book_page=3,\
+\9\9onCast = add_spells.invisibility_10_radius\
+\9}\9\
+\
+\9fw_magic.defineSpell{\
+\9\9name='hold_monster',\
+\9\9level=5,\
+\9\9book_page=5,\
+\9\9onCast = add_spells.hold_monster\
+\9}\9\9\9\9\
+\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='burning_hands',\
+\9\9level=1,\
+\9\9book_page=1,\
+\9\9onCast = function(caster, x, y, direction, skill)\
+\9\9\9local dx,dy = getForward(direction)\
+\9\9\9playSoundAt(\"fireburst\",party.level,x,y)\
+\9\9\9local originator = 2 ^ (caster:getOrdinal()+1) \
+\9\9\9local skill = caster:getLevel()\
+\9\9\9damageTile(party.level, x+dx, y+dy, direction, originator, 'fire', 3+skill*2)\
+\9\9end\
+\9}\9\
+\
+\9fw_magic.defineSpell{\
+\9\9name='stoneskin',\
+\9\9level=4,\
+\9\9book_page=4,\
+\9\9onCast = add_spells.stoneskin\
+\9}\9\9\9\9\9\9\
+\
+end\
+\
+-- SPELLS ++\
+\
+melfs_acid_arrow_onHit = function(projectile,target,damage,damageType)\
+\9\9\9if target.getOrdinal then\
+\9\9\9\9target = party\
+\9\9\9end\
+\9\9\9local caster = fw.getById(data.get(projectile,'caster_id')) \
+\9\9\
+\9\9\9local callback = function(caster_id,target_id)\
+\9\9\9\9\9local target = fw.getById(target_id) \
+\9\9\9\9\9local caster = fw.getById(caster_id) \
+\9\9\9\9\9local originator = 0 \
+\9\9\9\9\9local modifier = 1\
+\9\9\9\9\9local damage = math.random(2,6)\9\
+\9\9\9\9\9\
+\9\9\9\9\9if caster.getOrdinal then\
+\9\9\9\9\9\9originator = 2 ^ (caster:getOrdinal()+1) \
+\9\9\9\9\9\9modifier = math.ceil(caster:getLevel()/2)\
+\9\9\9\9\9end\
+\9\9\9\9\9\9\9\
+\9\9\9\9\9damageTile(target.level,target.x,target.y,(target.facing + 2)%4,originator+1, 'physical',damage)\
+\9\9\9\9\9local fx = spawn('fx',target.level,target.x,target.y,target.facing)\
+\9\9\9\9\9fx:setParticleSystem('hit_slime')\
+\9\9\9\9\9fx:translate(0,1,0)\9\9\
+\9\9\9end\
+\9\9\9local casterLevel = 4\
+\9\9\9if caster.getLevel then\
+\9\9\9\9casterLevel = caster:getLevel()\
+\9\9\9end\
+\9\9\9local attacks = math.ceil(casterLevel/3)\9\
+\9\9\9fw.repeatFunction(attacks,1,{fw.getId(caster),fw.getId(target)},callback,true)\9\9\9\
+\9\9\9return false\
+end\
+\
+-- SHIELD --\
 \
 settings.shield = {}\
 settings.shield.level = 1\
@@ -995,68 +1253,13 @@ settings.shield.duration = 5 --seconds + (skill/2)\
 settings.shield.missiles = 6 -- how many damagepoints are subtracted (max value)\
 settings.shield.throwing = 8 -- how many damagepoints are subtracted (max value)\
 \
-settings.burning_hands = {}\
-settings.burning_hands.level = 1\
-settings.burning_hands.damage = 3 -- damage+skill*2\
-\
-\
-settings.armor = {}\
-settings.armor.level = 1\
--- threshold + skill (how much damage champion can get before spell is deactivated)\
-settings.armor.threshold = 8 \
-settings.armor.protection = 6 -- sets protection stat to this level\
-\
-settings.invisibility = {}\
-settings.invisibility.level = 2\
-settings.invisibility_10_radius = {}\
-settings.invisibility_10_radius.level = 3\
-\
-settings.melfs_acid_arrow = {}\
-settings.melfs_acid_arrow.level = 2\
-settings.melfs_acid_arrow.damage = 8 -- (damage*level/3)\
-\
-function activate()\
-\
-\9fw_magic.addSpell('hold_monster',holdMonster)\
-\9fw_magic.addSpell('magic_missile',magicMissile)\
-\9fw_magic.addSpell('burning_hands',burningHands)\
-\9fw_magic.addSpell('shield',shield)\
-\9fw_magic.addSpell('armor',armor)\
-\9fw_magic.addSpell('invisibility',invisibility)\
-\9fw_magic.addSpell('invisibility_10_radius',invisibility_10_radius)\
-\9fw_magic.addSpell('melfs_acid_arrow',melfs_acid_arrow)\
-\9for _,champ in ipairs(help.getChampions()) do\
-\9\9if champ:getClass() == 'Mage' then\
-\9\9\9initChampion(champ)\
-\9\9end\
-\9end\
-\9preventPickingUpSpellBook()\9\
-\9fw.addHooks('party','eob_spells',{\
-\9\9onCastSpell = eob_spells.canCast\
-\9\
-\9})\
-\9fw.addHooks('items_spell_book','eob_spells',{\
-\9\9onLearnSpell = eob_spells.learnSpell\
-\9})\
-end\
-\
--- SPELLS ++\
-\
--- BURNING HANDS --\
-\
-function burningHands(caster, x, y, direction, skill)\
-\9if (eob_spells.useCasterLevelAsModifier) then skill = caster:getLevel() end\
-\9local dx,dy = getForward(direction)\
-\9playSoundAt(\"fireburst\",party.level,x,y)\
-\9damageTile(party.level, x+dx, y+dy, direction, 0, 'fire', eob_spells.settings.burning_hands.damage+skill*2)\
-end\
-\
--- SHIELD --\
-\
 function shield(caster, x, y, direction, skill)\
-\9if (eob_spells.useCasterLevelAsModifier and caster.getLevel) then skill = caster:getLevel() end\
+\9skill = 1\
+\9if (caster.getLevel) then\
+\9 \9skill = caster:getLevel() \
+\9end\
 \9\
-\9local timerId = fw_magic.createSpellTimer(caster,settings.shield.duration+skill/2,{'eob_spells','shieldDestructor'})\
+\9local timerId = fw_magic.createSpellTimer(caster,settings.shield.duration+skill/2,{'add_spells','shieldDestructor'})\
 \9playSoundAt(\"fireball_launch\",party.level,x,y)\
 \9\
 \9fw.addHooks(fw.getId(caster),timerId,{\
@@ -1066,13 +1269,13 @@ function shield(caster, x, y, direction, skill)\
 \9\9\9\9return false\
 \9\9\9end\
 \9\9\9if help.isEntityType(projectile,'item_missileweapon') then\
-\9\9\9\9champion:damage(damage - math.random(eob_spells.settings.shield.missiles), damageType)\
+\9\9\9\9champion:damage(damage - math.random(add_spells.settings.shield.missiles), damageType)\
 \9\9\9\9hudPrint('Shield spell deflected some damage')\
 \9\9\9\9champion:playDamageSound()\
 \9\9\9\9return false\
 \9\9\9end\
 \9\9\9if help.isEntityType(projectile,'item_throwingweapon') then\
-\9\9\9\9champion:damage(damage - math.random(eob_spells.settings.shield.throwing), damageType)\
+\9\9\9\9champion:damage(damage - math.random(add_spells.settings.shield.throwing), damageType)\
 \9\9\9\9hudPrint('Shield spell deflected some damage')\
 \9\9\9\9champion:playDamageSound()\
 \9\9\9\9return false\
@@ -1085,134 +1288,174 @@ end\
 \
 function shieldDestructor(timer)\
 \9fw_magic.spellTimerDestructor(timer)\
-\9hudPrint('Effect of shield spell worn out.')\
+\9hudPrint('The effect of the shield spell has worn out.')\
 end\
 \
--- MAGIC MISSILE --\
+-- STONESKIN--\
 \
-function magicMissile(caster, x, y, direction, skill)\
+\
+function stoneskin(caster, x, y, direction, skill)\
+\9local selector = fw_magic.createTargetSelector()\
+\9selector.skill = caster:getLevel()\
+\9selector.onSelectChampion = add_spells.castStoneskin\
+end\
+\
+function castStoneskin(target,skill)\9\
 \9\
-\9fw.setHookVars('monsters','eob_spells_magic_missile','onProjectileHit',fw.getId(caster))\
-\9\
-\9fw.addHooks('monsters','eob_spells_magic_missile',{\
-\9\9onProjectileHit = function(monster,projectile,damage,damageType)\
-\9\9\9if projectile.name == 'magic_missile' then\
-\9\9\9\9local caster = fw.getById(fw.getHookVars()) \
-\9\9\9\9local originator = 2 ^ (caster:getOrdinal()+1) \
-\9\9\9\9local modifier = math.ceil(caster:getLevel()/2)\
-\9\9\9\9local damage = math.random(modifier*2,eob_spells.settings.magic_missile.damage * modifier)\9\9\9\9\
-\9\9\9\9damageTile(monster.level,monster.x,monster.y,(monster.facing + 2)%4,originator+1, 'physical',damage)\
-\9\9\9\9playSoundAt(\"fireball_hit\",monster.level,monster.x,monster.y)\
-\9\9\9\9-- remove hook for performance reasons\
-\9\9\9\9fw.removeHooks('monsters','eob_spells_magic_missile')\
-\9\9\9\9return false\
-\9\9\9end\
-\9\9end\
-\9\9}\
+\9skill = math.random(1,4) + math.floor(skill/2)\
+\9playSoundAt(\"generic_spell\",party.level,party.x,party.y)\
+\
+\9data.set(target,'add_spells_stoneskin_count',skill)\
+\9target:setCondition('fire_shield',10000)\
+\9fw.addHooks(fw.getId(target),'add_spells_stoneskin',{\
+\9\9onProjectileHit = function(champion,projectile,damage,damageType)\
+\9\9\9return add_spells.stoneskinCheck(champion,damageType,projectile)\
+\9\9end,\
+\9\9onDamage = function(champion,damage,damageType)\
+\9\9\9return add_spells.stoneskinCheck(champion,damageType)\
+\9\9end\9\9\
+\9}\
 \9)\
-\9if caster and caster.getOrdinal then caster = party end\
-\9playSoundAt(\"fireball_launch\",party.level,x,y)\
+end\
 \
-\9\
-\9shootProjectile('magic_missile', party.level, x, y, direction, 14, 0, 0, 0, 0, 0,\
-\9 \0091, caster, true)\
-\9\
+function stoneskinCheck(champion,damageType,projectile)\
+\9if projectile and projectile.name == 'spell_projectile' then\
+\9\9return\
+\9end\9\
+\
+\9if damageType == 'physical' then \
+\9\9local count = data.get(champion,'add_spells_stoneskin_count')\
+\9\9count = count - 1\
+\9\9data.set(champion,'add_spells_stoneskin_count',count)\
+\9\9hudPrint('('..champion:getName()..') Stoneskin spell prevented the attack.')\
+\9\9\
+\9\9if count < 1 then\
+\9\9\9fw.removeHooks(fw.getId(champion),'add_spells_stoneskin')\
+\9\9\9champion:setCondition('fire_shield',0)\
+\9\9\9hudPrint('('..champion:getName()..') Stoneskin spell has worn out.')\
+\9\9\9data.unset(champion,'add_spells_stoneskin_count')\
+\9\9end\9\
+\9\9\
+\9\9return false \
+\9end\
 end\
 \
 -- HOLD MONSTER --\
 \
-function holdMonster(caster, x, y, direction, skill)\
-\9if (eob_spells.useCasterLevelAsModifier) then skill = caster:getLevel() end\
+settings.hold_monster = {}\
+settings.hold_monster.level = 5\
+settings.hold_monster.duration = 9 --seconds + (skill/2)\9\
+settings.hold_monster.immune= {\
+\9skeleton_archer=true,\
+\9skeleton_warrior=true\
+}\
+\
+\
+function hold_monster(caster, x, y, direction, skill)\
+\
+\9skill = 1\
+\9if caster.getOrdinal then\
+\9\9skill = caster:getLevel()\
+\9\9caster = party\
+\9\9\
+\9end\9\
 \9\
-\9local holdMonster = function() return false end\
+\9local target = help.nextEntityAheadOf(caster,3,{'monster','party'})\
 \9\
-\9local monster = help.nextEntityAheadOf(party,3,'monster')\
-\9if not monster then return false end\
-\9if eob_spells.settings.hold_monster.immune[monster.name] then return false end\
-\9local timerId = fw_magic.createSpellTimer(monster,eob_spells.settings.hold_monster.duration+(skill/2))\
-\9playSoundAt(\"frostbolt_launch\",party.level,party.x,party.y)\
+\9if not target then return false end\
+\9if add_spells.settings.hold_monster.immune[target.name] then return false end\
 \9\
-\9fw.debugPrint(monster.id..' held')\
+\9playSoundAt(\"frostbolt_launch\",caster.level,caster.x,caster.y)\
+\
 \9\
 \9--dynamically add hooks which prevents monster to attack or move\9\
-\9-- use spellId as hook-id so the hook can be removed on destructor\
-\9fw.addHooks(monster.id,timerId,{\
-\9\9onMove = holdMonster,\
-\9\9onAttack = holdMonster,\
-\9\9onRangedAttack = holdMonster,\
-\9\9onTurn = holdMonster\
+\9-- use timerId as hook-id so the hook can be removed on destructor\
+\9local hold_monsterHook = function() return false end\
+\9\
+\9local timerId = fw_magic.createSpellTimer(target,add_spells.settings.hold_monster.duration+skill)\
+\9\
+\9local fx = spawn('fx',target.level,target.x,target.y,target.facing)\
+\9fx:setParticleSystem('hold_monster')\
+\9fx:translate(0,1,0)\9\9\9\
+\9\
+\9fw.addHooks(target.id,timerId,{\
+\9\9onMove = hold_monsterHook,\
+\9\9onAttack = hold_monsterHook,\
+\9\9onRangedAttack = hold_monsterHook,\
+\9\9onTurn = hold_monsterHook\
 \9},\
 \0091)\
 \9return true\
 end\
 \
+\
+-- HASTE --\
+\
+\
+settings.haste = {}\
+settings.haste.level = 3\
+settings.haste.duration = 10\
+ \
+settings.haste.count = 0\
+function haste(caster, x, y, direction, skill)\
+\9local selector = fw_magic.createTargetSelector()\
+\9selector.skill = caster:getLevel()\
+\9selector.caster_id = fw.getId(caster)\
+\9if settings.haste.count == 0 then\
+\9\9settings.haste.count = caster:getLevel()\
+\9\9if settings.haste.count > 4 then\
+\9\9\9settings.haste.count = 4\
+\9\9end\
+\9end\
+\9selector.onSelectChampion = add_spells.castHaste\
+\9selector.afterCast = add_spells.hasteAfterCast\
+end\
+\
+function castHaste(target,skill,caster_id)\
+\9target:setCondition('haste',settings.haste.duration + skill)\
+\9playSoundAt('generic_spell',party.level,party.x,party.y)\
+\
+end\
+\
+function hasteAfterCast(caster_id)\
+\9settings.haste.count = settings.haste.count - 1\
+\9\
+\9if settings.haste.count > 0 then\
+\9\9add_spells.haste(fw.getById(caster_id))\
+\9end\
+end\
+\
+\
 -- ARMOR --\
+\
+settings.armor = {}\
+-- threshold + skill (how much damage champion can get before spell is deactivated)\
+settings.armor.threshold = 8 \
+settings.armor.protection = 6 -- sets protection stat to this level\
+\
 \
 function armor(caster, x, y, direction, skill)\
 \9local selector = fw_magic.createTargetSelector()\
-\9selector.skill = skill\
-\9selector.onSelectChampion = eob_spells.castArmor\
+\9selector.skill = caster:getLevel()\
+\9selector.onSelectChampion = add_spells.castArmor\
 end\
 \
- -- MELF'S ACID ARROW ***\
-\
-function melfs_acid_arrow(caster, x, y, direction, skill)\
-\9if (eob_spells.useCasterLevelAsModifier) then skill = caster:getLevel() end\
-\
-\9playSoundAt(\"fireball_launch\",party.level,x,y)\
-\9\
-\9-- pass the caster.id to hook\
-\9fw.setHookVars('monsters','eob_spells_acid_arrow','onProjectileHit',fw.getId(caster))\
-\9\
-\9fw.addHooks('monsters','eob_spells_acid_arrow',{\
-\9\9onProjectileHit = function(monster,projectile,damage,damageType)\
-\9\9\9if projectile.name == 'acid_arrow' then\
-\9\9\9\
-\9\9\9\9local caster = fw.getById(fw.getHookVars()) \
-\
-\9\9\9\9\9\9\9\
-\9\9\9\9local callback = function(caster_id,target_id)\
-\9\9\9\9\9local target = fw.getById(target_id) \
-\9\9\9\9\9local caster = fw.getById(caster_id) \
-\9\9\9\9\9local originator = 2 ^ (caster:getOrdinal()+1) \
-\9\9\9\9\9local modifier = math.ceil(caster:getLevel()/2)\
-\9\9\9\9\9local damage = math.random(2,eob_spells.settings.melfs_acid_arrow.damage)\
-\9\9\9\9\9\9\9\9\9\
-\9\9\9\9\9damageTile(target.level,target.x,target.y,(target.facing + 2)%4,originator+1, 'physical',8)\
-\9\9\9\9end\
-\9\9\9\9\
-\9\9\9\9local attacks = math.ceil(caster:getLevel()/3)\9\
-\9\9\9\9\
-\9\9\9\9fw.repeatFunction(attacks,1,{fw.getId(caster),fw.getId(monster)},callback,true)\
-\9\
-\9\9\9\9-- remove hook for performance reasons\
-\9\9\9\9fw.removeHooks('monsters','eob_spells_acid_arrow')\
-\9\9\9\9return false\
-\9\9\9end\
-\9\9\9\
-\9\9end\
-\9})\
-\9\
-\9shootProjectile('acid_arrow', party.level, x, y, direction, 14, 0, 0, 0, 0, 0,\
-\9 \0090, party, true)\
-\
-end\
 \
 function castArmor(champion,skill)\
-\9if champion:getStat('protection') >= eob_spells.settings.armor.protection then\
+\9if champion:getStat('protection') >= add_spells.settings.armor.protection then\
 \9\9hudPrint('Armor spell has no effect on '..champion:getName())\
 \9\9return false\
 \9end\
 \9\
-\9if (eob_spells.useCasterLevelAsModifier and caster.getLevel) then skill = caster:getLevel() end\
+\9skill = champion:getLevel() \
 \
-\9playSoundAt(\"fireball_launch\",party.level,party.x,party.y)\
+\9playSoundAt(\"generic_spell\",party.level,party.x,party.y)\
 \9data.set(champion,'spell_armor_orig_protection',champion:getStat('protection'))\
 \9data.set(champion,'spell_armor_max_protection',champion:getStatMax('protection'))\9\
-\9champion:setStatMax('protection',eob_spells.settings.armor.protection)\
-\9champion:setStat('protection',eob_spells.settings.armor.protection)\
+\9champion:setStatMax('protection',add_spells.settings.armor.protection)\
+\9champion:setStat('protection',add_spells.settings.armor.protection)\
 \
-\9data.set(champion,'spell_armor_damage_threshold',eob_spells.settings.armor.threshold + skill)\
+\9data.set(champion,'spell_armor_damage_threshold',add_spells.settings.armor.threshold + skill)\
 \9\
 \9fw.addHooks(fw.getId(champion),'spell_armor',{\
 \9\
@@ -1232,14 +1475,21 @@ function castArmor(champion,skill)\
 \9\
 end\
 \
+-- INVISIBILITY --\
+\
+settings.invisibility = {}\
+settings.invisibility.level = 2\
+\
+\
 function invisibility(caster, x, y, direction, skill)\
 \9local selector = fw_magic.createTargetSelector()\
 \9selector.skill = skill\
-\9selector.onSelectChampion = eob_spells.castInvisibility\9\
+\9selector.onSelectChampion = add_spells.castInvisibility\9\
 end\
 \
 function castInvisibility(champion,skill)\
 \9champion:setCondition('invisibility',10000)\
+\9playSoundAt('generic_spell',party.level,party.x,party.y)\
 \9fw.addHooks(fw.getId(champion),'spell_inivisibility',{\
 \9\9onDamage = function(self)\
 \9\9\9self:setCondition('invisibility',0)\
@@ -1247,6 +1497,11 @@ function castInvisibility(champion,skill)\
 \9\9end \
 \9})\
 end\
+\
+-- INVISIBILITY 10' RADIUS --\
+\
+settings.invisibility_10_radius = {}\
+settings.invisibility_10_radius.level = 3\
 \
 function invisibility_10_radius(caster, x, y, direction, skill)\
 \9for i,champ in ipairs(help.getChampions()) do\
@@ -1256,93 +1511,24 @@ end\
 \
 -- SPELLS --\
 \
-\
--- SPELL BOOK ++\
-\
-function spawnSpellBook(champion)\
-\9local champId = '_'..champion:getOrdinal()\
-\
-\9local book = champion:getItem(11)\
-\9if book and string.sub(book.name,1,11) == 'spell_book_' then\
-\9\9champion:removeItem(11)\
-\9\9-- this is the only way to close the container gui if it's opened\
-\9\9for c in book:containedItems() do\
-\9\9\9champion:insertItem(11,c)\
-\9\9\9champion:removeItem(11)\
-\9\9end\
-\9end\
-\9\
-\9book = spawn('spell_book_mage',nil,nil,nil,nil,'spell_book_mage'..champId)\
-\9\
-\9for i=1,5 do \
-\9\9local chapter = spawn('spell_book_level_'..i,nil,nil,nil,nil,'spell_book_level'..i..champId)\
-\9\9book:addItem(chapter)\
-\9\9for spellName,properties in pairs(settings) do\
-\9\9\9if properties.level == i then\
-\9\9\9\9if data.get(champion,'learnedSpells')[spellName] then\
-\9\9\9\9\9chapter:addItem(spawn('spell_book_'..spellName..'_learned',nil,nil,nil,nil,'spell_book_'..spellName..champId))\
-\9\9\9\9else\
-\9\9\9\9\9chapter:addItem(spawn('spell_book_'..spellName,nil,nil,nil,nil,'spell_book_'..spellName..champId))\9\
-\9\9\9\9end\
-\9\9\9end\
-\9\9end\
-\9end\
-\9\
-\9local item = champion:getItem(11)\
-\9if (item) then\
-\9\9if string.sub(item.name,1,11) ~= 'spell_book_' then\
-\9\9\9setMouseItem(item)\
-\9\9end\
-\9\9champion:removeItem(11)\
-\9end\
-\9champion:insertItem(11,book)\9\
-\9updateSpellBookDescription(champion)\
-end\
-\
-function updateSpellBookDescription(champ)\
-\9local sp = data.get(champ,'spellPoints')\
-\9local book = champ:getItem(11)\
-\9local description = 'Available spell points\\n'\
-\9for level,points in ipairs(sp) do\
-\9\9description = description..\"\\nLevel \"..level..\":  \"..points\
-\9end\
-\9description = description..[[\
-\9\
-\9You can learn spells by right clicking the \
-\9\9desired spell scroll from this book.]]\
-\9book:setScrollText(description)\
-end\
-\
-function preventPickingUpSpellBook()\
-\9spawn('timer',party.level,0,0,0,'spell_book_timer')\
-\9spell_book_timer:setTimerInterval(0.3)\
-\9spell_book_timer:addConnector('activate','eob_spells','spellBookScanner')\
-\9spell_book_timer:activate()\
-end\
-\
-function canCast(caster,spellName)\
-\9if data.get(caster,'learnedSpells')[spellName] then return true end\
-\9hudPrint(caster:getName()..\" haven't memorized this spell yet\")\
-\9playSound('swipe')\
-\9return false\9\
-end\
-\
 function initChampion(champ)\
 \9\
 \9data.set(champ,'spellPoints',{0,0,0,0,0})\
-\9\
-\9data.set(champ,'learnedSpells',{})\9\
-\9spawnSpellBook(champ)\
 \9updateSpellPoints(champ)\
-\9fw.addHooks(fw.getId(champ),'eob_spells_level_up',{\
+\9updateSpellBookDescription(champ)\
+\9\
+\9fw.addHooks(fw.getId(champ),'add_spells_level_up',{\
 \9\9\9onLevelUp = function(champ)\
-\9\9\9\9eob_spells.updateSpellPoints(champ)\
+\9\9\9\9add_spells.updateSpellPoints(champ)\
 \9\9\9end\
 \9\9}\9\
 \9)\
 end\
 \
 function updateSpellPoints(champ)\
+\9if champ:getLevel() > 14 then\
+\9\9return\
+\9end\
 \9local progressionTable = {\
 \9{1},\
 \9{1},\
@@ -1360,6 +1546,7 @@ function updateSpellPoints(champ)\
 \9{0, 0, 0, 1, 1},\
 }\
 \9local spellPoints = data.get(champ,'spellPoints')\
+\9\
 \9for spellLevel,points in ipairs(progressionTable[champ:getLevel()]) do\
 \9\9spellPoints[spellLevel] = points + (spellPoints[spellLevel] or 0)\
 \9end\
@@ -1368,55 +1555,241 @@ function updateSpellPoints(champ)\
 \9updateSpellBookDescription(champ)\
 end\
 \
-function spellBookScanner()\
-\9local mouseItem = getMouseItem()\
-\
-\9local book = findEntity('spell_book_mage_4')\
-\9-- respawn spell book if it is in dungeon or \
-\9-- the book or any of it pages is set as mouse item\
-\9if book or (mouseItem and string.sub(mouseItem.name,1,11) == 'spell_book_') then\
-\9\9if book then\
-\9\9\9book:destroy()\
-\9\9end\9\
-\9\9setMouseItem()\
-\9\9\
-\9\9spawnSpellBook(party:getChampion(4))\
+function updateSpellBookDescription(champ)\
+\9local sp = data.get(champ,'spellPoints')\
+\9local book = champ:getItem(11)\
+\9local description = 'Available spell points\\n'\
+\9for level,points in ipairs(sp) do\
+\9\9description = description..\"\\nLevel \"..level..\":  \"..points\
 \9end\
-\9\
+\9description = description..\"\\nYou can learn spells by right clicking the\\ndesired spell scroll from this book.\"\
+\9book:setScrollText(description)\
 end\
 \
-function learnSpell(scroll,champion)\
+function onLearnSpell(scroll,champion)\
 \9local spellName = string.sub(scroll.name,12)\
 \9local sp = data.get(champion,'spellPoints')\
-\9local sl = eob_spells.settings[spellName].level\
+\9local sl = fw_magic.spells[spellName].level\
 \9if (sp[sl] < 1) then\
-\9\9hudPrint('Not enough spell points')\
+\9\9hudPrint('Not enough spell points.')\
 \9\9return false\
 \9end\
 \9sp[sl] = sp[sl] - 1\
 \9data.set(champion,'spellPoints',sp)\
+\9-- overwrite the onLearnSpell-hook\
+\9fw_magic.learnSpell(spellName,champion,scroll)\
+\9add_spells.updateSpellBookDescription(champion)\
+\9return true\
+end")
+spawn("script_entity", 22,0,0, "fw_magic")
+	:setSource("activeSpells = {}\
+selector = {\
+\9skill = 0,\
+\9onSelectChampion = nil,\
+\9caster_id = nil\
+}\
+\
+spells = {}\
+\
+mages = {}\
+\
+testMode = false\
+\
+function setTestMode(enabled)\
+\9testMode = enabled\
+end\
+\
+function activate()\
+\9-- scroll hook --\
+\9\
+\9fw.addHooks('scrolls','fw_magic',{\
+\9\9onReadScroll = function(scroll,champ) \
+\9\9\9local spellName = string.sub(scroll.name,8)\
+\9\9\9if champ:getClass() ~= 'Mage' or fw_magic.spells[spellName].level > champ:getLevel() then\
+\9\9\9\9return false\
+\9\9\9end\
+\9\9\9fw.executeHooks(spellName,'onCast',champ, party.x, party.y, party.facing, champ:getLevel())\
+\9\9\9return true\
+\9\9end\
+\9})\9\
+end\
+\
+function enableSpellBook()\
+\9for i,champ in ipairs(help.getChampions()) do\
+\9\9if champ:getClass() == 'Mage' then\
+\9\9\9data.set(champ,'learnedSpells',{})\9\
+\9\9\9addSpellBookToChampion(champ)\
+\9\9end\
+\9end\9\
+\9\
+\9if not testMode then\
+\9\9fw.addHooks('party','fw_magic',{\
+\9\9\9onCastSpell = fw_magic.canCast\
+\9\9},1)\
+\9end\9\9\
+\9fw.addHooks('items_spell_book','fw_magic',{\
+\9\9onLearnSpell = fw_magic.onLearnSpell\
+\9})\9\
+end\
+\
+function onLearnSpell(scroll,champion)\
+\9local spellName = string.sub(scroll.name,12)\
+\9local spellDef = fw_magic.spells[spellName]\
+\9if spellDef.skill then\
+\9\9if champion:getSkillLevel(spellDef.skill) < spellDef.level then\
+\9\9\9hudPrint(\"Not skillfull enough to learn this spell\")\
+\9\9\9return false\
+\9\9end\
+\9elseif champion:getLevel() < spellDef.level then\
+\9\9hudPrint(\"Not skillfull enough to learn this spell\")\
+\9\9return false\9\
+\9end\
+\9learnSpell(spellName,champion,scroll)\
+\
+\9return true\
+end\
+\
+function learnSpell(spellName,champion,scroll)\
 \9local spells = data.get(champion,'learnedSpells')\
 \9spells[spellName] = true\
 \9data.set(champion,'learnedSpells',spells)\
 \9hudPrint('Learned a new spell: '..scroll:getUIName())\
 \9playSound('discover_spell')\
-\9eob_spells.updateSpellBookDescription(champion)\
-\9return true\
+\9--spawnSpellBook(champion)\
 end\
-")
-spawn("script_entity", 22,0,0, "fw_magic")
-	:setSource("\9\
-activeSpells = {}\
-selector = {\
-\9skill = 0,\
-\9onSelectChampion = nil\
-}\
 \
-function addSpell(spellName,hookFunction)\
-\9fw.addHooks(spellName,'fw_spells',{\
+\
+function defineSpell(spellDef)\
+\9spells[spellDef.name] = spellDef\
+\9\
+\9if not spellDef.onCast then\
+\9\9fw.setHookVars(spellDef.name,'fw_magic_spells','onCast',spellDef.name)\
+\9\9spellDef.onCast = function(caster)\
+\9\9 \9local spellName = fw.getHookVars()\
+\9\9\9fw_magic.shootSpell(spellName,caster)\
+\9\9end\
+\9end\
+\9\
+\9--default onHit-hook\
+\9\
+\9if spellDef.projectile and not spellDef.onHit then\
+\9\9spellDef.onHit = function(projectile,target,damage,damageType)\
+\9\9\9if target.getOrdinal then\
+\9\9\9\9target = party\
+\9\9\9end\9\
+\9\9\9local spellName = fw.getHookVars()\
+\9\9\9local caster = fw.getById(data.get(projectile,'caster_id')) \
+\9\9\9fw_magic.dealSpellDamage(spellName,caster,target.x,target.y)\
+\9\9\9return false\
+\9\9end\9\
+\9end\
+\
+\9fw.addHooks(spellDef.name,'fw_magic_spells',{\
+\9\9onCast = spellDef.onCast\
+\9})\9\9\
+\9for i=1, #mages do\
+\9\9spawnSpellBook(party:getChampion(mages[i]))\
+\9end\
+\
+end\
+\
+function dealSpellDamage(spellName,caster,target_x,target_y)\
+\9\
+\9\9local dir = caster.facing\
+\9\9if caster.getOrdinal then\9\
+\9\9\9dir = party.facing\9\9\
+\9\9end\
+\
+\9\9\9local damageArea = fw_magic.spells[spellName].area\
+\9\9\9\9\9\
+\9\9\9if (damageArea) then\
+\9\9\9\9\
+\9\9\9\9local from_x,to_x,from_y,to_y = 0,0,0,0\
+\9\9\9\9if dir == 0 then\
+\9\9\9\9\9from_x = damageArea.from[2]\
+\9\9\9\9\9to_x =  damageArea.to[2]\
+\9\9\9\9\9from_y = - damageArea.to[1]\
+\9\9\9\9\9to_y =  - damageArea.from[1]\9\9\9\9\9\
+\9\9\9\9elseif dir == 1 then\
+\9\9\9\9\9from_x = damageArea.from[1]\
+\9\9\9\9\9to_x =  damageArea.to[1]\
+\9\9\9\9\9from_y = damageArea.from[2]\
+\9\9\9\9\9to_y =  damageArea.to[2]\9\9\9\9\9\
+\9\9\9\9elseif dir == 2 then\
+\9\9\9\9\9from_x = damageArea.from[2]\
+\9\9\9\9\9to_x =  damageArea.to[2]\
+\9\9\9\9\9from_y = damageArea.from[1]\
+\9\9\9\9\9to_y =  damageArea.to[1]\9\9\9\9\9\9\
+\9\9\9\9else\
+\9\9\9\9\9from_x = -damageArea.to[1]\
+\9\9\9\9\9to_x =  -damageArea.from[1]\
+\9\9\9\9\9from_y = -damageArea.to[2]\
+\9\9\9\9\9to_y =  -damageArea.from[2]\9\9\9\9\9\
+\9\9\9\9end\
+\9\9\9\9\
+\9\9\9\9for x = from_x,to_x do\
+\9\9\9\9\9for y = from_y,to_y do\
+\9\9\9\9\9\9fw_magic.doDamage(spellName,caster,target_x + x, target_y + y)\9\9\
+\9\9\9\9\9end\
+\9\9\9\9end \
+\9\9\9else\
+\9\9\9\9fw_magic.doDamage(spellName,caster,target_x,target_y)\9\
+\9\9\9end\
+\9\9\
+end\
+\
+function doDamage(spellName,caster,x,y)\
+\9\9local originator = 0\
+\9\9local damage = fw_magic.spells[spellName].calculateDamage(caster)\
+\9\9local damageType = fw_magic.spells[spellName].damageType\
+\9\9\
+\9\9if caster.getOrdinal then\
+\9\9\9originator = 2 ^ (caster:getOrdinal()+1) \9\
+\9\9\9caster = party\9\9\
+\9\9end\
+\9\9\
+\9\9damageTile(caster.level,x, y,(caster.facing + 2)%4,originator+1, damageType,damage)\
+\9\9local fxName = fw_magic.spells[spellName].onHitParticleEffect\
+\9\9local fx = spawn('fx',caster.level,x ,y ,0)\9\9\
+\9\9fx:setParticleSystem(fxName)\
+\9\9fx:translate(0,1,0)\9\9\9\9\
+\9\9local light = fw_fx.getLightPreset(spellName..'_hit')\
+\9\9if light then\
+\9\9\9fx:setLight(unpack(light))\9\
+\9\9end\
+\
+\9\9if fw_magic.spells[spellName].onHitSound then\
+\9\9\9playSoundAt(fw_magic.spells[spellName].onHitSound,caster.level,x,y)\
+\9\9end \9\9\
+\9\9\9\
+end\
+\
+\
+function addSpell(spellName,hookFunction,projectileName)\
+\9fw.addHooks(spellName,'fw_magic_spells',{\
 \9\9\9onCast = hookFunction\
 \9\9}\
 \9)\
+\9\
+\9local onHitHook = function(projectile,target,damage,damageType)\
+\9\9\9if target.getOrdinal then\
+\9\9\9\9target = party\
+\9\9\9end\9\
+\9\9\9local caster = fw.getById(data.get(projectile,'caster_id')) \
+\9\9\9\
+\9\9\9if caster.getOrdinal then\
+\9\9\9\9local originator = 2 ^ (caster:getOrdinal()+1) \9\9\9\
+\9\9\9\9damageTile(target.level,target.x,target.y,(target.facing + 2)%4,originator, damageType,damage)\
+\9\9\9\9return false\
+\9\9\9end\
+\9\9\9\
+\9\9end\9\
+\9\
+\9if projectileName then\
+\9\9fw.addHooks(projectileName,'fw_magic_spells',{\
+\9\9\9onHit = onHitHook\
+\9\9})\9\
+\9end\
 end\
 \
 \
@@ -1449,7 +1822,7 @@ function scanInventory()\
 \9\9\9local item = champ:getItem(slot)\
 \9\9\9if item and item.name == 'spell_selector' then\
 \9\9\9\9champ:removeItem(slot)\
-\9\9\9\9selector.onSelectChampion(champ,selector.skill)\
+\9\9\9\9selector.onSelectChampion(champ,selector.skill,selector.caster_id)\
 \9\9\9\9if (getMouseItem() and getMouseItem().name == 'spell_selector') then\
 \9\9\9\9\9setMouseItem()\
 \9\9\9\9elseif getMouseItem() then\
@@ -1463,6 +1836,9 @@ function scanInventory()\
 \9end\
 \9if getMouseItem() == nil or getMouseItem().name ~= 'spell_selector' then\
 \9\9destroyTargetSelector()\9\
+\9\9if selector.afterCast then\
+\9\9\9selector.afterCast(selector.caster_id)\
+\9\9end\
 \9end\
 end\
 \
@@ -1495,7 +1871,186 @@ function spellTimerDestructor(timer)\
 \9timer:destroy()\
 \
 end\
-")
+\
+function castSpell(spellName,caster)\
+\9fw.executeHooks(spellName,'onCast',caster)\
+end\
+\
+function shootSpell(spellName,caster,speed,damage,fx,onHitFx,sound,onHitSound,area)\
+\
+\9local spellDef = spells[spellName]\
+\9sound = sound or spellDef.sound\
+\9onHitSound = onHitSound or spellDef.onHitSound\
+\9speed = speed or spellDef.speed\
+\9\
+\9if spellDef.calculateDamage then\
+\9\9damage = spellDef.calculateDamage(caster) \
+\9else\
+\9\9damage = damage or 0\
+\9end\
+\9\
+\9fx = fx or spellDef.particleEffect\
+\9onHitFx = onHitFx or spellDef.onHitParticleEffect\
+\
+    local caster_id = fw.getId(caster)\
+\
+\9if caster.getOrdinal then \
+\9\9caster = party \
+\9end\
+\
+\9shootProjectile(spellDef.projectile, caster.level, caster.x, caster.y, caster.facing, speed, 0, 0, 0, 0, 0,\
+\9\9damage, caster, true)\
+\
+\9local projectile = nil\
+\9for ent in entitiesAt(caster.level, caster.x, caster.y) do\
+\9\9if ent.name == spellDef.projectile then\
+\9\9\9projectile = ent\
+\9\9\9break\
+\9\9end\
+\9end\
+\9data.set(projectile,'caster_id',caster_id)\
+\9\
+\9fw.setHookVars(projectile.id,'fw_magic_spells','onHit',spellDef.name)\
+\9fw.addHooks(projectile.id,'fw_magic_spells',{\
+\9\9onHit=spellDef.onHit\
+\9})\
+\9if fx then\
+    \9local effect = fw_fx.addProjectileEffect(projectile,fx,speed,onHitFx,sound,onHitSound)\
+\9end\
+\9\
+\9return projectile \9\
+end\
+\
+function canCast(caster,spellName)\
+\9if data.get(caster,'learnedSpells')[spellName] then return true end\
+\9hudPrint(caster:getName()..\" haven't learned this spell yet\")\
+\9playSound('swipe')\
+\9return false\9\
+end\
+\
+-- SPELL BOOK ++\
+\
+function addSpellBookToChampion(champion)\
+\9spawnSpellBook(champion)\
+\9table.insert(mages,champion:getOrdinal())\
+\9preventPickingUpSpellBook()\
+end\
+\
+function spawnSpellBook(champion)\
+\9local champId = '_'..champion:getOrdinal()\
+\
+\9local book = champion:getItem(11)\
+\9if book and string.sub(book.name,1,11) == 'spell_book_' then\
+\9\9champion:removeItem(11)\
+\9\9-- this is the only way to close the container gui if it's opened\
+\9\9for c in book:containedItems() do\
+\9\9\9champion:insertItem(11,c)\
+\9\9\9champion:removeItem(11)\
+\9\9end\
+\9end\
+\9\
+\9book = spawn('spell_book_mage',nil,nil,nil,nil,'spell_book_mage'..champId)\
+\9\
+\9for i=1,5 do \
+\9\9local chapter = spawn('spell_book_level_'..i,nil,nil,nil,nil,'spell_book_level'..i..champId)\
+\9\9book:addItem(chapter)\
+\9\9for spellName,properties in pairs(fw_magic.spells) do\
+\9\9\9if properties.book_page == i then\
+\9\9\9\9if data.get(champion,'learnedSpells')[spellName] then\
+\9\9\9\9\9chapter:addItem(spawn('spell_book_'..spellName..'_learned',nil,nil,nil,nil,'spell_book_'..spellName..champId))\
+\9\9\9\9else\
+\9\9\9\9\9chapter:addItem(spawn('spell_book_'..spellName,nil,nil,nil,nil,'spell_book_'..spellName..champId))\9\
+\9\9\9\9end\
+\9\9\9end\
+\9\9end\
+\9end\
+\9\
+\9local item = champion:getItem(11)\
+\9if (item) then\
+\9\9if string.sub(item.name,1,11) ~= 'spell_book_' then\
+\9\9\9setMouseItem(item)\
+\9\9end\
+\9\9champion:removeItem(11)\
+\9end\
+\9champion:insertItem(11,book)\9\
+end\
+\
+\
+\
+function preventPickingUpSpellBook()\
+\9if spell_book_timer then\
+\9\9return\
+\9end\
+\9local sbtimer = timers:create('spell_book_timer') \
+\
+\9sbtimer:setTimerInterval(0.3)\
+\9sbtimer:addConnector('activate','fw_magic','spellBookScanner')\
+\9sbtimer:setConstant()\
+\9sbtimer:activate()\
+end\
+\
+function spellBookScanner()\
+\9local mouseItem = getMouseItem()\
+\9for _,i in ipairs(mages) do\
+\9\9local book = findEntity('spell_book_mage_'..i)\
+\9\9-- respawn spell book if it is in dungeon or \
+\9\9-- the book or any of it pages is set as mouse item\
+\9\9if book or (mouseItem and string.sub(mouseItem.name,1,11) == 'spell_book_') then\
+\9\9\9if book then\
+\9\9\9\9book:destroy()\
+\9\9\9end\9\
+\9\9\9setMouseItem()\
+\9\9\9spawnSpellBook(party:getChampion(i))\
+\9\9end\
+\9end\
+\9\
+end\
+\
+-- monsters spell support\
+\
+function addSpellsToMonsters(monsterNamespace,spellName,amount,targets,range,propability,cooldown)\
+\
+\9local spellHook = function(monster,dir)\
+\9\9\9if data.get(monster,'spell_cooldown') then\
+\9\9\9\9return false\
+\9\9\9end\
+\9\9\9local v = fw.getHookVars()\
+\9\9\9if math.random() > v.prop then return end\
+\9\9\9if (help.nextEntityAheadOf(monster, v.range,v.targets,true)) then\9\9\9\9\
+\9\9\9\9local count = data.get(monster,v.spellName..'_count') or v.amount\
+\9\9\9\9if count < 1 then\
+\9\9\9\9\9return\
+\9\9\9\9end\
+\9\9\9\9fw.executeHooks(v.spellName,'onCast',monster)\
+\9\9\9\9data.set(monster,v.spellName..'_count',count - 1)\
+\9\9\9\9data.set(monster,'spell_cooldown',true)\
+\9\9\9\9fw.repeatFunction(1,v.cooldown,{monster.id},function(monster_id)\
+\9\9\9\9\9\9local monster = fw.getById(monster_id)\
+\9\9\9\9\9\9if monster then\
+\9\9\9\9\9\9\9data.unset(monster,'spell_cooldown')\
+\9\9\9\9\9\9end\
+\9\9\9\9\9end\
+\9\9\9\9)\
+\9\9\9\9return false\
+\9\9\9end\
+\9\9end\
+\9\9\
+\9local vars = {}\
+\9vars.spellName=spellName\
+\9vars.amount=amount\
+\9vars.targets=targets\9\9\
+\9vars.range = range or 5\
+\9vars.prop = propability or 0.5\
+\9vars.cooldown = cooldown or 2\
+\9\
+\9fw.setHookVars(monsterNamespace,'fw_magic_monsters_'..spellName,'onMove',vars)\
+\9fw.setHookVars(monsterNamespace,'fw_magic_monsters_'..spellName,'onTurn',vars)\9\
+\9\
+\9fw.addHooks(monsterNamespace,'fw_magic_monsters_'..spellName,{\
+\9\9onMove = spellHook,\
+\9\9onTurn = spellHook\
+\9})\
+end")
 spawn("eob_sewers_wall_text_long", 6,15,0, "eob_sewers_wall_text_long_14")
 	:setWallText("Teleport to Level 3")
 spawn("teleporter", 6,16,1, "teleporter_11")
@@ -2796,8 +3351,6 @@ spawn("pressure_plate_hidden", 22,20,2, "pressure_plate_hidden_19")
 	:addConnector("activate", "script_entity_12", "SpawnPit")
 spawn("eob_sewers_door_metal", 21,24,0, "eob_sewers_door_metal_19")
 
--- This file has been generated by EobConverter v0.6.8
-
 --- level 4 ---
 
 mapName("Upper Level Dwarven Ruins")
@@ -2837,196 +3390,208 @@ mapDesc([[
 #...#...#..#...........#...#...#
 ##############################.#
 ]])
-spawn("eob_ruins_portal_amulet", 16, 1, 0, "eob_ruins_portal_amulet_4_16_1_N")
-spawn("eob_ruins_wall_text", 17, 1, 0, "eob_ruins_wall_text_4_17_1_N")
-spawn("eob_ruins_net_torn", 30, 0, 0, "eob_ruins_net_torn_4_30_0")
-spawn("eob_ruins_door_stone", 14, 1, 1, "eob_ruins_door_stone_4_14_1")
-spawn("eob_ruins_door_stone", 18, 1, 3, "eob_ruins_door_stone_4_18_1")
+spawn("eob_ruins_portal_amulet", 16,1,0, "eob_ruins_portal_amulet_4_16_1_N")
+spawn("eob_ruins_wall_text", 17,1,0, "eob_ruins_wall_text_4_17_1_N")
+	:setWallText("")
+spawn("eob_ruins_net_torn", 30,0,0, "eob_ruins_net_torn_4_30_0")
+spawn("eob_ruins_door_stone", 14,1,1, "eob_ruins_door_stone_4_14_1")
+spawn("eob_ruins_door_stone", 18,1,3, "eob_ruins_door_stone_4_18_1")
 	:addPullChain()
-spawn("eob_ruins_statue_lever", 3, 3, 0, "eob_ruins_statue_lever_4_3_3_N")
-spawn("eob_ruins_door_stone", 7, 2, 0, "eob_ruins_door_stone_4_7_2")
+spawn("eob_ruins_statue_lever", 3,3,0, "eob_ruins_statue_lever_4_3_3_N")
+spawn("eob_ruins_door_stone", 7,2,0, "eob_ruins_door_stone_4_7_2")
 	:addPullChain()
-spawn("eob_ruins_wall_text", 13, 3, 0, "eob_ruins_wall_text_4_13_3_N")
-spawn("eob_ruins_lever", 15, 2, 3, "eob_ruins_lever_4_15_2_W")
-spawn("eob_ruins_door_stone", 24, 2, 0, "eob_ruins_door_stone_4_24_2")
+spawn("eob_ruins_wall_text", 13,3,0, "eob_ruins_wall_text_4_13_3_N")
+	:setWallText("")
+spawn("eob_ruins_lever", 15,2,3, "eob_ruins_lever_4_15_2_W")
+spawn("eob_ruins_door_stone", 24,2,0, "eob_ruins_door_stone_4_24_2")
 	:addPullChain()
-spawn("eob_ruins_statue_lock", 1, 3, 1, "eob_ruins_statue_lock_4_1_3_E")
-spawn("eob_ruins_pressure_plate", 9, 3, 1, "eob_ruins_pressure_plate_4_9_3")
+spawn("eob_ruins_statue_lock", 1,3,1, "eob_ruins_statue_lock_4_1_3_E")
+spawn("eob_ruins_pressure_plate", 9,3,1, "eob_ruins_pressure_plate_4_9_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_pit", 10, 3, 1, "eob_ruins_pit_4_10_3")
-spawn("eob_ruins_pit", 11, 3, 1, "eob_ruins_pit_4_11_3")
-spawn("eob_ruins_pit", 12, 3, 1, "eob_ruins_pit_4_12_3")
-spawn("eob_ruins_wall_small_statue", 15, 3, 3, "eob_ruins_wall_small_statue_4_15_3_W")
-spawn("eob_ruins_wall_small_statue", 17, 3, 1, "eob_ruins_wall_small_statue_4_17_3_E")
-spawn("eob_ruins_alcove", 20, 3, 1, "eob_ruins_alcove_4_20_3_E")
+spawn("eob_ruins_pit", 10,3,1, "eob_ruins_pit_4_10_3")
+spawn("eob_ruins_pit", 11,3,1, "eob_ruins_pit_4_11_3")
+spawn("eob_ruins_pit", 12,3,1, "eob_ruins_pit_4_12_3")
+spawn("eob_ruins_wall_small_statue", 15,3,3, "eob_ruins_wall_small_statue_4_15_3_W")
+spawn("eob_ruins_wall_small_statue", 17,3,1, "eob_ruins_wall_small_statue_4_17_3_E")
+spawn("eob_ruins_alcove", 20,3,1, "eob_ruins_alcove_4_20_3_E")
 	:addItem(spawn("eob_potion_cure_poison"))
 	:addItem(spawn("eob_potion_cure_poison"))
-spawn("eob_ruins_net", 28, 3, 0, "eob_ruins_net_4_28_3")
-spawn("eob_ruins_door_stone", 1, 4, 0, "eob_ruins_door_stone_4_1_4")
-spawn("eob_ruins_illusion_wall", 5, 3, 2, "eob_ruins_illusion_wall_4_5_3_S")
-spawn("eob_ruins_illusion_wall", 5, 5, 0, "eob_ruins_illusion_wall_4_5_5_N")
-spawn("eob_ruins_statue_lever", 13, 4, 3, "eob_ruins_statue_lever_4_13_4_W")
-spawn("eob_ruins_wall_small_statue", 16, 3, 2, "eob_ruins_wall_small_statue_4_16_3_S")
-spawn("eob_ruins_wall_small_statue", 16, 5, 0, "eob_ruins_wall_small_statue_4_16_5_N")
-spawn("eob_ruins_alcove", 20, 4, 1, "eob_ruins_alcove_4_20_4_E")
+spawn("eob_ruins_net", 28,3,0, "eob_ruins_net_4_28_3")
+spawn("eob_ruins_door_stone", 1,4,0, "eob_ruins_door_stone_4_1_4")
+spawn("eob_ruins_illusion_wall", 5,3,2, "eob_ruins_illusion_wall_4_5_3_S")
+spawn("eob_ruins_illusion_wall", 5,5,0, "eob_ruins_illusion_wall_4_5_5_N")
+spawn("eob_ruins_statue_lever", 13,4,3, "eob_ruins_statue_lever_4_13_4_W")
+spawn("eob_ruins_wall_small_statue", 16,3,2, "eob_ruins_wall_small_statue_4_16_3_S")
+spawn("eob_ruins_wall_small_statue", 16,5,0, "eob_ruins_wall_small_statue_4_16_5_N")
+spawn("eob_ruins_alcove", 20,4,1, "eob_ruins_alcove_4_20_4_E")
 	:addItem(spawn("eob_potion_cure_poison"))
 	:addItem(spawn("eob_potion_cure_poison"))
-spawn("eob_ruins_net", 30, 4, 2, "eob_ruins_net_4_30_4")
-spawn("eob_ruins_statue_lock", 1, 5, 3, "eob_ruins_statue_lock_4_1_5_W")
-spawn("eob_ruins_wall_text", 23, 4, 2, "eob_ruins_wall_text_4_23_4_S")
-spawn("eob_ruins_alcove", 24, 4, 2, "eob_ruins_alcove_4_24_4_S")
-spawn("eob_ruins_wall_text", 2, 5, 2, "eob_ruins_wall_text_4_2_5_S")
-spawn("eob_ruins_button", 1, 6, 1, "eob_ruins_button_4_1_6_E")
-spawn("eob_ruins_door_stone", 3, 6, 0, "eob_ruins_door_stone_4_3_6")
-spawn("eob_ruins_button", 4, 5, 2, "eob_ruins_button_4_4_5_S")
-spawn("eob_ruins_door_stone", 20, 6, 3, "eob_ruins_door_stone_4_20_6")
+spawn("eob_ruins_net", 30,4,2, "eob_ruins_net_4_30_4")
+spawn("eob_ruins_statue_lock", 1,5,3, "eob_ruins_statue_lock_4_1_5_W")
+spawn("eob_ruins_wall_text", 23,4,2, "eob_ruins_wall_text_4_23_4_S")
+	:setWallText("")
+spawn("eob_ruins_alcove", 24,4,2, "eob_ruins_alcove_4_24_4_S")
+spawn("eob_ruins_wall_text", 2,5,2, "eob_ruins_wall_text_4_2_5_S")
+	:setWallText("")
+spawn("eob_ruins_button", 1,6,1, "eob_ruins_button_4_1_6_E")
+spawn("eob_ruins_door_stone", 3,6,0, "eob_ruins_door_stone_4_3_6")
+spawn("eob_ruins_button", 4,5,2, "eob_ruins_button_4_4_5_S")
+spawn("eob_ruins_door_stone", 20,6,3, "eob_ruins_door_stone_4_20_6")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 2, 7, 3, "eob_ruins_door_stone_4_2_7")
-spawn("eob_ruins_door_stone", 4, 7, 1, "eob_ruins_door_stone_4_4_7")
-spawn("eob_ruins_chain_lever", 18, 6, 2, "eob_ruins_chain_lever_4_18_6_S")
-spawn("eob_ruins_net", 25, 7, 1, "eob_ruins_net_4_25_7")
-spawn("eob_ruins_button", 2, 9, 0, "eob_ruins_button_4_2_9_N")
-spawn("eob_ruins_door_stone", 3, 8, 2, "eob_ruins_door_stone_4_3_8")
-spawn("eob_ruins_button", 5, 8, 3, "eob_ruins_button_4_5_8_W")
-spawn("eob_ruins_door_stone", 20, 8, 3, "eob_ruins_door_stone_4_20_8")
+spawn("eob_ruins_door_stone", 2,7,3, "eob_ruins_door_stone_4_2_7")
+spawn("eob_ruins_door_stone", 4,7,1, "eob_ruins_door_stone_4_4_7")
+spawn("eob_ruins_chain_lever", 18,6,2, "eob_ruins_chain_lever_4_18_6_S")
+spawn("eob_ruins_net", 25,7,1, "eob_ruins_net_4_25_7")
+spawn("eob_ruins_button", 2,9,0, "eob_ruins_button_4_2_9_N")
+spawn("eob_ruins_door_stone", 3,8,2, "eob_ruins_door_stone_4_3_8")
+spawn("eob_ruins_button", 5,8,3, "eob_ruins_button_4_5_8_W")
+spawn("eob_ruins_door_stone", 20,8,3, "eob_ruins_door_stone_4_20_8")
 	:addPullChain()
-spawn("eob_ruins_statue_lever", 21, 8, 1, "eob_ruins_statue_lever_4_21_8_E")
-spawn("eob_ruins_wall_text", 13, 9, 1, "eob_ruins_wall_text_4_13_9_E")
-spawn("eob_ruins_wall_text", 21, 8, 2, "eob_ruins_wall_text_4_21_8_S")
-spawn("eob_ruins_statue_lock", 2, 11, 0, "eob_ruins_statue_lock_4_2_11_N")
-spawn("eob_ruins_door_stone", 3, 10, 0, "eob_ruins_door_stone_4_3_10")
-spawn("eob_ruins_statue_lock", 4, 9, 2, "eob_ruins_statue_lock_4_4_9_S")
-spawn("eob_ruins_wall_text", 9, 10, 3, "eob_ruins_wall_text_4_9_10_W")
-spawn("eob_ruins_door_stone", 20, 10, 3, "eob_ruins_door_stone_4_20_10")
+spawn("eob_ruins_statue_lever", 21,8,1, "eob_ruins_statue_lever_4_21_8_E")
+spawn("eob_ruins_wall_text", 13,9,1, "eob_ruins_wall_text_4_13_9_E")
+	:setWallText("")
+spawn("eob_ruins_wall_text", 21,8,2, "eob_ruins_wall_text_4_21_8_S")
+	:setWallText("")
+spawn("eob_ruins_statue_lock", 2,11,0, "eob_ruins_statue_lock_4_2_11_N")
+spawn("eob_ruins_door_stone", 3,10,0, "eob_ruins_door_stone_4_3_10")
+spawn("eob_ruins_statue_lock", 4,9,2, "eob_ruins_statue_lock_4_4_9_S")
+spawn("eob_ruins_wall_text", 9,10,3, "eob_ruins_wall_text_4_9_10_W")
+	:setWallText("")
+spawn("eob_ruins_door_stone", 20,10,3, "eob_ruins_door_stone_4_20_10")
 	:addPullChain()
-spawn("eob_ruins_net_torn", 26, 10, 0, "eob_ruins_net_torn_4_26_10")
-spawn("eob_ruins_wall_text", 13, 11, 1, "eob_ruins_wall_text_4_13_11_E")
-spawn("eob_ruins_stairs_down", 4, 12, 0, "eob_ruins_stairs_down_4_4_12_S")
-spawn("eob_ruins_wall_text", 9, 12, 3, "eob_ruins_wall_text_4_9_12_W")
-spawn("eob_ruins_door_stone", 20, 12, 3, "eob_ruins_door_stone_4_20_12")
+spawn("eob_ruins_net_torn", 26,10,0, "eob_ruins_net_torn_4_26_10")
+spawn("eob_ruins_wall_text", 13,11,1, "eob_ruins_wall_text_4_13_11_E")
+	:setWallText("")
+spawn("eob_ruins_stairs_down", 4,12,0, "eob_ruins_stairs_down_4_4_12_S")
+spawn("eob_ruins_wall_text", 9,12,3, "eob_ruins_wall_text_4_9_12_W")
+	:setWallText("")
+spawn("eob_ruins_door_stone", 20,12,3, "eob_ruins_door_stone_4_20_12")
 	:addPullChain()
-spawn("eob_ruins_net", 28, 12, 0, "eob_ruins_net_4_28_12")
-spawn("eob_ruins_wall_small_statue", 6, 13, 3, "eob_ruins_wall_small_statue_4_6_13_W")
-spawn("eob_ruins_door_stone", 9, 13, 0, "eob_ruins_door_stone_4_9_13")
+spawn("eob_ruins_net", 28,12,0, "eob_ruins_net_4_28_12")
+spawn("eob_ruins_wall_small_statue", 6,13,3, "eob_ruins_wall_small_statue_4_6_13_W")
+spawn("eob_ruins_door_stone", 9,13,0, "eob_ruins_door_stone_4_9_13")
 	:addPullChain()
-spawn("eob_ruins_wall_small_statue", 10, 12, 2, "eob_ruins_wall_small_statue_4_10_12_S")
-spawn("eob_ruins_door_stone", 11, 13, 0, "eob_ruins_door_stone_4_11_13")
-spawn("eob_ruins_statue_lock", 12, 12, 2, "eob_ruins_statue_lock_4_12_12_S")
-spawn("eob_ruins_door_stone", 13, 13, 0, "eob_ruins_door_stone_4_13_13")
+spawn("eob_ruins_wall_small_statue", 10,12,2, "eob_ruins_wall_small_statue_4_10_12_S")
+spawn("eob_ruins_door_stone", 11,13,0, "eob_ruins_door_stone_4_11_13")
+spawn("eob_ruins_statue_lock", 12,12,2, "eob_ruins_statue_lock_4_12_12_S")
+spawn("eob_ruins_door_stone", 13,13,0, "eob_ruins_door_stone_4_13_13")
 	:addPullChain()
-spawn("eob_ruins_wall_text", 14, 14, 0, "eob_ruins_wall_text_4_14_14_N")
-spawn("eob_ruins_statue_lever", 14, 14, 1, "eob_ruins_statue_lever_4_14_14_E")
-spawn("eob_ruins_statue_lock", 4, 15, 1, "eob_ruins_statue_lock_4_4_15_E")
-spawn("eob_ruins_stairs_up", 16, 15, 2, "eob_ruins_stairs_up_4_16_15_N")
-spawn("eob_ruins_door_stone", 4, 16, 0, "eob_ruins_door_stone_4_4_16")
-spawn("eob_ruins_door_stone", 21, 16, 0, "eob_ruins_door_stone_4_21_16")
+spawn("eob_ruins_wall_text", 14,14,0, "eob_ruins_wall_text_4_14_14_N")
+	:setWallText("")
+spawn("eob_ruins_statue_lever", 14,14,1, "eob_ruins_statue_lever_4_14_14_E")
+spawn("eob_ruins_statue_lock", 4,15,1, "eob_ruins_statue_lock_4_4_15_E")
+spawn("eob_ruins_stairs_up", 16,15,2, "eob_ruins_stairs_up_4_16_15_N")
+spawn("eob_ruins_door_stone", 4,16,0, "eob_ruins_door_stone_4_4_16")
+spawn("eob_ruins_door_stone", 21,16,0, "eob_ruins_door_stone_4_21_16")
 	:addPullChain()
-spawn("eob_ruins_secret_button_tiny", 6, 17, 3, "eob_ruins_secret_button_tiny_4_6_17_W")
-spawn("eob_ruins_door_stone", 20, 17, 1, "eob_ruins_door_stone_4_20_17")
+spawn("eob_ruins_secret_button_tiny", 6,17,3, "eob_ruins_secret_button_tiny_4_6_17_W")
+spawn("eob_ruins_door_stone", 20,17,1, "eob_ruins_door_stone_4_20_17")
 	:addPullChain()
-spawn("eob_ruins_wall_small_statue", 10, 17, 2, "eob_ruins_wall_small_statue_4_10_17_S")
-spawn("eob_ruins_wall_small_statue", 12, 17, 2, "eob_ruins_wall_small_statue_4_12_17_S")
-spawn("eob_ruins_net_torn", 28, 18, 2, "eob_ruins_net_torn_4_28_18")
-spawn("eob_ruins_chain_lever", 11, 18, 2, "eob_ruins_chain_lever_4_11_18_S")
-spawn("eob_ruins_stairs_up", 16, 19, 0, "eob_ruins_stairs_up_4_16_19_S")
-spawn("eob_ruins_door_stone", 25, 19, 3, "eob_ruins_door_stone_4_25_19")
-spawn("eob_ruins_pressure_plate", 26, 19, 1, "eob_ruins_pressure_plate_4_26_19")
+spawn("eob_ruins_wall_small_statue", 10,17,2, "eob_ruins_wall_small_statue_4_10_17_S")
+spawn("eob_ruins_wall_small_statue", 12,17,2, "eob_ruins_wall_small_statue_4_12_17_S")
+spawn("eob_ruins_net_torn", 28,18,2, "eob_ruins_net_torn_4_28_18")
+spawn("eob_ruins_chain_lever", 11,18,2, "eob_ruins_chain_lever_4_11_18_S")
+spawn("eob_ruins_stairs_up", 16,19,0, "eob_ruins_stairs_up_4_16_19_S")
+spawn("eob_ruins_door_stone", 25,19,3, "eob_ruins_door_stone_4_25_19")
+spawn("eob_ruins_pressure_plate", 26,19,1, "eob_ruins_pressure_plate_4_26_19")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_wall_text", 10, 20, 1, "eob_ruins_wall_text_4_10_20_E")
-spawn("eob_ruins_wall_small_statue", 16, 20, 1, "eob_ruins_wall_small_statue_4_16_20_E")
-spawn("eob_ruins_wall_text", 20, 20, 1, "eob_ruins_wall_text_4_20_20_E")
-spawn("eob_ruins_button", 24, 20, 1, "eob_ruins_button_4_24_20_E")
-spawn("eob_ruins_net_torn", 30, 20, 0, "eob_ruins_net_torn_4_30_20")
-spawn("eob_ruins_button", 16, 21, 3, "eob_ruins_button_4_16_21_W")
-spawn("eob_ruins_net", 26, 21, 0, "eob_ruins_net_4_26_21")
-spawn("eob_ruins_door_stone", 2, 22, 1, "eob_ruins_door_stone_4_2_22")
+spawn("eob_ruins_wall_text", 10,20,1, "eob_ruins_wall_text_4_10_20_E")
+	:setWallText("")
+spawn("eob_ruins_wall_small_statue", 16,20,1, "eob_ruins_wall_small_statue_4_16_20_E")
+spawn("eob_ruins_wall_text", 20,20,1, "eob_ruins_wall_text_4_20_20_E")
+	:setWallText("")
+spawn("eob_ruins_button", 24,20,1, "eob_ruins_button_4_24_20_E")
+spawn("eob_ruins_net_torn", 30,20,0, "eob_ruins_net_torn_4_30_20")
+spawn("eob_ruins_button", 16,21,3, "eob_ruins_button_4_16_21_W")
+spawn("eob_ruins_net", 26,21,0, "eob_ruins_net_4_26_21")
+spawn("eob_ruins_door_stone", 2,22,1, "eob_ruins_door_stone_4_2_22")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 16, 22, 2, "eob_ruins_door_stone_4_16_22")
-spawn("eob_ruins_door_stone", 14, 23, 1, "eob_ruins_door_stone_4_14_23")
-spawn("eob_ruins_pressure_plate", 16, 23, 2, "eob_ruins_pressure_plate_4_16_23")
+spawn("eob_ruins_door_stone", 16,22,2, "eob_ruins_door_stone_4_16_22")
+spawn("eob_ruins_door_stone", 14,23,1, "eob_ruins_door_stone_4_14_23")
+spawn("eob_ruins_pressure_plate", 16,23,2, "eob_ruins_pressure_plate_4_16_23")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_net", 23, 23, 0, "eob_ruins_net_4_23_23")
-spawn("eob_ruins_stairs_down", 11, 24, 0, "eob_ruins_stairs_down_4_11_24_S")
-spawn("eob_ruins_statue_lock", 15, 23, 2, "eob_ruins_statue_lock_4_15_23_S")
-spawn("eob_ruins_ceiling_shaft", 19, 24, 2, "eob_ruins_ceiling_shaft_4_19_24")
-spawn("eob_ruins_net", 21, 24, 3, "eob_ruins_net_4_21_24")
-spawn("eob_ruins_door_stone", 8, 25, 2, "eob_ruins_door_stone_4_8_25")
+spawn("eob_ruins_net", 23,23,0, "eob_ruins_net_4_23_23")
+spawn("eob_ruins_stairs_down", 11,24,0, "eob_ruins_stairs_down_4_11_24_S")
+spawn("eob_ruins_statue_lock", 15,23,2, "eob_ruins_statue_lock_4_15_23_S")
+spawn("eob_ruins_ceiling_shaft", 19,24,2, "eob_ruins_ceiling_shaft_4_19_24")
+spawn("eob_ruins_net", 21,24,3, "eob_ruins_net_4_21_24")
+spawn("eob_ruins_door_stone", 8,25,2, "eob_ruins_door_stone_4_8_25")
 	:addPullChain()
-spawn("eob_ruins_wall_small_statue", 12, 26, 0, "eob_ruins_wall_small_statue_4_12_26_N")
-spawn("eob_ruins_net_torn", 16, 26, 0, "eob_ruins_net_torn_4_16_26")
-spawn("eob_ruins_net", 24, 26, 1, "eob_ruins_net_4_24_26")
-spawn("eob_ruins_door_stone", 2, 27, 0, "eob_ruins_door_stone_4_2_27")
+spawn("eob_ruins_wall_small_statue", 12,26,0, "eob_ruins_wall_small_statue_4_12_26_N")
+spawn("eob_ruins_net_torn", 16,26,0, "eob_ruins_net_torn_4_16_26")
+spawn("eob_ruins_net", 24,26,1, "eob_ruins_net_4_24_26")
+spawn("eob_ruins_door_stone", 2,27,0, "eob_ruins_door_stone_4_2_27")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 6, 27, 0, "eob_ruins_door_stone_4_6_27")
+spawn("eob_ruins_door_stone", 6,27,0, "eob_ruins_door_stone_4_6_27")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 9, 27, 0, "eob_ruins_door_stone_4_9_27")
+spawn("eob_ruins_door_stone", 9,27,0, "eob_ruins_door_stone_4_9_27")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 13, 27, 0, "eob_ruins_door_stone_4_13_27")
-spawn("eob_ruins_button", 14, 26, 2, "eob_ruins_button_4_14_26_S")
-spawn("eob_ruins_net", 25, 27, 0, "eob_ruins_net_4_25_27")
-spawn("eob_ruins_net", 29, 27, 2, "eob_ruins_net_4_29_27")
-spawn("eob_ruins_pressure_plate", 13, 28, 2, "eob_ruins_pressure_plate_4_13_28")
+spawn("eob_ruins_door_stone", 13,27,0, "eob_ruins_door_stone_4_13_27")
+spawn("eob_ruins_button", 14,26,2, "eob_ruins_button_4_14_26_S")
+spawn("eob_ruins_net", 25,27,0, "eob_ruins_net_4_25_27")
+spawn("eob_ruins_net", 29,27,2, "eob_ruins_net_4_29_27")
+spawn("eob_ruins_pressure_plate", 13,28,2, "eob_ruins_pressure_plate_4_13_28")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_net", 15, 28, 1, "eob_ruins_net_4_15_28")
-spawn("eob_ruins_net_torn", 17, 28, 3, "eob_ruins_net_torn_4_17_28")
-spawn("eob_ruins_statue_lever", 10, 29, 1, "eob_ruins_statue_lever_4_10_29_E")
-spawn("eob_ruins_net", 27, 29, 1, "eob_ruins_net_4_27_29")
-spawn("eob_ruins_ceiling_shaft", 29, 29, 2, "eob_ruins_ceiling_shaft_4_29_29")
-spawn("eob_ruins_net", 13, 30, 1, "eob_ruins_net_4_13_30")
-spawn("eob_ruins_net", 17, 30, 3, "eob_ruins_net_4_17_30")
-spawn("eob_ruins_net", 30, 31, 0, "eob_ruins_net_4_30_31")
-spawn("eob_arrow_u", 29, 10, 1, "eob_arrow_u_10")
-spawn("eob_stone_scepter_u", 27, 2, 3, "eob_stone_scepter_u_1")
-spawn("eob_ring_protection3_u", 24, 6, 0, "eob_ring_protection3_u_1")
-spawn("eob_rations_iron_u", 20, 19, 1, "eob_rations_iron_u_1")
-spawn("eob_axe_drow_cleaver_u", 11, 18, 2, "eob_axe_drow_cleaver_u_1")
-spawn("eob_potion_healing", 3, 14, 0, "eob_potion_healing_5")
-spawn("eob_rock_u", 30, 28, 1, "eob_rock_u_10")
-spawn("eob_arrow_u", 26, 4, 0, "eob_arrow_u_11")
-spawn("eob_key_dwarven_u", 3, 7, 0, "eob_key_dwarven_u_1")
-spawn("eob_potion_cure_poison", 24, 15, 3, "eob_potion_cure_poison_1")
-spawn("eob_rock_u", 19, 24, 0, "eob_rock_u_11")
-spawn("eob_rations_iron_u", 20, 19, 1, "eob_rations_iron_u_2")
-spawn("eob_cleric_scroll_slow_poison", 3, 19, 2, "eob_cleric_scroll_slow_poison_1")
-spawn("eob_robe_u", 10, 17, 3, "eob_robe_u_1")
-spawn("eob_rock_u", 30, 12, 0, "eob_rock_u_12")
-spawn("eob_mace_u", 22, 6, 2, "eob_mace_u_1")
-spawn("eob_arrow_u", 20, 25, 2, "eob_arrow_u_12")
-spawn("eob_shield_u", 10, 20, 3, "eob_shield_u_4")
-spawn("eob_ring2_u", 29, 11, 2, "eob_ring2_u_1")
-spawn("eob_key_dwarven_u", 15, 8, 0, "eob_key_dwarven_u_2")
-spawn("eob_medallion_of_adornment_u", 10, 17, 3, "eob_medallion_of_adornment_u_1")
-spawn("eob_mace_u", 21, 13, 3, "eob_mace_u_2")
-spawn("eob_potion_healing", 3, 19, 0, "eob_potion_healing_6")
-spawn("eob_rations_iron_u", 20, 19, 1, "eob_rations_iron_u_3")
-spawn("eob_key_dwarven_u", 28, 28, 0, "eob_key_dwarven_u_3")
-spawn("eob_key_dwarven_u", 9, 15, 2, "eob_key_dwarven_u_4")
-spawn("eob_dwarven_helmet_u", 10, 20, 0, "eob_dwarven_helmet_u_1")
-spawn("eob_mage_scroll_flame_arrow", 3, 19, 3, "eob_mage_scroll_flame_arrow_1")
-spawn("eob_potion_cure_poison", 24, 15, 3, "eob_potion_cure_poison_2")
-spawn("eob_spider", 29, 10, 0, "eob_spider_1")
-spawn("eob_spider", 28, 1, 0, "eob_spider_2")
-spawn("eob_spider", 3, 7, 0, "eob_spider_3")
-spawn("eob_spider", 25, 29, 0, "eob_spider_4")
-spawn("eob_spider", 28, 2, 0, "eob_spider_5")
-spawn("eob_spider", 28, 8, 0, "eob_spider_6")
-spawn("eob_spider", 26, 24, 0, "eob_spider_7")
-spawn("eob_spider", 28, 10, 0, "eob_spider_8")
-spawn("eob_spider", 29, 30, 0, "eob_spider_9")
-spawn("eob_spider", 15, 2, 0, "eob_spider_10")
-spawn("eob_spider", 18, 21, 0, "eob_spider_11")
-spawn("eob_spider", 27, 2, 0, "eob_spider_12")
-spawn("eob_spider", 27, 1, 0, "eob_spider_13")
-spawn("eob_spider", 21, 15, 0, "eob_spider_14")
-spawn("eob_spider", 18, 25, 0, "eob_spider_15")
+spawn("eob_ruins_net", 15,28,1, "eob_ruins_net_4_15_28")
+spawn("eob_ruins_net_torn", 17,28,3, "eob_ruins_net_torn_4_17_28")
+spawn("eob_ruins_statue_lever", 10,29,1, "eob_ruins_statue_lever_4_10_29_E")
+spawn("eob_ruins_net", 27,29,1, "eob_ruins_net_4_27_29")
+spawn("eob_ruins_ceiling_shaft", 29,29,2, "eob_ruins_ceiling_shaft_4_29_29")
+spawn("eob_ruins_net", 13,30,1, "eob_ruins_net_4_13_30")
+spawn("eob_ruins_net", 17,30,3, "eob_ruins_net_4_17_30")
+spawn("eob_ruins_net", 30,31,0, "eob_ruins_net_4_30_31")
+spawn("eob_arrow_u", 29,10,1, "eob_arrow_u_10")
+spawn("eob_stone_scepter_u", 27,2,3, "eob_stone_scepter_u_1")
+spawn("eob_ring_protection3_u", 24,6,0, "eob_ring_protection3_u_1")
+spawn("eob_rations_iron_u", 20,19,1, "eob_rations_iron_u_1")
+spawn("eob_axe_drow_cleaver_u", 11,18,2, "eob_axe_drow_cleaver_u_1")
+spawn("eob_potion_healing", 3,14,0, "eob_potion_healing_5")
+spawn("eob_rock_u", 30,28,1, "eob_rock_u_10")
+spawn("eob_arrow_u", 26,4,0, "eob_arrow_u_11")
+spawn("eob_key_dwarven_u", 3,7,0, "eob_key_dwarven_u_1")
+spawn("eob_potion_cure_poison", 24,15,3, "eob_potion_cure_poison_1")
+spawn("eob_rock_u", 19,24,0, "eob_rock_u_11")
+spawn("eob_rations_iron_u", 20,19,1, "eob_rations_iron_u_2")
+spawn("eob_cleric_scroll_slow_poison", 3,19,2, "eob_cleric_scroll_slow_poison_1")
+spawn("eob_robe_u", 10,17,3, "eob_robe_u_1")
+spawn("eob_rock_u", 30,12,0, "eob_rock_u_12")
+spawn("eob_mace_u", 22,6,2, "eob_mace_u_1")
+spawn("eob_arrow_u", 20,25,2, "eob_arrow_u_12")
+spawn("eob_shield_u", 10,20,3, "eob_shield_u_4")
+spawn("eob_ring2_u", 29,11,2, "eob_ring2_u_1")
+spawn("eob_key_dwarven_u", 15,8,0, "eob_key_dwarven_u_2")
+spawn("eob_medallion_of_adornment_u", 10,17,3, "eob_medallion_of_adornment_u_1")
+spawn("eob_mace_u", 21,13,3, "eob_mace_u_2")
+spawn("eob_potion_healing", 3,19,0, "eob_potion_healing_6")
+spawn("eob_rations_iron_u", 20,19,1, "eob_rations_iron_u_3")
+spawn("eob_key_dwarven_u", 28,28,0, "eob_key_dwarven_u_3")
+spawn("eob_key_dwarven_u", 9,15,2, "eob_key_dwarven_u_4")
+spawn("eob_dwarven_helmet_u", 10,20,0, "eob_dwarven_helmet_u_1")
+spawn("eob_mage_scroll_flame_arrow", 3,19,3, "eob_mage_scroll_flame_arrow_1")
+spawn("eob_potion_cure_poison", 24,15,3, "eob_potion_cure_poison_2")
+spawn("eob_spider", 29,10,0, "eob_spider_1")
+spawn("eob_spider", 28,1,0, "eob_spider_2")
+spawn("eob_spider", 3,7,0, "eob_spider_3")
+spawn("eob_spider", 25,29,0, "eob_spider_4")
+spawn("eob_spider", 28,2,0, "eob_spider_5")
+spawn("eob_spider", 28,8,0, "eob_spider_6")
+spawn("eob_spider", 26,24,0, "eob_spider_7")
+spawn("eob_spider", 28,10,0, "eob_spider_8")
+spawn("eob_spider", 29,30,0, "eob_spider_9")
+spawn("eob_spider", 15,2,0, "eob_spider_10")
+spawn("eob_spider", 18,21,0, "eob_spider_11")
+spawn("eob_spider", 27,2,0, "eob_spider_12")
+spawn("eob_spider", 27,1,0, "eob_spider_13")
+spawn("eob_spider", 21,15,0, "eob_spider_14")
+spawn("eob_spider", 18,25,0, "eob_spider_15")
 
 --- level 5 ---
 
@@ -3067,178 +3632,231 @@ mapDesc([[
 #....#.......######...#.########
 ################################
 ]])
-spawn("eob_ruins_alcove", 6, 1, 0, "eob_ruins_alcove_5_6_1_N")
-spawn("eob_ruins_alcove", 7, 1, 0, "eob_ruins_alcove_5_7_1_N")
-spawn("eob_ruins_illusion_wall_rune", 14, 1, 3, "eob_ruins_illusion_wall_rune_5_14_1_W")
-spawn("eob_ruins_illusion_wall_rune", 12, 1, 1, "eob_ruins_illusion_wall_rune_5_12_1_E")
-spawn("eob_ruins_stairs_down", 25, 1, 3, "eob_ruins_stairs_down_5_25_1_E")
-spawn("eob_ruins_door_stone", 2, 2, 1, "eob_ruins_door_stone_5_2_2")
+spawn("eob_ruins_alcove", 6,1,0, "eob_ruins_alcove_5_6_1_N")
+spawn("eob_ruins_alcove", 7,1,0, "eob_ruins_alcove_5_7_1_N")
+spawn("eob_ruins_illusion_wall_rune", 14,1,3, "eob_ruins_illusion_wall_rune_5_14_1_W")
+spawn("eob_ruins_illusion_wall_rune", 12,1,1, "eob_ruins_illusion_wall_rune_5_12_1_E")
+spawn("eob_ruins_stairs_down", 25,1,3, "eob_ruins_stairs_down_5_25_1_E")
+spawn("eob_ruins_door_stone", 2,2,1, "eob_ruins_door_stone_5_2_2")
 	:addPullChain()
-spawn("eob_ruins_secret_button_tiny", 12, 2, 1, "eob_ruins_secret_button_tiny_5_12_2_E")
-spawn("eob_ruins_illusion_wall", 23, 1, 2, "eob_ruins_illusion_wall_5_23_1_S")
-spawn("eob_ruins_illusion_wall_rune", 23, 3, 0, "eob_ruins_illusion_wall_rune_5_23_3_N")
-spawn("eob_ruins_door_stone", 28, 2, 3, "eob_ruins_door_stone_5_28_2")
-spawn("eob_ruins_ceiling_shaft", 10, 3, 1, "eob_ruins_ceiling_shaft_5_10_3")
-spawn("eob_ruins_ceiling_shaft", 11, 3, 1, "eob_ruins_ceiling_shaft_5_11_3")
-spawn("eob_ruins_ceiling_shaft", 12, 3, 2, "eob_ruins_ceiling_shaft_5_12_3")
-spawn("eob_ruins_wall_text", 23, 3, 3, "eob_ruins_wall_text_5_23_3_W")
-spawn("eob_ruins_alcove", 6, 3, 2, "eob_ruins_alcove_5_6_3_S")
-spawn("eob_ruins_alcove", 7, 3, 2, "eob_ruins_alcove_5_7_3_S")
-spawn("eob_ruins_portal_necklace", 10, 5, 0, "eob_ruins_portal_necklace_5_10_5_N")
-spawn("eob_ruins_illusion_wall", 21, 4, 3, "eob_ruins_illusion_wall_5_21_4_W")
-spawn("eob_ruins_illusion_wall_rune", 19, 4, 1, "eob_ruins_illusion_wall_rune_5_19_4_E")
-spawn("eob_teleporter", 24, 4, 1, "eob_teleporter_5_24_4")
-spawn("eob_teleporter", 25, 4, 1, "eob_teleporter_5_25_4")
-spawn("eob_ruins_alcove", 15, 5, 1, "eob_ruins_alcove_5_15_5_E")
-	:addItem(spawn("eob_stone_necklace_u")) -- Stone Necklace 
-spawn("eob_ruins_door_stone", 17, 5, 0, "eob_ruins_door_stone_5_17_5")
-	:addPullChain()
-spawn("eob_ruins_lever", 21, 6, 0, "eob_ruins_lever_5_21_6_N")
-spawn("eob_teleporter", 22, 5, 2, "eob_teleporter_5_22_5")
-spawn("eob_teleporter", 24, 5, 2, "eob_teleporter_5_24_5")
-spawn("eob_ruins_door_stone", 28, 5, 0, "eob_ruins_door_stone_5_28_5")
-spawn("eob_ruins_door_stone", 2, 6, 0, "eob_ruins_door_stone_5_2_6")
-	:addPullChain()
-spawn("eob_ruins_illusion_wall_statue", 10, 5, 2, "eob_ruins_illusion_wall_statue_5_10_5_S")
-spawn("eob_ruins_illusion_wall_statue", 10, 7, 0, "eob_ruins_illusion_wall_statue_5_10_7_N")
-spawn("eob_teleporter", 22, 6, 2, "eob_teleporter_5_22_6")
-spawn("eob_teleporter", 23, 6, 2, "eob_teleporter_5_23_6")
-spawn("eob_ruins_lever", 25, 6, 3, "eob_ruins_lever_5_25_6_W")
-spawn("eob_teleporter", 26, 6, 2, "eob_teleporter_5_26_6")
-spawn("eob_ruins_door_stone", 29, 6, 1, "eob_ruins_door_stone_5_29_6")
-spawn("eob_teleporter", 22, 7, 2, "eob_teleporter_5_22_7")
-spawn("eob_ruins_wall_text", 23, 7, 1, "eob_ruins_wall_text_5_23_7_E")
-spawn("eob_teleporter", 26, 7, 2, "eob_teleporter_5_26_7")
-spawn("eob_teleporter", 21, 8, 2, "eob_teleporter_5_21_8")
-spawn("eob_teleporter", 23, 8, 2, "eob_teleporter_5_23_8")
-spawn("eob_teleporter", 24, 8, 1, "eob_teleporter_5_24_8")
-spawn("eob_ruins_door_stone", 1, 9, 2, "eob_ruins_door_stone_5_1_9")
-	:addPullChain()
-spawn("eob_ruins_door_stone", 4, 9, 2, "eob_ruins_door_stone_5_4_9")
-	:addPullChain()
-spawn("eob_ruins_secret_button_tiny", 6, 9, 3, "eob_ruins_secret_button_tiny_5_6_9_W")
-spawn("eob_ruins_lever", 21, 9, 3, "eob_ruins_lever_5_21_9_W")
-spawn("eob_teleporter", 23, 9, 2, "eob_teleporter_5_23_9")
-spawn("eob_teleporter", 24, 9, 2, "eob_teleporter_5_24_9")
-spawn("eob_teleporter", 25, 9, 2, "eob_teleporter_5_25_9")
-spawn("eob_blocker", 30, 9, 1, "eob_blocker_5_30_9")
-spawn("eob_ruins_illusion_wall_rune", 4, 10, 3, "eob_ruins_illusion_wall_rune_5_4_10_W")
-spawn("eob_ruins_illusion_wall", 2, 10, 1, "eob_ruins_illusion_wall_5_2_10_E")
-spawn("eob_ruins_door_stone", 5, 10, 1, "eob_ruins_door_stone_5_5_10")
-spawn("eob_ruins_door_stone_stacked", 8, 10, 1, "eob_ruins_door_stone_stacked_5_8_10")
-spawn("eob_ruins_door_stone", 14, 10, 1, "eob_ruins_door_stone_5_14_10")
-	:addPullChain()
-spawn("eob_ruins_stairs_up", 4, 12, 1, "eob_ruins_stairs_up_5_4_12_W")
-spawn("eob_ruins_illusion_wall_rune", 26, 12, 3, "eob_ruins_illusion_wall_rune_5_26_12_W")
-spawn("eob_ruins_illusion_wall_rune", 24, 12, 1, "eob_ruins_illusion_wall_rune_5_24_12_E")
-spawn("eob_ruins_door_stone", 1, 13, 0, "eob_ruins_door_stone_5_1_13")
-	:addPullChain()
-spawn("eob_ruins_wall_text", 10, 13, 1, "eob_ruins_wall_text_5_10_13_E")
-spawn("eob_ruins_ceiling_shaft", 22, 13, 2, "eob_ruins_ceiling_shaft_5_22_13")
-spawn("eob_ruins_illusion_wall", 30, 12, 2, "eob_ruins_illusion_wall_5_30_12_S")
-spawn("eob_ruins_illusion_wall_rune", 30, 14, 0, "eob_ruins_illusion_wall_rune_5_30_14_N")
-spawn("eob_ruins_alcove", 10, 13, 2, "eob_ruins_alcove_5_10_13_S")
-spawn("eob_ruins_pressure_plate", 22, 14, 2, "eob_ruins_pressure_plate_5_22_14")
+spawn("eob_ruins_secret_button_tiny", 12,2,1, "eob_ruins_secret_button_tiny_5_12_2_E")
+spawn("eob_ruins_illusion_wall", 23,1,2, "eob_ruins_illusion_wall_5_23_1_S")
+spawn("eob_ruins_illusion_wall_rune", 23,3,0, "eob_ruins_illusion_wall_rune_5_23_3_N")
+spawn("eob_ruins_door_stone", 28,2,3, "eob_ruins_door_stone_5_28_2")
+spawn("eob_ruins_ceiling_shaft", 10,3,1, "eob_ruins_ceiling_shaft_5_10_3")
+spawn("eob_ruins_ceiling_shaft", 11,3,1, "eob_ruins_ceiling_shaft_5_11_3")
+spawn("eob_ruins_ceiling_shaft", 12,3,2, "eob_ruins_ceiling_shaft_5_12_3")
+spawn("eob_ruins_wall_text", 23,3,3, "eob_ruins_wall_text_5_23_3_W")
+	:setWallText("")
+spawn("eob_ruins_alcove", 6,3,2, "eob_ruins_alcove_5_6_3_S")
+spawn("eob_ruins_alcove", 7,3,2, "eob_ruins_alcove_5_7_3_S")
+spawn("eob_ruins_portal_necklace", 10,5,0, "eob_ruins_portal_necklace_5_10_5_N")
+spawn("eob_ruins_illusion_wall", 21,4,3, "eob_ruins_illusion_wall_5_21_4_W")
+spawn("eob_ruins_illusion_wall_rune", 19,4,1, "eob_ruins_illusion_wall_rune_5_19_4_E")
+spawn("eob_teleporter", 24,4,1, "eob_teleporter_5_24_4")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_illusion_wall", 25, 14, 3, "eob_ruins_illusion_wall_5_25_14_W")
-spawn("eob_ruins_illusion_wall_rune", 23, 14, 1, "eob_ruins_illusion_wall_rune_5_23_14_E")
-spawn("eob_ruins_secret_button_tiny", 2, 15, 1, "eob_ruins_secret_button_tiny_5_2_15_E")
-spawn("eob_ruins_button", 20, 16, 0, "eob_ruins_button_5_20_16_N")
-spawn("eob_ruins_illusion_wall_rune", 27, 14, 2, "eob_ruins_illusion_wall_rune_5_27_14_S")
-spawn("eob_ruins_illusion_wall", 27, 16, 0, "eob_ruins_illusion_wall_5_27_16_N")
-spawn("eob_ruins_illusion_wall", 25, 16, 3, "eob_ruins_illusion_wall_5_25_16_W")
-spawn("eob_ruins_illusion_wall", 23, 16, 1, "eob_ruins_illusion_wall_5_23_16_E")
-spawn("eob_ruins_illusion_wall", 27, 16, 3, "eob_ruins_illusion_wall_5_27_16_W")
-spawn("eob_ruins_illusion_wall", 25, 16, 1, "eob_ruins_illusion_wall_5_25_16_E")
-spawn("eob_ruins_wall_text", 18, 18, 0, "eob_ruins_wall_text_5_18_18_N")
-spawn("eob_ruins_statue_lever", 19, 18, 0, "eob_ruins_statue_lever_5_19_18_N")
-spawn("eob_ruins_illusion_wall", 1, 17, 2, "eob_ruins_illusion_wall_5_1_17_S")
-spawn("eob_ruins_illusion_wall", 1, 19, 0, "eob_ruins_illusion_wall_5_1_19_N")
-spawn("eob_ruins_statue_lock", 6, 19, 0, "eob_ruins_statue_lock_5_6_19_N")
-spawn("eob_ruins_door_stone", 7, 18, 2, "eob_ruins_door_stone_5_7_18")
-spawn("eob_ruins_statue_lock", 9, 19, 0, "eob_ruins_statue_lock_5_9_19_N")
-spawn("eob_ruins_door_stone", 10, 18, 2, "eob_ruins_door_stone_5_10_18")
-spawn("eob_ruins_statue_lock", 12, 19, 0, "eob_ruins_statue_lock_5_12_19_N")
-spawn("eob_ruins_door_stone", 13, 18, 2, "eob_ruins_door_stone_5_13_18")
-spawn("eob_ruins_door_stone", 23, 19, 2, "eob_ruins_door_stone_5_23_19")
+spawn("eob_teleporter", 25,4,1, "eob_teleporter_5_25_4")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_alcove", 15,5,1, "eob_ruins_alcove_5_15_5_E")
+	:addItem(spawn("eob_stone_necklace_u"))
+spawn("eob_ruins_door_stone", 17,5,0, "eob_ruins_door_stone_5_17_5")
 	:addPullChain()
-spawn("eob_ruins_ceiling_shaft", 9, 20, 2, "eob_ruins_ceiling_shaft_5_9_20")
-spawn("eob_ruins_illusion_wall_rune", 6, 21, 3, "eob_ruins_illusion_wall_rune_5_6_21_W")
-spawn("eob_ruins_illusion_wall_rune", 4, 21, 1, "eob_ruins_illusion_wall_rune_5_4_21_E")
-spawn("eob_ruins_wall_text", 20, 20, 2, "eob_ruins_wall_text_5_20_20_S")
-spawn("eob_ruins_stairs_down", 16, 22, 2, "eob_ruins_stairs_down_5_16_22_N")
-spawn("eob_ruins_lever", 19, 22, 3, "eob_ruins_lever_5_19_22_W")
-spawn("eob_ruins_illusion_wall", 8, 22, 2, "eob_ruins_illusion_wall_5_8_22_S")
-spawn("eob_ruins_illusion_wall", 9, 23, 3, "eob_ruins_illusion_wall_5_9_23_W")
-spawn("eob_ruins_illusion_wall", 8, 24, 0, "eob_ruins_illusion_wall_5_8_24_N")
-spawn("eob_ruins_illusion_wall_rune", 9, 22, 2, "eob_ruins_illusion_wall_rune_5_9_22_S")
-spawn("eob_ruins_illusion_wall_rune", 9, 24, 0, "eob_ruins_illusion_wall_rune_5_9_24_N")
-spawn("eob_ruins_illusion_wall", 8, 23, 1, "eob_ruins_illusion_wall_5_8_23_E")
-spawn("eob_ruins_door_stone", 19, 23, 0, "eob_ruins_door_stone_5_19_23")
-spawn("eob_ruins_stairs_up", 11, 24, 1, "eob_ruins_stairs_up_5_11_24_W")
-spawn("eob_ruins_door_stone", 25, 25, 1, "eob_ruins_door_stone_5_25_25")
+spawn("eob_ruins_lever", 21,6,0, "eob_ruins_lever_5_21_6_N")
+spawn("eob_teleporter", 22,5,2, "eob_teleporter_5_22_5")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 24,5,2, "eob_teleporter_5_24_5")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_door_stone", 28,5,0, "eob_ruins_door_stone_5_28_5")
+spawn("eob_ruins_door_stone", 2,6,0, "eob_ruins_door_stone_5_2_6")
 	:addPullChain()
-spawn("eob_ruins_secret_button_tiny", 3, 26, 2, "eob_ruins_secret_button_tiny_5_3_26_S")
-spawn("eob_ruins_door_stone", 14, 27, 0, "eob_ruins_door_stone_5_14_27")
+spawn("eob_ruins_illusion_wall_statue", 10,5,2, "eob_ruins_illusion_wall_statue_5_10_5_S")
+spawn("eob_ruins_illusion_wall_statue", 10,7,0, "eob_ruins_illusion_wall_statue_5_10_7_N")
+spawn("eob_teleporter", 22,6,2, "eob_teleporter_5_22_6")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 23,6,2, "eob_teleporter_5_23_6")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_lever", 25,6,3, "eob_ruins_lever_5_25_6_W")
+spawn("eob_teleporter", 26,6,2, "eob_teleporter_5_26_6")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_door_stone", 29,6,1, "eob_ruins_door_stone_5_29_6")
+spawn("eob_teleporter", 22,7,2, "eob_teleporter_5_22_7")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_wall_text", 23,7,1, "eob_ruins_wall_text_5_23_7_E")
+	:setWallText("")
+spawn("eob_teleporter", 26,7,2, "eob_teleporter_5_26_7")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 21,8,2, "eob_teleporter_5_21_8")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 23,8,2, "eob_teleporter_5_23_8")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 24,8,1, "eob_teleporter_5_24_8")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_door_stone", 1,9,2, "eob_ruins_door_stone_5_1_9")
 	:addPullChain()
-spawn("eob_teleporter", 17, 27, 2, "eob_teleporter_5_17_27_N")
-spawn("eob_ruins_door_stone", 24, 27, 3, "eob_ruins_door_stone_5_24_27")
-spawn("eob_ruins_ornate_lock", 23, 28, 1, "eob_ruins_ornate_lock_5_23_28_E")
-spawn("eob_ruins_ornate_lock", 25, 27, 2, "eob_ruins_ornate_lock_5_25_27_S")
-spawn("eob_ruins_door_stone", 17, 29, 3, "eob_ruins_door_stone_5_17_29")
+spawn("eob_ruins_door_stone", 4,9,2, "eob_ruins_door_stone_5_4_9")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 25, 29, 1, "eob_ruins_door_stone_5_25_29")
+spawn("eob_ruins_secret_button_tiny", 6,9,3, "eob_ruins_secret_button_tiny_5_6_9_W")
+spawn("eob_ruins_lever", 21,9,3, "eob_ruins_lever_5_21_9_W")
+spawn("eob_teleporter", 23,9,2, "eob_teleporter_5_23_9")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 24,9,2, "eob_teleporter_5_24_9")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 25,9,2, "eob_teleporter_5_25_9")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_blocker", 30,9,1, "eob_blocker_5_30_9")
+spawn("eob_ruins_illusion_wall_rune", 4,10,3, "eob_ruins_illusion_wall_rune_5_4_10_W")
+spawn("eob_ruins_illusion_wall", 2,10,1, "eob_ruins_illusion_wall_5_2_10_E")
+spawn("eob_ruins_door_stone", 5,10,1, "eob_ruins_door_stone_5_5_10")
+spawn("eob_ruins_door_stone_stacked", 8,10,1, "eob_ruins_door_stone_stacked_5_8_10")
+spawn("eob_ruins_door_stone", 14,10,1, "eob_ruins_door_stone_5_14_10")
 	:addPullChain()
-spawn("eob_ruins_illusion_wall_rune", 8, 30, 3, "eob_ruins_illusion_wall_rune_5_8_30_W")
-spawn("eob_ruins_illusion_wall_rune", 6, 30, 1, "eob_ruins_illusion_wall_rune_5_6_30_E")
-spawn("eob_rations_iron_u", 12, 10, 1, "eob_rations_iron_u_4")
-spawn("eob_rations_iron_u", 8, 7, 0, "eob_rations_iron_u_5")
-spawn("eob_mage_scroll_invisibility 10'", 25, 27, 1, "eob_mage_scroll_invisibility 10'_1")
-spawn("eob_long_sword_u", 25, 10, 0, "eob_long_sword_u_2")
-spawn("eob_key_dwarven_u", 4, 25, 0, "eob_key_dwarven_u_5")
-spawn("eob_spear_u", 21, 2, 2, "eob_spear_u_2")
-spawn("eob_rock_u", 25, 16, 0, "eob_rock_u_13")
-spawn("eob_cleric_scroll_hold_person", 1, 1, 1, "eob_cleric_scroll_hold_person_1")
-spawn("eob_key_u", 28, 26, 0, "eob_key_u_1")
-spawn("eob_rations_iron_u", 6, 14, 0, "eob_rations_iron_u_6")
-spawn("eob_key_u", 14, 28, 0, "eob_key_u_2")
-spawn("eob_rock_u", 21, 11, 0, "eob_rock_u_14")
-spawn("eob_cleric_scroll_prayer", 6, 29, 0, "eob_cleric_scroll_prayer_1")
-spawn("eob_axe_cursed3_u", 20, 25, 1, "eob_axe_cursed3_u_1")
-spawn("eob_wand_cone_of_cold_2_u", 27, 16, 0, "eob_wand_cone_of_cold_2_u_1")
-spawn("eob_mage_scroll_dispel_magic", 5, 15, 1, "eob_mage_scroll_dispel_magic_1")
-spawn("eob_sling_cursed3_u", 19, 26, 2, "eob_sling_cursed3_u_1")
-spawn("eob_cleric_scroll_aid", 5, 6, 3, "eob_cleric_scroll_aid_1")
-spawn("eob_cleric_scroll_detect_magic", 24, 8, 0, "eob_cleric_scroll_detect_magic_1")
-spawn("eob_rations_iron_u", 21, 2, 2, "eob_rations_iron_u_7")
-spawn("eob_leather_boots_u", 19, 30, 2, "eob_leather_boots_u_2")
-spawn("eob_potion_poison", 10, 13, 2, "eob_potion_poison_1")
-spawn("eob_rations_iron_u", 7, 12, 0, "eob_rations_iron_u_8")
-spawn("eob_scale_mail_u", 4, 25, 3, "eob_scale_mail_u_1")
-spawn("eob_mage_scroll_haste", 6, 6, 2, "eob_mage_scroll_haste_1")
-spawn("eob_ring2_feather_fall_u", 22, 27, 1, "eob_ring2_feather_fall_u_1")
-spawn("eob_plate_mail_u", 25, 27, 2, "eob_plate_mail_u_1")
-spawn("eob_dwarf1_1", 19, 13, 0, "eob_dwarf1_1_1")
-spawn("eob_dwarf2_1_group", 14, 8, 0, "eob_dwarf2_1_group_1")
-spawn("eob_dwarf1_2", 15, 12, 0, "eob_dwarf1_2_1")
-spawn("eob_spider", 20, 16, 0, "eob_spider_16")
-spawn("eob_dwarf1_2", 15, 13, 0, "eob_dwarf1_2_2")
-spawn("eob_spider", 22, 11, 0, "eob_spider_17")
-spawn("eob_spider", 22, 22, 0, "eob_spider_18")
-spawn("eob_spider", 6, 2, 0, "eob_spider_19")
-spawn("eob_dwarf1_2", 19, 10, 0, "eob_dwarf1_2_3")
-spawn("eob_spider", 5, 15, 0, "eob_spider_20")
-spawn("eob_spider", 7, 2, 0, "eob_spider_21")
-spawn("eob_spider", 2, 16, 0, "eob_spider_22")
-spawn("eob_spider", 1, 2, 0, "eob_spider_23")
-spawn("eob_dwarf1_2", 17, 13, 0, "eob_dwarf1_2_4")
-spawn("eob_spider", 1, 5, 0, "eob_spider_24")
-spawn("eob_spider", 3, 12, 0, "eob_spider_25")
-spawn("eob_dwarf4_1_group", 18, 14, 0, "eob_dwarf4_1_group_1")
-spawn("eob_dwarf1_1", 17, 8, 0, "eob_dwarf1_1_2")
-spawn("eob_spider", 21, 16, 0, "eob_spider_26")
+spawn("eob_ruins_stairs_up", 4,12,1, "eob_ruins_stairs_up_5_4_12_W")
+spawn("eob_ruins_illusion_wall_rune", 26,12,3, "eob_ruins_illusion_wall_rune_5_26_12_W")
+spawn("eob_ruins_illusion_wall_rune", 24,12,1, "eob_ruins_illusion_wall_rune_5_24_12_E")
+spawn("eob_ruins_door_stone", 1,13,0, "eob_ruins_door_stone_5_1_13")
+	:addPullChain()
+spawn("eob_ruins_wall_text", 10,13,1, "eob_ruins_wall_text_5_10_13_E")
+	:setWallText("")
+spawn("eob_ruins_ceiling_shaft", 22,13,2, "eob_ruins_ceiling_shaft_5_22_13")
+spawn("eob_ruins_illusion_wall", 30,12,2, "eob_ruins_illusion_wall_5_30_12_S")
+spawn("eob_ruins_illusion_wall_rune", 30,14,0, "eob_ruins_illusion_wall_rune_5_30_14_N")
+spawn("eob_ruins_alcove", 10,13,2, "eob_ruins_alcove_5_10_13_S")
+spawn("eob_ruins_pressure_plate", 22,14,2, "eob_ruins_pressure_plate_5_22_14")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_illusion_wall", 25,14,3, "eob_ruins_illusion_wall_5_25_14_W")
+spawn("eob_ruins_illusion_wall_rune", 23,14,1, "eob_ruins_illusion_wall_rune_5_23_14_E")
+spawn("eob_ruins_secret_button_tiny", 2,15,1, "eob_ruins_secret_button_tiny_5_2_15_E")
+spawn("eob_ruins_button", 20,16,0, "eob_ruins_button_5_20_16_N")
+spawn("eob_ruins_illusion_wall_rune", 27,14,2, "eob_ruins_illusion_wall_rune_5_27_14_S")
+spawn("eob_ruins_illusion_wall", 27,16,0, "eob_ruins_illusion_wall_5_27_16_N")
+spawn("eob_ruins_illusion_wall", 25,16,3, "eob_ruins_illusion_wall_5_25_16_W")
+spawn("eob_ruins_illusion_wall", 23,16,1, "eob_ruins_illusion_wall_5_23_16_E")
+spawn("eob_ruins_illusion_wall", 27,16,3, "eob_ruins_illusion_wall_5_27_16_W")
+spawn("eob_ruins_illusion_wall", 25,16,1, "eob_ruins_illusion_wall_5_25_16_E")
+spawn("eob_ruins_wall_text", 18,18,0, "eob_ruins_wall_text_5_18_18_N")
+	:setWallText("")
+spawn("eob_ruins_statue_lever", 19,18,0, "eob_ruins_statue_lever_5_19_18_N")
+spawn("eob_ruins_illusion_wall", 1,17,2, "eob_ruins_illusion_wall_5_1_17_S")
+spawn("eob_ruins_illusion_wall", 1,19,0, "eob_ruins_illusion_wall_5_1_19_N")
+spawn("eob_ruins_statue_lock", 6,19,0, "eob_ruins_statue_lock_5_6_19_N")
+spawn("eob_ruins_door_stone", 7,18,2, "eob_ruins_door_stone_5_7_18")
+spawn("eob_ruins_statue_lock", 9,19,0, "eob_ruins_statue_lock_5_9_19_N")
+spawn("eob_ruins_door_stone", 10,18,2, "eob_ruins_door_stone_5_10_18")
+spawn("eob_ruins_statue_lock", 12,19,0, "eob_ruins_statue_lock_5_12_19_N")
+spawn("eob_ruins_door_stone", 13,18,2, "eob_ruins_door_stone_5_13_18")
+spawn("eob_ruins_door_stone", 23,19,2, "eob_ruins_door_stone_5_23_19")
+	:addPullChain()
+spawn("eob_ruins_ceiling_shaft", 9,20,2, "eob_ruins_ceiling_shaft_5_9_20")
+spawn("eob_ruins_illusion_wall_rune", 6,21,3, "eob_ruins_illusion_wall_rune_5_6_21_W")
+spawn("eob_ruins_illusion_wall_rune", 4,21,1, "eob_ruins_illusion_wall_rune_5_4_21_E")
+spawn("eob_ruins_wall_text", 20,20,2, "eob_ruins_wall_text_5_20_20_S")
+	:setWallText("")
+spawn("eob_ruins_stairs_down", 16,22,2, "eob_ruins_stairs_down_5_16_22_N")
+spawn("eob_ruins_lever", 19,22,3, "eob_ruins_lever_5_19_22_W")
+spawn("eob_ruins_illusion_wall", 8,22,2, "eob_ruins_illusion_wall_5_8_22_S")
+spawn("eob_ruins_illusion_wall", 9,23,3, "eob_ruins_illusion_wall_5_9_23_W")
+spawn("eob_ruins_illusion_wall", 8,24,0, "eob_ruins_illusion_wall_5_8_24_N")
+spawn("eob_ruins_illusion_wall_rune", 9,22,2, "eob_ruins_illusion_wall_rune_5_9_22_S")
+spawn("eob_ruins_illusion_wall_rune", 9,24,0, "eob_ruins_illusion_wall_rune_5_9_24_N")
+spawn("eob_ruins_illusion_wall", 8,23,1, "eob_ruins_illusion_wall_5_8_23_E")
+spawn("eob_ruins_door_stone", 19,23,0, "eob_ruins_door_stone_5_19_23")
+spawn("eob_ruins_stairs_up", 11,24,1, "eob_ruins_stairs_up_5_11_24_W")
+spawn("eob_ruins_door_stone", 25,25,1, "eob_ruins_door_stone_5_25_25")
+	:addPullChain()
+spawn("eob_ruins_secret_button_tiny", 3,26,2, "eob_ruins_secret_button_tiny_5_3_26_S")
+spawn("eob_ruins_door_stone", 14,27,0, "eob_ruins_door_stone_5_14_27")
+	:addPullChain()
+spawn("eob_teleporter", 17,27,2, "eob_teleporter_5_17_27_N")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_ruins_door_stone", 24,27,3, "eob_ruins_door_stone_5_24_27")
+spawn("eob_ruins_ornate_lock", 23,28,1, "eob_ruins_ornate_lock_5_23_28_E")
+spawn("eob_ruins_ornate_lock", 25,27,2, "eob_ruins_ornate_lock_5_25_27_S")
+spawn("eob_ruins_door_stone", 17,29,3, "eob_ruins_door_stone_5_17_29")
+	:addPullChain()
+spawn("eob_ruins_door_stone", 25,29,1, "eob_ruins_door_stone_5_25_29")
+	:addPullChain()
+spawn("eob_ruins_illusion_wall_rune", 8,30,3, "eob_ruins_illusion_wall_rune_5_8_30_W")
+spawn("eob_ruins_illusion_wall_rune", 6,30,1, "eob_ruins_illusion_wall_rune_5_6_30_E")
+spawn("eob_rations_iron_u", 12,10,1, "eob_rations_iron_u_4")
+spawn("eob_rations_iron_u", 8,7,0, "eob_rations_iron_u_5")
+spawn("eob_mage_scroll_invisibility 10'", 25,27,1, "eob_mage_scroll_invisibility 10'_1")
+spawn("eob_long_sword_u", 25,10,0, "eob_long_sword_u_2")
+spawn("eob_key_dwarven_u", 4,25,0, "eob_key_dwarven_u_5")
+spawn("eob_spear_u", 21,2,2, "eob_spear_u_2")
+spawn("eob_rock_u", 25,16,0, "eob_rock_u_13")
+spawn("eob_cleric_scroll_hold_person", 1,1,1, "eob_cleric_scroll_hold_person_1")
+spawn("eob_key_u", 28,26,0, "eob_key_u_1")
+spawn("eob_rations_iron_u", 6,14,0, "eob_rations_iron_u_6")
+spawn("eob_key_u", 14,28,0, "eob_key_u_2")
+spawn("eob_rock_u", 21,11,0, "eob_rock_u_14")
+spawn("eob_cleric_scroll_prayer", 6,29,0, "eob_cleric_scroll_prayer_1")
+spawn("eob_axe_cursed3_u", 20,25,1, "eob_axe_cursed3_u_1")
+spawn("eob_wand_cone_of_cold_2_u", 27,16,0, "eob_wand_cone_of_cold_2_u_1")
+spawn("eob_mage_scroll_dispel_magic", 5,15,1, "eob_mage_scroll_dispel_magic_1")
+spawn("eob_sling_cursed3_u", 19,26,2, "eob_sling_cursed3_u_1")
+spawn("eob_cleric_scroll_aid", 5,6,3, "eob_cleric_scroll_aid_1")
+spawn("eob_cleric_scroll_detect_magic", 24,8,0, "eob_cleric_scroll_detect_magic_1")
+spawn("eob_rations_iron_u", 21,2,2, "eob_rations_iron_u_7")
+spawn("eob_leather_boots_u", 19,30,2, "eob_leather_boots_u_2")
+spawn("eob_potion_poison", 10,13,2, "eob_potion_poison_1")
+spawn("eob_rations_iron_u", 7,12,0, "eob_rations_iron_u_8")
+spawn("eob_scale_mail_u", 4,25,3, "eob_scale_mail_u_1")
+spawn("eob_mage_scroll_haste", 6,6,2, "eob_mage_scroll_haste_1")
+spawn("eob_ring2_feather_fall_u", 22,27,1, "eob_ring2_feather_fall_u_1")
+spawn("eob_plate_mail_u", 25,27,2, "eob_plate_mail_u_1")
+spawn("eob_dwarf1_1", 19,13,0, "eob_dwarf1_1_1")
+spawn("eob_dwarf2_1_group", 14,8,0, "eob_dwarf2_1_group_1")
+spawn("eob_dwarf1_2", 15,12,0, "eob_dwarf1_2_1")
+spawn("eob_spider", 20,16,0, "eob_spider_16")
+spawn("eob_dwarf1_2", 15,13,0, "eob_dwarf1_2_2")
+spawn("eob_spider", 22,11,0, "eob_spider_17")
+spawn("eob_spider", 22,22,0, "eob_spider_18")
+spawn("eob_spider", 6,2,0, "eob_spider_19")
+spawn("eob_dwarf1_2", 19,10,0, "eob_dwarf1_2_3")
+spawn("eob_spider", 5,15,0, "eob_spider_20")
+spawn("eob_spider", 7,2,0, "eob_spider_21")
+spawn("eob_spider", 2,16,0, "eob_spider_22")
+spawn("eob_spider", 1,2,0, "eob_spider_23")
+spawn("eob_dwarf1_2", 17,13,0, "eob_dwarf1_2_4")
+spawn("eob_spider", 1,5,0, "eob_spider_24")
+spawn("eob_spider", 3,12,0, "eob_spider_25")
+spawn("eob_dwarf4_1_group", 18,14,0, "eob_dwarf4_1_group_1")
+spawn("eob_dwarf1_1", 17,8,0, "eob_dwarf1_1_2")
+spawn("eob_spider", 21,16,0, "eob_spider_26")
 
 --- level 6 ---
 
@@ -3279,294 +3897,299 @@ mapDesc([[
 ##....########....#....#......##
 ################################
 ]])
-spawn("eob_ruins_stairs_up", 4, 0, 0, "eob_ruins_stairs_up_6_4_0_S")
-spawn("eob_ruins_stairs_up", 25, 1, 1, "eob_ruins_stairs_up_6_25_1_W")
-spawn("eob_ruins_door_stone", 16, 2, 0, "eob_ruins_door_stone_6_16_2")
+spawn("eob_ruins_stairs_up", 4,0,0, "eob_ruins_stairs_up_6_4_0_S")
+spawn("eob_ruins_stairs_up", 25,1,1, "eob_ruins_stairs_up_6_25_1_W")
+spawn("eob_ruins_door_stone", 16,2,0, "eob_ruins_door_stone_6_16_2")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 19, 2, 0, "eob_ruins_door_stone_6_19_2")
+spawn("eob_ruins_door_stone", 19,2,0, "eob_ruins_door_stone_6_19_2")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 10, 3, 3, "eob_ruins_door_stone_6_10_3")
+spawn("eob_ruins_door_stone", 10,3,3, "eob_ruins_door_stone_6_10_3")
 	:addPullChain()
-spawn("eob_ruins_pressure_plate", 25, 3, 0, "eob_ruins_pressure_plate_6_25_3")
+spawn("eob_ruins_pressure_plate", 25,3,0, "eob_ruins_pressure_plate_6_25_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_door_stone", 26, 4, 1, "eob_ruins_door_stone_6_26_4")
+spawn("eob_ruins_door_stone", 26,4,1, "eob_ruins_door_stone_6_26_4")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 1, 5, 0, "eob_ruins_door_stone_6_1_5")
-spawn("eob_ruins_door_stone", 7, 5, 0, "eob_ruins_door_stone_6_7_5")
-spawn("eob_ruins_wall_text", 24, 4, 2, "eob_ruins_wall_text_6_24_4_S")
-spawn("eob_ruins_pressure_plate", 25, 5, 2, "eob_ruins_pressure_plate_6_25_5")
+spawn("eob_ruins_door_stone", 1,5,0, "eob_ruins_door_stone_6_1_5")
+spawn("eob_ruins_door_stone", 7,5,0, "eob_ruins_door_stone_6_7_5")
+spawn("eob_ruins_wall_text", 24,4,2, "eob_ruins_wall_text_6_24_4_S")
+	:setWallText("")
+spawn("eob_ruins_pressure_plate", 25,5,2, "eob_ruins_pressure_plate_6_25_5")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_ceiling_shaft", 1, 6, 2, "eob_ruins_ceiling_shaft_6_1_6")
-spawn("eob_ruins_stairs_down", 5, 6, 0, "eob_ruins_stairs_down_6_5_6_S")
-spawn("eob_ruins_ceiling_shaft", 7, 6, 2, "eob_ruins_ceiling_shaft_6_7_6")
-spawn("eob_ruins_ornate_lock", 27, 6, 3, "eob_ruins_ornate_lock_6_27_6_W")
-spawn("eob_ruins_door_stone", 26, 7, 1, "eob_ruins_door_stone_6_26_7")
-spawn("eob_ruins_door_stone", 5, 9, 2, "eob_ruins_door_stone_6_5_9")
+spawn("eob_ruins_ceiling_shaft", 1,6,2, "eob_ruins_ceiling_shaft_6_1_6")
+spawn("eob_ruins_stairs_down", 5,6,0, "eob_ruins_stairs_down_6_5_6_S")
+spawn("eob_ruins_ceiling_shaft", 7,6,2, "eob_ruins_ceiling_shaft_6_7_6")
+spawn("eob_ruins_ornate_lock", 27,6,3, "eob_ruins_ornate_lock_6_27_6_W")
+spawn("eob_ruins_door_stone", 26,7,1, "eob_ruins_door_stone_6_26_7")
+spawn("eob_ruins_door_stone", 5,9,2, "eob_ruins_door_stone_6_5_9")
 	:addPullChain()
-spawn("eob_ruins_dart_firing_pad", 4, 10, 3, "eob_ruins_dart_firing_pad_6_4_10_W")
-spawn("eob_ruins_dart_firing_pad", 6, 10, 1, "eob_ruins_dart_firing_pad_6_6_10_E")
-spawn("eob_ruins_portal_scepter", 12, 10, 1, "eob_ruins_portal_scepter_6_12_10_E")
-spawn("eob_ruins_stairs_down", 14, 10, 3, "eob_ruins_stairs_down_6_14_10_E")
-spawn("eob_ruins_dart_firing_pad", 4, 11, 3, "eob_ruins_dart_firing_pad_6_4_11_W")
-spawn("eob_ruins_pressure_plate", 5, 11, 2, "eob_ruins_pressure_plate_6_5_11")
+spawn("eob_ruins_dart_firing_pad", 4,10,3, "eob_ruins_dart_firing_pad_6_4_10_W")
+spawn("eob_ruins_dart_firing_pad", 6,10,1, "eob_ruins_dart_firing_pad_6_6_10_E")
+spawn("eob_ruins_portal_scepter", 12,10,1, "eob_ruins_portal_scepter_6_12_10_E")
+spawn("eob_ruins_stairs_down", 14,10,3, "eob_ruins_stairs_down_6_14_10_E")
+spawn("eob_ruins_dart_firing_pad", 4,11,3, "eob_ruins_dart_firing_pad_6_4_11_W")
+spawn("eob_ruins_pressure_plate", 5,11,2, "eob_ruins_pressure_plate_6_5_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_dart_firing_pad", 6, 11, 1, "eob_ruins_dart_firing_pad_6_6_11_E")
-spawn("eob_ruins_door_stone", 29, 11, 2, "eob_ruins_door_stone_6_29_11")
+spawn("eob_ruins_dart_firing_pad", 6,11,1, "eob_ruins_dart_firing_pad_6_6_11_E")
+spawn("eob_ruins_door_stone", 29,11,2, "eob_ruins_door_stone_6_29_11")
 	:addPullChain()
-spawn("eob_ruins_pit", 2, 12, 2, "eob_ruins_pit_6_2_12")
-spawn("eob_ruins_dart_firing_pad", 4, 12, 3, "eob_ruins_dart_firing_pad_6_4_12_W")
-spawn("eob_ruins_dart_firing_pad", 6, 12, 1, "eob_ruins_dart_firing_pad_6_6_12_E")
-spawn("eob_ruins_pit", 8, 12, 2, "eob_ruins_pit_6_8_12")
-spawn("eob_ruins_door_stone", 5, 13, 0, "eob_ruins_door_stone_6_5_13")
+spawn("eob_ruins_pit", 2,12,2, "eob_ruins_pit_6_2_12")
+spawn("eob_ruins_dart_firing_pad", 4,12,3, "eob_ruins_dart_firing_pad_6_4_12_W")
+spawn("eob_ruins_dart_firing_pad", 6,12,1, "eob_ruins_dart_firing_pad_6_6_12_E")
+spawn("eob_ruins_pit", 8,12,2, "eob_ruins_pit_6_8_12")
+spawn("eob_ruins_door_stone", 5,13,0, "eob_ruins_door_stone_6_5_13")
 	:addPullChain()
-spawn("eob_ruins_ceiling_shaft", 22, 13, 2, "eob_ruins_ceiling_shaft_6_22_13")
-spawn("eob_ruins_dart_firing_pad", 28, 13, 3, "eob_ruins_dart_firing_pad_6_28_13_W")
-spawn("eob_ruins_pressure_plate", 29, 13, 2, "eob_ruins_pressure_plate_6_29_13")
+spawn("eob_ruins_ceiling_shaft", 22,13,2, "eob_ruins_ceiling_shaft_6_22_13")
+spawn("eob_ruins_dart_firing_pad", 28,13,3, "eob_ruins_dart_firing_pad_6_28_13_W")
+spawn("eob_ruins_pressure_plate", 29,13,2, "eob_ruins_pressure_plate_6_29_13")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_dart_firing_pad", 30, 13, 1, "eob_ruins_dart_firing_pad_6_30_13_E")
-spawn("eob_ruins_door_stone", 29, 15, 0, "eob_ruins_door_stone_6_29_15")
+spawn("eob_ruins_dart_firing_pad", 30,13,1, "eob_ruins_dart_firing_pad_6_30_13_E")
+spawn("eob_ruins_door_stone", 29,15,0, "eob_ruins_door_stone_6_29_15")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 13, 16, 0, "eob_ruins_door_stone_6_13_16")
+spawn("eob_ruins_door_stone", 13,16,0, "eob_ruins_door_stone_6_13_16")
 	:addPullChain()
-spawn("eob_ruins_wall_text", 14, 15, 2, "eob_ruins_wall_text_6_14_15_S")
-spawn("eob_ruins_ornate_lock", 4, 17, 2, "eob_ruins_ornate_lock_6_4_17_S")
-spawn("eob_ruins_stairs_down", 1, 20, 3, "eob_ruins_stairs_down_6_1_20_E")
-spawn("eob_ruins_wall_text", 7, 19, 2, "eob_ruins_wall_text_6_7_19_S")
-spawn("eob_ruins_alcove", 11, 21, 2, "eob_ruins_alcove_6_11_21_S")
-spawn("eob_ruins_alcove", 12, 22, 3, "eob_ruins_alcove_6_12_22_W")
-spawn("eob_ruins_alcove", 11, 23, 0, "eob_ruins_alcove_6_11_23_N")
-spawn("eob_ruins_alcove", 10, 22, 1, "eob_ruins_alcove_6_10_22_E")
-spawn("eob_ruins_alcove", 12, 21, 2, "eob_ruins_alcove_6_12_21_S")
-spawn("eob_ruins_alcove", 13, 22, 3, "eob_ruins_alcove_6_13_22_W")
-spawn("eob_ruins_alcove", 12, 23, 0, "eob_ruins_alcove_6_12_23_N")
-spawn("eob_ruins_alcove", 11, 22, 1, "eob_ruins_alcove_6_11_22_E")
-spawn("eob_ruins_stairs_up", 16, 22, 3, "eob_ruins_stairs_up_6_16_22_E")
-spawn("eob_ruins_door_stone", 18, 22, 1, "eob_ruins_door_stone_6_18_22")
+spawn("eob_ruins_wall_text", 14,15,2, "eob_ruins_wall_text_6_14_15_S")
+	:setWallText("")
+spawn("eob_ruins_ornate_lock", 4,17,2, "eob_ruins_ornate_lock_6_4_17_S")
+spawn("eob_ruins_stairs_down", 1,20,3, "eob_ruins_stairs_down_6_1_20_E")
+spawn("eob_ruins_wall_text", 7,19,2, "eob_ruins_wall_text_6_7_19_S")
+	:setWallText("")
+spawn("eob_ruins_alcove", 11,21,2, "eob_ruins_alcove_6_11_21_S")
+spawn("eob_ruins_alcove", 12,22,3, "eob_ruins_alcove_6_12_22_W")
+spawn("eob_ruins_alcove", 11,23,0, "eob_ruins_alcove_6_11_23_N")
+spawn("eob_ruins_alcove", 10,22,1, "eob_ruins_alcove_6_10_22_E")
+spawn("eob_ruins_alcove", 12,21,2, "eob_ruins_alcove_6_12_21_S")
+spawn("eob_ruins_alcove", 13,22,3, "eob_ruins_alcove_6_13_22_W")
+spawn("eob_ruins_alcove", 12,23,0, "eob_ruins_alcove_6_12_23_N")
+spawn("eob_ruins_alcove", 11,22,1, "eob_ruins_alcove_6_11_22_E")
+spawn("eob_ruins_stairs_up", 16,22,3, "eob_ruins_stairs_up_6_16_22_E")
+spawn("eob_ruins_door_stone", 18,22,1, "eob_ruins_door_stone_6_18_22")
 	:addPullChain()
-spawn("eob_ruins_door_stone", 22, 22, 0, "eob_ruins_door_stone_6_22_22")
-spawn("eob_ruins_door_stone", 27, 22, 0, "eob_ruins_door_stone_6_27_22")
-spawn("eob_ruins_dart_firing_pad", 2, 23, 3, "eob_ruins_dart_firing_pad_6_2_23_W")
-spawn("eob_ruins_pressure_plate", 2, 23, 3, "eob_ruins_pressure_plate_6_2_23")
+spawn("eob_ruins_door_stone", 22,22,0, "eob_ruins_door_stone_6_22_22")
+spawn("eob_ruins_door_stone", 27,22,0, "eob_ruins_door_stone_6_27_22")
+spawn("eob_ruins_dart_firing_pad", 2,23,3, "eob_ruins_dart_firing_pad_6_2_23_W")
+spawn("eob_ruins_pressure_plate", 2,23,3, "eob_ruins_pressure_plate_6_2_23")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_pressure_plate", 7, 23, 2, "eob_ruins_pressure_plate_6_7_23")
+spawn("eob_ruins_pressure_plate", 7,23,2, "eob_ruins_pressure_plate_6_7_23")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_alcove", 11, 22, 2, "eob_ruins_alcove_6_11_22_S")
-spawn("eob_ruins_alcove", 12, 23, 3, "eob_ruins_alcove_6_12_23_W")
-spawn("eob_ruins_alcove", 11, 24, 0, "eob_ruins_alcove_6_11_24_N")
-spawn("eob_ruins_alcove", 10, 23, 1, "eob_ruins_alcove_6_10_23_E")
-spawn("eob_ruins_door_stone", 19, 23, 2, "eob_ruins_door_stone_6_19_23")
-spawn("eob_ruins_alcove", 11, 23, 2, "eob_ruins_alcove_6_11_23_S")
-spawn("eob_ruins_alcove", 12, 24, 3, "eob_ruins_alcove_6_12_24_W")
-spawn("eob_ruins_alcove", 11, 25, 0, "eob_ruins_alcove_6_11_25_N")
-spawn("eob_ruins_alcove", 10, 24, 1, "eob_ruins_alcove_6_10_24_E")
-spawn("eob_ruins_ceiling_shaft", 20, 24, 1, "eob_ruins_ceiling_shaft_6_20_24")
-spawn("eob_ruins_ceiling_shaft", 22, 24, 2, "eob_ruins_ceiling_shaft_6_22_24")
-spawn("eob_ruins_ceiling_shaft", 23, 24, 2, "eob_ruins_ceiling_shaft_6_23_24")
-spawn("eob_ruins_ceiling_shaft", 24, 24, 2, "eob_ruins_ceiling_shaft_6_24_24")
-spawn("eob_ruins_pressure_plate", 2, 25, 2, "eob_ruins_pressure_plate_6_2_25")
+spawn("eob_ruins_alcove", 11,22,2, "eob_ruins_alcove_6_11_22_S")
+spawn("eob_ruins_alcove", 12,23,3, "eob_ruins_alcove_6_12_23_W")
+spawn("eob_ruins_alcove", 11,24,0, "eob_ruins_alcove_6_11_24_N")
+spawn("eob_ruins_alcove", 10,23,1, "eob_ruins_alcove_6_10_23_E")
+spawn("eob_ruins_door_stone", 19,23,2, "eob_ruins_door_stone_6_19_23")
+spawn("eob_ruins_alcove", 11,23,2, "eob_ruins_alcove_6_11_23_S")
+spawn("eob_ruins_alcove", 12,24,3, "eob_ruins_alcove_6_12_24_W")
+spawn("eob_ruins_alcove", 11,25,0, "eob_ruins_alcove_6_11_25_N")
+spawn("eob_ruins_alcove", 10,24,1, "eob_ruins_alcove_6_10_24_E")
+spawn("eob_ruins_ceiling_shaft", 20,24,1, "eob_ruins_ceiling_shaft_6_20_24")
+spawn("eob_ruins_ceiling_shaft", 22,24,2, "eob_ruins_ceiling_shaft_6_22_24")
+spawn("eob_ruins_ceiling_shaft", 23,24,2, "eob_ruins_ceiling_shaft_6_23_24")
+spawn("eob_ruins_ceiling_shaft", 24,24,2, "eob_ruins_ceiling_shaft_6_24_24")
+spawn("eob_ruins_pressure_plate", 2,25,2, "eob_ruins_pressure_plate_6_2_25")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_pressure_plate", 7, 25, 1, "eob_ruins_pressure_plate_6_7_25")
+spawn("eob_ruins_pressure_plate", 7,25,1, "eob_ruins_pressure_plate_6_7_25")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_ruins_dart_firing_pad", 7, 25, 1, "eob_ruins_dart_firing_pad_6_7_25_E")
-spawn("eob_ruins_alcove", 11, 24, 2, "eob_ruins_alcove_6_11_24_S")
-spawn("eob_ruins_alcove", 12, 25, 3, "eob_ruins_alcove_6_12_25_W")
-spawn("eob_ruins_alcove", 11, 26, 0, "eob_ruins_alcove_6_11_26_N")
-spawn("eob_ruins_alcove", 10, 25, 1, "eob_ruins_alcove_6_10_25_E")
-spawn("eob_ruins_ceiling_shaft", 18, 25, 2, "eob_ruins_ceiling_shaft_6_18_25")
-spawn("eob_ruins_ceiling_shaft", 19, 25, 2, "eob_ruins_ceiling_shaft_6_19_25")
-spawn("eob_ruins_ceiling_shaft", 20, 25, 2, "eob_ruins_ceiling_shaft_6_20_25")
-spawn("eob_ruins_ceiling_shaft", 22, 25, 2, "eob_ruins_ceiling_shaft_6_22_25")
-spawn("eob_ruins_ceiling_shaft", 23, 25, 2, "eob_ruins_ceiling_shaft_6_23_25")
-spawn("eob_ruins_ceiling_shaft", 24, 25, 2, "eob_ruins_ceiling_shaft_6_24_25")
-spawn("eob_ruins_ceiling_shaft", 25, 25, 2, "eob_ruins_ceiling_shaft_6_25_25")
-spawn("eob_ruins_ceiling_shaft", 27, 25, 2, "eob_ruins_ceiling_shaft_6_27_25")
-spawn("eob_ruins_ceiling_shaft", 28, 25, 2, "eob_ruins_ceiling_shaft_6_28_25")
-spawn("eob_ruins_ceiling_shaft", 29, 25, 2, "eob_ruins_ceiling_shaft_6_29_25")
-spawn("eob_ruins_dart_firing_pad", 2, 25, 2, "eob_ruins_dart_firing_pad_6_2_25_S")
-spawn("eob_ruins_alcove", 9, 25, 2, "eob_ruins_alcove_6_9_25_S")
-spawn("eob_ruins_alcove", 10, 26, 3, "eob_ruins_alcove_6_10_26_W")
-spawn("eob_ruins_alcove", 9, 27, 0, "eob_ruins_alcove_6_9_27_N")
-spawn("eob_ruins_alcove", 8, 26, 1, "eob_ruins_alcove_6_8_26_E")
-spawn("eob_ruins_alcove", 10, 25, 2, "eob_ruins_alcove_6_10_25_S")
-spawn("eob_ruins_alcove", 11, 26, 3, "eob_ruins_alcove_6_11_26_W")
-spawn("eob_ruins_alcove", 10, 27, 0, "eob_ruins_alcove_6_10_27_N")
-spawn("eob_ruins_alcove", 9, 26, 1, "eob_ruins_alcove_6_9_26_E")
-spawn("eob_ruins_alcove", 11, 25, 2, "eob_ruins_alcove_6_11_25_S")
-spawn("eob_ruins_alcove", 12, 26, 3, "eob_ruins_alcove_6_12_26_W")
-spawn("eob_ruins_alcove", 11, 27, 0, "eob_ruins_alcove_6_11_27_N")
-spawn("eob_ruins_alcove", 10, 26, 1, "eob_ruins_alcove_6_10_26_E")
-spawn("eob_ruins_ceiling_shaft", 15, 26, 2, "eob_ruins_ceiling_shaft_6_15_26")
-spawn("eob_ruins_ceiling_shaft", 16, 26, 2, "eob_ruins_ceiling_shaft_6_16_26")
-spawn("eob_ruins_ceiling_shaft", 17, 26, 2, "eob_ruins_ceiling_shaft_6_17_26")
-spawn("eob_ruins_ceiling_shaft", 18, 26, 2, "eob_ruins_ceiling_shaft_6_18_26")
-spawn("eob_ruins_ceiling_shaft", 22, 26, 2, "eob_ruins_ceiling_shaft_6_22_26")
-spawn("eob_ruins_ceiling_shaft", 29, 26, 2, "eob_ruins_ceiling_shaft_6_29_26")
-spawn("eob_ruins_alcove", 9, 26, 2, "eob_ruins_alcove_6_9_26_S")
-spawn("eob_ruins_alcove", 10, 27, 3, "eob_ruins_alcove_6_10_27_W")
-spawn("eob_ruins_alcove", 9, 28, 0, "eob_ruins_alcove_6_9_28_N")
-spawn("eob_ruins_alcove", 8, 27, 1, "eob_ruins_alcove_6_8_27_E")
-spawn("eob_ruins_alcove", 10, 26, 2, "eob_ruins_alcove_6_10_26_S")
-spawn("eob_ruins_alcove", 11, 27, 3, "eob_ruins_alcove_6_11_27_W")
-spawn("eob_ruins_alcove", 10, 28, 0, "eob_ruins_alcove_6_10_28_N")
-spawn("eob_ruins_alcove", 9, 27, 1, "eob_ruins_alcove_6_9_27_E")
-spawn("eob_ruins_alcove", 11, 26, 2, "eob_ruins_alcove_6_11_26_S")
-spawn("eob_ruins_alcove", 12, 27, 3, "eob_ruins_alcove_6_12_27_W")
-spawn("eob_ruins_alcove", 11, 28, 0, "eob_ruins_alcove_6_11_28_N")
-spawn("eob_ruins_alcove", 10, 27, 1, "eob_ruins_alcove_6_10_27_E")
-spawn("eob_ruins_ceiling_shaft", 20, 27, 3, "eob_ruins_ceiling_shaft_6_20_27")
-spawn("eob_ruins_ceiling_shaft", 21, 27, 1, "eob_ruins_ceiling_shaft_6_21_27")
-spawn("eob_ruins_ceiling_shaft", 22, 27, 2, "eob_ruins_ceiling_shaft_6_22_27")
-spawn("eob_ruins_ceiling_shaft", 23, 27, 2, "eob_ruins_ceiling_shaft_6_23_27")
-spawn("eob_ruins_ceiling_shaft", 29, 27, 2, "eob_ruins_ceiling_shaft_6_29_27")
-spawn("eob_ruins_alcove", 2, 28, 1, "eob_ruins_alcove_6_2_28_E")
-	:addItem(spawn("eob_dart_plus4_u")) -- Adamantite Dart 
-	:addItem(spawn("eob_dagger_u")) -- Dagger 
-spawn("eob_ruins_alcove", 9, 27, 2, "eob_ruins_alcove_6_9_27_S")
-spawn("eob_ruins_alcove", 10, 28, 3, "eob_ruins_alcove_6_10_28_W")
-spawn("eob_ruins_alcove", 9, 29, 0, "eob_ruins_alcove_6_9_29_N")
-spawn("eob_ruins_alcove", 8, 28, 1, "eob_ruins_alcove_6_8_28_E")
-spawn("eob_ruins_alcove", 10, 27, 2, "eob_ruins_alcove_6_10_27_S")
-spawn("eob_ruins_alcove", 11, 28, 3, "eob_ruins_alcove_6_11_28_W")
-spawn("eob_ruins_alcove", 10, 29, 0, "eob_ruins_alcove_6_10_29_N")
-spawn("eob_ruins_alcove", 9, 28, 1, "eob_ruins_alcove_6_9_28_E")
-spawn("eob_ruins_alcove", 11, 27, 2, "eob_ruins_alcove_6_11_27_S")
-spawn("eob_ruins_alcove", 12, 28, 3, "eob_ruins_alcove_6_12_28_W")
-spawn("eob_ruins_alcove", 11, 29, 0, "eob_ruins_alcove_6_11_29_N")
-spawn("eob_ruins_alcove", 10, 28, 1, "eob_ruins_alcove_6_10_28_E")
-spawn("eob_ruins_ceiling_shaft", 15, 28, 1, "eob_ruins_ceiling_shaft_6_15_28")
-spawn("eob_ruins_ceiling_shaft", 16, 28, 1, "eob_ruins_ceiling_shaft_6_16_28")
-spawn("eob_ruins_ceiling_shaft", 17, 28, 1, "eob_ruins_ceiling_shaft_6_17_28")
-spawn("eob_ruins_ceiling_shaft", 20, 28, 2, "eob_ruins_ceiling_shaft_6_20_28")
-spawn("eob_ruins_ceiling_shaft", 21, 28, 2, "eob_ruins_ceiling_shaft_6_21_28")
-spawn("eob_ruins_ceiling_shaft", 29, 28, 2, "eob_ruins_ceiling_shaft_6_29_28")
-spawn("eob_ruins_alcove", 6, 28, 2, "eob_ruins_alcove_6_6_28_S")
-	:addItem(spawn("eob_wand_magic_missile_20_u")) -- Wand 
-spawn("eob_ruins_alcove", 7, 29, 3, "eob_ruins_alcove_6_7_29_W")
-	:addItem(spawn("eob_wand_magic_missile_20_u")) -- Wand 
-spawn("eob_ruins_alcove", 6, 30, 0, "eob_ruins_alcove_6_6_30_N")
-	:addItem(spawn("eob_wand_magic_missile_20_u")) -- Wand 
-spawn("eob_ruins_alcove", 5, 29, 1, "eob_ruins_alcove_6_5_29_E")
-	:addItem(spawn("eob_wand_magic_missile_20_u")) -- Wand 
-spawn("eob_ruins_alcove", 7, 28, 2, "eob_ruins_alcove_6_7_28_S")
-spawn("eob_ruins_alcove", 8, 29, 3, "eob_ruins_alcove_6_8_29_W")
-spawn("eob_ruins_alcove", 7, 30, 0, "eob_ruins_alcove_6_7_30_N")
-spawn("eob_ruins_alcove", 6, 29, 1, "eob_ruins_alcove_6_6_29_E")
-spawn("eob_ruins_alcove", 8, 28, 2, "eob_ruins_alcove_6_8_28_S")
-	:addItem(spawn("eob_key_dwarven_u")) -- Dwarven Key 
-spawn("eob_ruins_alcove", 9, 29, 3, "eob_ruins_alcove_6_9_29_W")
-	:addItem(spawn("eob_key_dwarven_u")) -- Dwarven Key 
-spawn("eob_ruins_alcove", 8, 30, 0, "eob_ruins_alcove_6_8_30_N")
-	:addItem(spawn("eob_key_dwarven_u")) -- Dwarven Key 
-spawn("eob_ruins_alcove", 7, 29, 1, "eob_ruins_alcove_6_7_29_E")
-	:addItem(spawn("eob_key_dwarven_u")) -- Dwarven Key 
-spawn("eob_ruins_alcove", 9, 28, 2, "eob_ruins_alcove_6_9_28_S")
-spawn("eob_ruins_alcove", 10, 29, 3, "eob_ruins_alcove_6_10_29_W")
-spawn("eob_ruins_alcove", 9, 30, 0, "eob_ruins_alcove_6_9_30_N")
-spawn("eob_ruins_alcove", 8, 29, 1, "eob_ruins_alcove_6_8_29_E")
-spawn("eob_ruins_alcove", 10, 28, 2, "eob_ruins_alcove_6_10_28_S")
-spawn("eob_ruins_alcove", 11, 29, 3, "eob_ruins_alcove_6_11_29_W")
-spawn("eob_ruins_alcove", 10, 30, 0, "eob_ruins_alcove_6_10_30_N")
-spawn("eob_ruins_alcove", 9, 29, 1, "eob_ruins_alcove_6_9_29_E")
-spawn("eob_ruins_alcove", 11, 28, 2, "eob_ruins_alcove_6_11_28_S")
-spawn("eob_ruins_alcove", 12, 29, 3, "eob_ruins_alcove_6_12_29_W")
-spawn("eob_ruins_alcove", 11, 30, 0, "eob_ruins_alcove_6_11_30_N")
-spawn("eob_ruins_alcove", 10, 29, 1, "eob_ruins_alcove_6_10_29_E")
-spawn("eob_ruins_secret_button_tiny", 12, 28, 2, "eob_ruins_secret_button_tiny_6_12_28_S")
-spawn("eob_ruins_ceiling_shaft", 17, 29, 2, "eob_ruins_ceiling_shaft_6_17_29")
-spawn("eob_ruins_ceiling_shaft", 19, 29, 2, "eob_ruins_ceiling_shaft_6_19_29")
-spawn("eob_ruins_ceiling_shaft", 20, 29, 2, "eob_ruins_ceiling_shaft_6_20_29")
-spawn("eob_ruins_ceiling_shaft", 24, 29, 3, "eob_ruins_ceiling_shaft_6_24_29")
-spawn("eob_ruins_ceiling_shaft", 25, 29, 1, "eob_ruins_ceiling_shaft_6_25_29")
-spawn("eob_ruins_ceiling_shaft", 27, 29, 2, "eob_ruins_ceiling_shaft_6_27_29")
-spawn("eob_ruins_ceiling_shaft", 28, 29, 1, "eob_ruins_ceiling_shaft_6_28_29")
-spawn("eob_ruins_ceiling_shaft", 29, 29, 2, "eob_ruins_ceiling_shaft_6_29_29")
-spawn("eob_ruins_wall_text", 5, 30, 1, "eob_ruins_wall_text_6_5_30_E")
-spawn("eob_ruins_wall_text", 8, 29, 2, "eob_ruins_wall_text_6_8_29_S")
-spawn("eob_ruins_alcove", 9, 29, 2, "eob_ruins_alcove_6_9_29_S")
-spawn("eob_ruins_alcove", 10, 30, 3, "eob_ruins_alcove_6_10_30_W")
-spawn("eob_ruins_alcove", 9, 31, 0, "eob_ruins_alcove_6_9_31_N")
-spawn("eob_ruins_alcove", 8, 30, 1, "eob_ruins_alcove_6_8_30_E")
-spawn("eob_ruins_alcove", 10, 29, 2, "eob_ruins_alcove_6_10_29_S")
-spawn("eob_ruins_alcove", 11, 30, 3, "eob_ruins_alcove_6_11_30_W")
-spawn("eob_ruins_alcove", 10, 31, 0, "eob_ruins_alcove_6_10_31_N")
-spawn("eob_ruins_alcove", 9, 30, 1, "eob_ruins_alcove_6_9_30_E")
-spawn("eob_ruins_alcove", 11, 29, 2, "eob_ruins_alcove_6_11_29_S")
-spawn("eob_ruins_alcove", 12, 30, 3, "eob_ruins_alcove_6_12_30_W")
-spawn("eob_ruins_alcove", 11, 31, 0, "eob_ruins_alcove_6_11_31_N")
-spawn("eob_ruins_alcove", 10, 30, 1, "eob_ruins_alcove_6_10_30_E")
-spawn("eob_ruins_secret_button_tiny", 19, 30, 3, "eob_ruins_secret_button_tiny_6_19_30_W")
-spawn("eob_ruins_secret_button_tiny", 17, 30, 1, "eob_ruins_secret_button_tiny_6_17_30_E")
-spawn("eob_ruins_ceiling_shaft", 20, 30, 2, "eob_ruins_ceiling_shaft_6_20_30")
-spawn("eob_ruins_ceiling_shaft", 21, 30, 2, "eob_ruins_ceiling_shaft_6_21_30")
-spawn("eob_egg_30_u", 21, 5, 2, "eob_egg_30_u_1")
-spawn("eob_rock_u", 13, 13, 0, "eob_rock_u_15")
-spawn("eob_shield_dwarven_u", 9, 25, 0, "eob_shield_dwarven_u_1")
-spawn("eob_egg_30_u", 19, 5, 0, "eob_egg_30_u_2")
-spawn("eob_key_dwarven_u", 1, 6, 0, "eob_key_dwarven_u_6")
-spawn("eob_rock_u", 17, 25, 0, "eob_rock_u_16")
-spawn("eob_key_u", 19, 22, 0, "eob_key_u_3")
-spawn("eob_potion_extra_healing", 27, 15, 1, "eob_potion_extra_healing_3")
-spawn("eob_egg_20_u", 11, 5, 3, "eob_egg_20_u_1")
-spawn("eob_egg_40_u", 15, 5, 0, "eob_egg_40_u_1")
-spawn("eob_halberd_chieftain_u", 14, 18, 2, "eob_halberd_chieftain_u_1")
-spawn("eob_egg_20_u", 17, 5, 3, "eob_egg_20_u_2")
-spawn("eob_mage_scroll_hold_person", 27, 15, 3, "eob_mage_scroll_hold_person_1")
-spawn("eob_egg_10_u", 17, 18, 1, "eob_egg_10_u_1")
-spawn("eob_egg_10_u", 16, 5, 2, "eob_egg_10_u_2")
-spawn("eob_stone_ring_u", 17, 11, 2, "eob_stone_ring_u_1")
-spawn("eob_cleric_scroll_flame_blade", 22, 30, 1, "eob_cleric_scroll_flame_blade_2")
-spawn("eob_ring2_u", 15, 29, 0, "eob_ring2_u_2")
-spawn("eob_bracers_u", 26, 28, 0, "eob_bracers_u_1")
-spawn("eob_egg_30_u", 15, 4, 2, "eob_egg_30_u_3")
-spawn("eob_cleric_scroll_dispel_magic", 14, 20, 2, "eob_cleric_scroll_dispel_magic_1")
-spawn("eob_mace_plus3", 12, 28, 3, "eob_mace_plus3_1")
-spawn("eob_cleric_scroll_cure_serious_wnds", 14, 20, 1, "eob_cleric_scroll_cure_serious_wnds_1")
-spawn("eob_egg_20_u", 15, 5, 3, "eob_egg_20_u_3")
-spawn("eob_egg_40_u", 29, 8, 3, "eob_egg_40_u_2")
-spawn("eob_key_dwarven_u", 7, 6, 0, "eob_key_dwarven_u_7")
-spawn("eob_kenku1_1", 15, 15, 0, "eob_kenku1_1_1")
-spawn("eob_kenku1_2", 15, 5, 0, "eob_kenku1_2_1")
-spawn("eob_kenku1_1", 13, 3, 0, "eob_kenku1_1_2")
-spawn("eob_kenku1_2", 14, 7, 0, "eob_kenku1_2_2")
-spawn("eob_kenku1_1", 23, 7, 0, "eob_kenku1_1_3")
-spawn("eob_kenku1_2", 20, 12, 0, "eob_kenku1_2_3")
-spawn("eob_kenku1_2", 3, 18, 0, "eob_kenku1_2_4")
-spawn("eob_kenku1_2", 30, 4, 0, "eob_kenku1_2_5")
-spawn("eob_kenku1_2", 21, 5, 0, "eob_kenku1_2_6")
-spawn("eob_kenku1_1", 13, 5, 0, "eob_kenku1_1_4")
-spawn("eob_kenku2_1_group", 13, 17, 0, "eob_kenku2_1_group_1")
-spawn("eob_kenku1_1", 19, 5, 0, "eob_kenku1_1_5")
-spawn("eob_kenku1_1", 16, 8, 0, "eob_kenku1_1_6")
-spawn("eob_kenku1_2", 16, 13, 0, "eob_kenku1_2_7")
-spawn("eob_kenku1_2", 5, 15, 0, "eob_kenku1_2_8")
-spawn("eob_kenku1_2", 16, 4, 0, "eob_kenku1_2_9")
-spawn("eob_kenku1_1", 21, 3, 0, "eob_kenku1_1_7")
-spawn("eob_kenku1_1", 30, 7, 0, "eob_kenku1_1_8")
-spawn("eob_kenku1_1", 30, 24, 0, "eob_kenku1_1_9")
-spawn("eob_kenku1_2", 30, 1, 0, "eob_kenku1_2_10")
-spawn("eob_kenku1_2", 9, 14, 0, "eob_kenku1_2_11")
-spawn("eob_kenku1_2", 14, 28, 0, "eob_kenku1_2_12")
-spawn("eob_kenku1_1", 11, 11, 0, "eob_kenku1_1_10")
-spawn("eob_kenku1_1", 19, 30, 0, "eob_kenku1_1_11")
-spawn("eob_kenku1_2", 12, 5, 0, "eob_kenku1_2_13")
-spawn("eob_kenku1_1", 17, 4, 0, "eob_kenku1_1_12")
-spawn("eob_kenku1_1", 11, 5, 0, "eob_kenku1_1_13")
+spawn("eob_ruins_dart_firing_pad", 7,25,1, "eob_ruins_dart_firing_pad_6_7_25_E")
+spawn("eob_ruins_alcove", 11,24,2, "eob_ruins_alcove_6_11_24_S")
+spawn("eob_ruins_alcove", 12,25,3, "eob_ruins_alcove_6_12_25_W")
+spawn("eob_ruins_alcove", 11,26,0, "eob_ruins_alcove_6_11_26_N")
+spawn("eob_ruins_alcove", 10,25,1, "eob_ruins_alcove_6_10_25_E")
+spawn("eob_ruins_ceiling_shaft", 18,25,2, "eob_ruins_ceiling_shaft_6_18_25")
+spawn("eob_ruins_ceiling_shaft", 19,25,2, "eob_ruins_ceiling_shaft_6_19_25")
+spawn("eob_ruins_ceiling_shaft", 20,25,2, "eob_ruins_ceiling_shaft_6_20_25")
+spawn("eob_ruins_ceiling_shaft", 22,25,2, "eob_ruins_ceiling_shaft_6_22_25")
+spawn("eob_ruins_ceiling_shaft", 23,25,2, "eob_ruins_ceiling_shaft_6_23_25")
+spawn("eob_ruins_ceiling_shaft", 24,25,2, "eob_ruins_ceiling_shaft_6_24_25")
+spawn("eob_ruins_ceiling_shaft", 25,25,2, "eob_ruins_ceiling_shaft_6_25_25")
+spawn("eob_ruins_ceiling_shaft", 27,25,2, "eob_ruins_ceiling_shaft_6_27_25")
+spawn("eob_ruins_ceiling_shaft", 28,25,2, "eob_ruins_ceiling_shaft_6_28_25")
+spawn("eob_ruins_ceiling_shaft", 29,25,2, "eob_ruins_ceiling_shaft_6_29_25")
+spawn("eob_ruins_dart_firing_pad", 2,25,2, "eob_ruins_dart_firing_pad_6_2_25_S")
+spawn("eob_ruins_alcove", 9,25,2, "eob_ruins_alcove_6_9_25_S")
+spawn("eob_ruins_alcove", 10,26,3, "eob_ruins_alcove_6_10_26_W")
+spawn("eob_ruins_alcove", 9,27,0, "eob_ruins_alcove_6_9_27_N")
+spawn("eob_ruins_alcove", 8,26,1, "eob_ruins_alcove_6_8_26_E")
+spawn("eob_ruins_alcove", 10,25,2, "eob_ruins_alcove_6_10_25_S")
+spawn("eob_ruins_alcove", 11,26,3, "eob_ruins_alcove_6_11_26_W")
+spawn("eob_ruins_alcove", 10,27,0, "eob_ruins_alcove_6_10_27_N")
+spawn("eob_ruins_alcove", 9,26,1, "eob_ruins_alcove_6_9_26_E")
+spawn("eob_ruins_alcove", 11,25,2, "eob_ruins_alcove_6_11_25_S")
+spawn("eob_ruins_alcove", 12,26,3, "eob_ruins_alcove_6_12_26_W")
+spawn("eob_ruins_alcove", 11,27,0, "eob_ruins_alcove_6_11_27_N")
+spawn("eob_ruins_alcove", 10,26,1, "eob_ruins_alcove_6_10_26_E")
+spawn("eob_ruins_ceiling_shaft", 15,26,2, "eob_ruins_ceiling_shaft_6_15_26")
+spawn("eob_ruins_ceiling_shaft", 16,26,2, "eob_ruins_ceiling_shaft_6_16_26")
+spawn("eob_ruins_ceiling_shaft", 17,26,2, "eob_ruins_ceiling_shaft_6_17_26")
+spawn("eob_ruins_ceiling_shaft", 18,26,2, "eob_ruins_ceiling_shaft_6_18_26")
+spawn("eob_ruins_ceiling_shaft", 22,26,2, "eob_ruins_ceiling_shaft_6_22_26")
+spawn("eob_ruins_ceiling_shaft", 29,26,2, "eob_ruins_ceiling_shaft_6_29_26")
+spawn("eob_ruins_alcove", 9,26,2, "eob_ruins_alcove_6_9_26_S")
+spawn("eob_ruins_alcove", 10,27,3, "eob_ruins_alcove_6_10_27_W")
+spawn("eob_ruins_alcove", 9,28,0, "eob_ruins_alcove_6_9_28_N")
+spawn("eob_ruins_alcove", 8,27,1, "eob_ruins_alcove_6_8_27_E")
+spawn("eob_ruins_alcove", 10,26,2, "eob_ruins_alcove_6_10_26_S")
+spawn("eob_ruins_alcove", 11,27,3, "eob_ruins_alcove_6_11_27_W")
+spawn("eob_ruins_alcove", 10,28,0, "eob_ruins_alcove_6_10_28_N")
+spawn("eob_ruins_alcove", 9,27,1, "eob_ruins_alcove_6_9_27_E")
+spawn("eob_ruins_alcove", 11,26,2, "eob_ruins_alcove_6_11_26_S")
+spawn("eob_ruins_alcove", 12,27,3, "eob_ruins_alcove_6_12_27_W")
+spawn("eob_ruins_alcove", 11,28,0, "eob_ruins_alcove_6_11_28_N")
+spawn("eob_ruins_alcove", 10,27,1, "eob_ruins_alcove_6_10_27_E")
+spawn("eob_ruins_ceiling_shaft", 20,27,3, "eob_ruins_ceiling_shaft_6_20_27")
+spawn("eob_ruins_ceiling_shaft", 21,27,1, "eob_ruins_ceiling_shaft_6_21_27")
+spawn("eob_ruins_ceiling_shaft", 22,27,2, "eob_ruins_ceiling_shaft_6_22_27")
+spawn("eob_ruins_ceiling_shaft", 23,27,2, "eob_ruins_ceiling_shaft_6_23_27")
+spawn("eob_ruins_ceiling_shaft", 29,27,2, "eob_ruins_ceiling_shaft_6_29_27")
+spawn("eob_ruins_alcove", 2,28,1, "eob_ruins_alcove_6_2_28_E")
+	:addItem(spawn("eob_dart_plus4_u"))
+	:addItem(spawn("eob_dagger_u"))
+spawn("eob_ruins_alcove", 9,27,2, "eob_ruins_alcove_6_9_27_S")
+spawn("eob_ruins_alcove", 10,28,3, "eob_ruins_alcove_6_10_28_W")
+spawn("eob_ruins_alcove", 9,29,0, "eob_ruins_alcove_6_9_29_N")
+spawn("eob_ruins_alcove", 8,28,1, "eob_ruins_alcove_6_8_28_E")
+spawn("eob_ruins_alcove", 10,27,2, "eob_ruins_alcove_6_10_27_S")
+spawn("eob_ruins_alcove", 11,28,3, "eob_ruins_alcove_6_11_28_W")
+spawn("eob_ruins_alcove", 10,29,0, "eob_ruins_alcove_6_10_29_N")
+spawn("eob_ruins_alcove", 9,28,1, "eob_ruins_alcove_6_9_28_E")
+spawn("eob_ruins_alcove", 11,27,2, "eob_ruins_alcove_6_11_27_S")
+spawn("eob_ruins_alcove", 12,28,3, "eob_ruins_alcove_6_12_28_W")
+spawn("eob_ruins_alcove", 11,29,0, "eob_ruins_alcove_6_11_29_N")
+spawn("eob_ruins_alcove", 10,28,1, "eob_ruins_alcove_6_10_28_E")
+spawn("eob_ruins_ceiling_shaft", 15,28,1, "eob_ruins_ceiling_shaft_6_15_28")
+spawn("eob_ruins_ceiling_shaft", 16,28,1, "eob_ruins_ceiling_shaft_6_16_28")
+spawn("eob_ruins_ceiling_shaft", 17,28,1, "eob_ruins_ceiling_shaft_6_17_28")
+spawn("eob_ruins_ceiling_shaft", 20,28,2, "eob_ruins_ceiling_shaft_6_20_28")
+spawn("eob_ruins_ceiling_shaft", 21,28,2, "eob_ruins_ceiling_shaft_6_21_28")
+spawn("eob_ruins_ceiling_shaft", 29,28,2, "eob_ruins_ceiling_shaft_6_29_28")
+spawn("eob_ruins_alcove", 6,28,2, "eob_ruins_alcove_6_6_28_S")
+	:addItem(spawn("eob_wand_magic_missile_20_u"))
+spawn("eob_ruins_alcove", 7,29,3, "eob_ruins_alcove_6_7_29_W")
+	:addItem(spawn("eob_wand_magic_missile_20_u"))
+spawn("eob_ruins_alcove", 6,30,0, "eob_ruins_alcove_6_6_30_N")
+	:addItem(spawn("eob_wand_magic_missile_20_u"))
+spawn("eob_ruins_alcove", 5,29,1, "eob_ruins_alcove_6_5_29_E")
+	:addItem(spawn("eob_wand_magic_missile_20_u"))
+spawn("eob_ruins_alcove", 7,28,2, "eob_ruins_alcove_6_7_28_S")
+spawn("eob_ruins_alcove", 8,29,3, "eob_ruins_alcove_6_8_29_W")
+spawn("eob_ruins_alcove", 7,30,0, "eob_ruins_alcove_6_7_30_N")
+spawn("eob_ruins_alcove", 6,29,1, "eob_ruins_alcove_6_6_29_E")
+spawn("eob_ruins_alcove", 8,28,2, "eob_ruins_alcove_6_8_28_S")
+	:addItem(spawn("eob_key_dwarven_u"))
+spawn("eob_ruins_alcove", 9,29,3, "eob_ruins_alcove_6_9_29_W")
+	:addItem(spawn("eob_key_dwarven_u"))
+spawn("eob_ruins_alcove", 8,30,0, "eob_ruins_alcove_6_8_30_N")
+	:addItem(spawn("eob_key_dwarven_u"))
+spawn("eob_ruins_alcove", 7,29,1, "eob_ruins_alcove_6_7_29_E")
+	:addItem(spawn("eob_key_dwarven_u"))
+spawn("eob_ruins_alcove", 9,28,2, "eob_ruins_alcove_6_9_28_S")
+spawn("eob_ruins_alcove", 10,29,3, "eob_ruins_alcove_6_10_29_W")
+spawn("eob_ruins_alcove", 9,30,0, "eob_ruins_alcove_6_9_30_N")
+spawn("eob_ruins_alcove", 8,29,1, "eob_ruins_alcove_6_8_29_E")
+spawn("eob_ruins_alcove", 10,28,2, "eob_ruins_alcove_6_10_28_S")
+spawn("eob_ruins_alcove", 11,29,3, "eob_ruins_alcove_6_11_29_W")
+spawn("eob_ruins_alcove", 10,30,0, "eob_ruins_alcove_6_10_30_N")
+spawn("eob_ruins_alcove", 9,29,1, "eob_ruins_alcove_6_9_29_E")
+spawn("eob_ruins_alcove", 11,28,2, "eob_ruins_alcove_6_11_28_S")
+spawn("eob_ruins_alcove", 12,29,3, "eob_ruins_alcove_6_12_29_W")
+spawn("eob_ruins_alcove", 11,30,0, "eob_ruins_alcove_6_11_30_N")
+spawn("eob_ruins_alcove", 10,29,1, "eob_ruins_alcove_6_10_29_E")
+spawn("eob_ruins_secret_button_tiny", 12,28,2, "eob_ruins_secret_button_tiny_6_12_28_S")
+spawn("eob_ruins_ceiling_shaft", 17,29,2, "eob_ruins_ceiling_shaft_6_17_29")
+spawn("eob_ruins_ceiling_shaft", 19,29,2, "eob_ruins_ceiling_shaft_6_19_29")
+spawn("eob_ruins_ceiling_shaft", 20,29,2, "eob_ruins_ceiling_shaft_6_20_29")
+spawn("eob_ruins_ceiling_shaft", 24,29,3, "eob_ruins_ceiling_shaft_6_24_29")
+spawn("eob_ruins_ceiling_shaft", 25,29,1, "eob_ruins_ceiling_shaft_6_25_29")
+spawn("eob_ruins_ceiling_shaft", 27,29,2, "eob_ruins_ceiling_shaft_6_27_29")
+spawn("eob_ruins_ceiling_shaft", 28,29,1, "eob_ruins_ceiling_shaft_6_28_29")
+spawn("eob_ruins_ceiling_shaft", 29,29,2, "eob_ruins_ceiling_shaft_6_29_29")
+spawn("eob_ruins_wall_text", 5,30,1, "eob_ruins_wall_text_6_5_30_E")
+	:setWallText("")
+spawn("eob_ruins_wall_text", 8,29,2, "eob_ruins_wall_text_6_8_29_S")
+	:setWallText("")
+spawn("eob_ruins_alcove", 9,29,2, "eob_ruins_alcove_6_9_29_S")
+spawn("eob_ruins_alcove", 10,30,3, "eob_ruins_alcove_6_10_30_W")
+spawn("eob_ruins_alcove", 9,31,0, "eob_ruins_alcove_6_9_31_N")
+spawn("eob_ruins_alcove", 8,30,1, "eob_ruins_alcove_6_8_30_E")
+spawn("eob_ruins_alcove", 10,29,2, "eob_ruins_alcove_6_10_29_S")
+spawn("eob_ruins_alcove", 11,30,3, "eob_ruins_alcove_6_11_30_W")
+spawn("eob_ruins_alcove", 10,31,0, "eob_ruins_alcove_6_10_31_N")
+spawn("eob_ruins_alcove", 9,30,1, "eob_ruins_alcove_6_9_30_E")
+spawn("eob_ruins_alcove", 11,29,2, "eob_ruins_alcove_6_11_29_S")
+spawn("eob_ruins_alcove", 12,30,3, "eob_ruins_alcove_6_12_30_W")
+spawn("eob_ruins_alcove", 11,31,0, "eob_ruins_alcove_6_11_31_N")
+spawn("eob_ruins_alcove", 10,30,1, "eob_ruins_alcove_6_10_30_E")
+spawn("eob_ruins_secret_button_tiny", 19,30,3, "eob_ruins_secret_button_tiny_6_19_30_W")
+spawn("eob_ruins_secret_button_tiny", 17,30,1, "eob_ruins_secret_button_tiny_6_17_30_E")
+spawn("eob_ruins_ceiling_shaft", 20,30,2, "eob_ruins_ceiling_shaft_6_20_30")
+spawn("eob_ruins_ceiling_shaft", 21,30,2, "eob_ruins_ceiling_shaft_6_21_30")
+spawn("eob_egg_30_u", 21,5,2, "eob_egg_30_u_1")
+spawn("eob_rock_u", 13,13,0, "eob_rock_u_15")
+spawn("eob_shield_dwarven_u", 9,25,0, "eob_shield_dwarven_u_1")
+spawn("eob_egg_30_u", 19,5,0, "eob_egg_30_u_2")
+spawn("eob_key_dwarven_u", 1,6,0, "eob_key_dwarven_u_6")
+spawn("eob_rock_u", 17,25,0, "eob_rock_u_16")
+spawn("eob_key_u", 19,22,0, "eob_key_u_3")
+spawn("eob_potion_extra_healing", 27,15,1, "eob_potion_extra_healing_3")
+spawn("eob_egg_20_u", 11,5,3, "eob_egg_20_u_1")
+spawn("eob_egg_40_u", 15,5,0, "eob_egg_40_u_1")
+spawn("eob_halberd_chieftain_u", 14,18,2, "eob_halberd_chieftain_u_1")
+spawn("eob_egg_20_u", 17,5,3, "eob_egg_20_u_2")
+spawn("eob_mage_scroll_hold_person", 27,15,3, "eob_mage_scroll_hold_person_1")
+spawn("eob_egg_10_u", 17,18,1, "eob_egg_10_u_1")
+spawn("eob_egg_10_u", 16,5,2, "eob_egg_10_u_2")
+spawn("eob_stone_ring_u", 17,11,2, "eob_stone_ring_u_1")
+spawn("eob_cleric_scroll_flame_blade", 22,30,1, "eob_cleric_scroll_flame_blade_2")
+spawn("eob_ring2_u", 15,29,0, "eob_ring2_u_2")
+spawn("eob_bracers_u", 26,28,0, "eob_bracers_u_1")
+spawn("eob_egg_30_u", 15,4,2, "eob_egg_30_u_3")
+spawn("eob_cleric_scroll_dispel_magic", 14,20,2, "eob_cleric_scroll_dispel_magic_1")
+spawn("eob_mace_plus3", 12,28,3, "eob_mace_plus3_1")
+spawn("eob_cleric_scroll_cure_serious_wnds", 14,20,1, "eob_cleric_scroll_cure_serious_wnds_1")
+spawn("eob_egg_20_u", 15,5,3, "eob_egg_20_u_3")
+spawn("eob_egg_40_u", 29,8,3, "eob_egg_40_u_2")
+spawn("eob_key_dwarven_u", 7,6,0, "eob_key_dwarven_u_7")
+spawn("eob_kenku1_1", 15,15,0, "eob_kenku1_1_1")
+spawn("eob_kenku1_2", 15,5,0, "eob_kenku1_2_1")
+spawn("eob_kenku1_1", 13,3,0, "eob_kenku1_1_2")
+spawn("eob_kenku1_2", 14,7,0, "eob_kenku1_2_2")
+spawn("eob_kenku1_1", 23,7,0, "eob_kenku1_1_3")
+spawn("eob_kenku1_2", 20,12,0, "eob_kenku1_2_3")
+spawn("eob_kenku1_2", 3,18,0, "eob_kenku1_2_4")
+spawn("eob_kenku1_2", 30,4,0, "eob_kenku1_2_5")
+spawn("eob_kenku1_2", 21,5,0, "eob_kenku1_2_6")
+spawn("eob_kenku1_1", 13,5,0, "eob_kenku1_1_4")
+spawn("eob_kenku2_1_group", 13,17,0, "eob_kenku2_1_group_1")
+spawn("eob_kenku1_1", 19,5,0, "eob_kenku1_1_5")
+spawn("eob_kenku1_1", 16,8,0, "eob_kenku1_1_6")
+spawn("eob_kenku1_2", 16,13,0, "eob_kenku1_2_7")
+spawn("eob_kenku1_2", 5,15,0, "eob_kenku1_2_8")
+spawn("eob_kenku1_2", 16,4,0, "eob_kenku1_2_9")
+spawn("eob_kenku1_1", 21,3,0, "eob_kenku1_1_7")
+spawn("eob_kenku1_1", 30,7,0, "eob_kenku1_1_8")
+spawn("eob_kenku1_1", 30,24,0, "eob_kenku1_1_9")
+spawn("eob_kenku1_2", 30,1,0, "eob_kenku1_2_10")
+spawn("eob_kenku1_2", 9,14,0, "eob_kenku1_2_11")
+spawn("eob_kenku1_2", 14,28,0, "eob_kenku1_2_12")
+spawn("eob_kenku1_1", 11,11,0, "eob_kenku1_1_10")
+spawn("eob_kenku1_1", 19,30,0, "eob_kenku1_1_11")
+spawn("eob_kenku1_2", 12,5,0, "eob_kenku1_2_13")
+spawn("eob_kenku1_1", 17,4,0, "eob_kenku1_1_12")
+spawn("eob_kenku1_1", 11,5,0, "eob_kenku1_1_13")
 
 --- level 7 ---
 
@@ -3607,198 +4230,216 @@ mapDesc([[
 #........#.............#########
 ################################
 ]])
-spawn("eob_drow_door", 24, 2, 3, "eob_drow_door_7_24_2")
+spawn("eob_drow_door", 24,2,3, "eob_drow_door_7_24_2")
 	:addPullChain()
-spawn("eob_drow_fireball_firing_pad", 25, 4, 0, "eob_drow_fireball_firing_pad_7_25_4_N")
-spawn("eob_drow_wall_text", 2, 5, 0, "eob_drow_wall_text_7_2_5_N")
-spawn("eob_drow_fireball_firing_pad", 4, 5, 0, "eob_drow_fireball_firing_pad_7_4_5_N")
-spawn("eob_drow_door", 19, 4, 1, "eob_drow_door_7_19_4")
+spawn("eob_drow_fireball_firing_pad", 25,4,0, "eob_drow_fireball_firing_pad_7_25_4_N")
+spawn("eob_drow_wall_text", 2,5,0, "eob_drow_wall_text_7_2_5_N")
+	:setWallText("")
+spawn("eob_drow_fireball_firing_pad", 4,5,0, "eob_drow_fireball_firing_pad_7_4_5_N")
+spawn("eob_drow_door", 19,4,1, "eob_drow_door_7_19_4")
 	:addPullChain()
-spawn("eob_drow_door", 28, 4, 3, "eob_drow_door_7_28_4")
-spawn("eob_drow_pressure_plate", 4, 5, 1, "eob_drow_pressure_plate_7_4_5")
+spawn("eob_drow_door", 28,4,3, "eob_drow_door_7_28_4")
+spawn("eob_drow_pressure_plate", 4,5,1, "eob_drow_pressure_plate_7_4_5")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pressure_plate", 6, 5, 2, "eob_drow_pressure_plate_7_6_5")
+spawn("eob_drow_pressure_plate", 6,5,2, "eob_drow_pressure_plate_7_6_5")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_door", 13, 7, 3, "eob_drow_door_7_13_7")
+spawn("eob_drow_door", 13,7,3, "eob_drow_door_7_13_7")
 	:addPullChain()
-spawn("eob_drow_door", 29, 7, 3, "eob_drow_door_7_29_7")
-spawn("eob_drow_pit", 26, 8, 1, "eob_drow_pit_7_26_8")
-spawn("eob_drow_pressure_plate", 4, 9, 2, "eob_drow_pressure_plate_7_4_9")
+spawn("eob_drow_door", 29,7,3, "eob_drow_door_7_29_7")
+spawn("eob_drow_pit", 26,8,1, "eob_drow_pit_7_26_8")
+spawn("eob_drow_pressure_plate", 4,9,2, "eob_drow_pressure_plate_7_4_9")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pressure_plate", 6, 9, 2, "eob_drow_pressure_plate_7_6_9")
+spawn("eob_drow_pressure_plate", 6,9,2, "eob_drow_pressure_plate_7_6_9")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_lock_spider", 12, 9, 1, "eob_drow_lock_spider_7_12_9_E")
-spawn("eob_drow_pit", 26, 9, 2, "eob_drow_pit_7_26_9")
-spawn("eob_drow_door", 29, 9, 3, "eob_drow_door_7_29_9")
-spawn("eob_drow_door", 13, 10, 3, "eob_drow_door_7_13_10")
-spawn("eob_drow_stairs_up", 14, 10, 1, "eob_drow_stairs_up_7_14_10_W")
-spawn("eob_drow_button", 26, 10, 3, "eob_drow_button_7_26_10_W")
-spawn("eob_drow_pressure_plate", 29, 11, 1, "eob_drow_pressure_plate_7_29_11")
+spawn("eob_drow_lock_spider", 12,9,1, "eob_drow_lock_spider_7_12_9_E")
+spawn("eob_drow_pit", 26,9,2, "eob_drow_pit_7_26_9")
+spawn("eob_drow_door", 29,9,3, "eob_drow_door_7_29_9")
+spawn("eob_drow_door", 13,10,3, "eob_drow_door_7_13_10")
+spawn("eob_drow_stairs_up", 14,10,1, "eob_drow_stairs_up_7_14_10_W")
+spawn("eob_drow_button", 26,10,3, "eob_drow_button_7_26_10_W")
+spawn("eob_drow_pressure_plate", 29,11,1, "eob_drow_pressure_plate_7_29_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_lock_spider", 11, 13, 1, "eob_drow_lock_spider_7_11_13_E")
-spawn("eob_drow_button", 20, 14, 0, "eob_drow_button_7_20_14_N")
-spawn("eob_drow_wall_text", 22, 14, 0, "eob_drow_wall_text_7_22_14_N")
-spawn("eob_drow_door", 11, 14, 0, "eob_drow_door_7_11_14")
-spawn("eob_drow_wall_text", 14, 15, 0, "eob_drow_wall_text_7_14_15_N")
-spawn("eob_drow_alcove", 20, 14, 3, "eob_drow_alcove_7_20_14_W")
-spawn("eob_drow_door", 21, 14, 1, "eob_drow_door_7_21_14")
+spawn("eob_drow_lock_spider", 11,13,1, "eob_drow_lock_spider_7_11_13_E")
+spawn("eob_drow_button", 20,14,0, "eob_drow_button_7_20_14_N")
+spawn("eob_drow_wall_text", 22,14,0, "eob_drow_wall_text_7_22_14_N")
+	:setWallText("")
+spawn("eob_drow_door", 11,14,0, "eob_drow_door_7_11_14")
+spawn("eob_drow_wall_text", 14,15,0, "eob_drow_wall_text_7_14_15_N")
+	:setWallText("")
+spawn("eob_drow_alcove", 20,14,3, "eob_drow_alcove_7_20_14_W")
+spawn("eob_drow_door", 21,14,1, "eob_drow_door_7_21_14")
 	:addPullChain()
-spawn("eob_drow_pit", 16, 15, 1, "eob_drow_pit_7_16_15")
-spawn("eob_drow_stairs_down", 22, 16, 0, "eob_drow_stairs_down_7_22_16_S")
-spawn("eob_drow_door", 25, 16, 2, "eob_drow_door_7_25_16")
+spawn("eob_drow_pit", 16,15,1, "eob_drow_pit_7_16_15")
+spawn("eob_drow_stairs_down", 22,16,0, "eob_drow_stairs_down_7_22_16_S")
+spawn("eob_drow_door", 25,16,2, "eob_drow_door_7_25_16")
 	:addPullChain()
-spawn("eob_drow_stairs_down", 28, 16, 0, "eob_drow_stairs_down_7_28_16_S")
-spawn("eob_drow_wall_text", 22, 17, 3, "eob_drow_wall_text_7_22_17_W")
-spawn("eob_drow_stairs_down", 11, 18, 1, "eob_drow_stairs_down_7_11_18")
-spawn("eob_drow_wall_text", 22, 18, 1, "eob_drow_wall_text_7_22_18_E")
-spawn("eob_drow_door", 27, 18, 1, "eob_drow_door_7_27_18")
+spawn("eob_drow_stairs_down", 28,16,0, "eob_drow_stairs_down_7_28_16_S")
+spawn("eob_drow_wall_text", 22,17,3, "eob_drow_wall_text_7_22_17_W")
+	:setWallText("")
+spawn("eob_drow_stairs_down", 11,18,1, "eob_drow_stairs_down_7_11_18")
+spawn("eob_drow_wall_text", 22,18,1, "eob_drow_wall_text_7_22_18_E")
+	:setWallText("")
+spawn("eob_drow_door", 27,18,1, "eob_drow_door_7_27_18")
 	:addPullChain()
-spawn("eob_drow_wall_text", 18, 20, 0, "eob_drow_wall_text_7_18_20_N")
-spawn("eob_drow_door", 20, 19, 2, "eob_drow_door_7_20_19")
-spawn("eob_drow_door", 22, 19, 0, "eob_drow_door_7_22_19")
+spawn("eob_drow_wall_text", 18,20,0, "eob_drow_wall_text_7_18_20_N")
+	:setWallText("")
+spawn("eob_drow_door", 20,19,2, "eob_drow_door_7_20_19")
+spawn("eob_drow_door", 22,19,0, "eob_drow_door_7_22_19")
 	:addPullChain()
-spawn("eob_drow_wall_text", 24, 20, 0, "eob_drow_wall_text_7_24_20_N")
-spawn("eob_drow_wall_text", 26, 20, 0, "eob_drow_wall_text_7_26_20_N")
-spawn("eob_drow_wall_text", 28, 18, 2, "eob_drow_wall_text_7_28_18_S")
-spawn("eob_drow_wall_text", 28, 20, 0, "eob_drow_wall_text_7_28_20_N")
-spawn("eob_drow_stairs_up", 1, 20, 2, "eob_drow_stairs_up_7_1_20_N")
-spawn("eob_drow_stairs_down", 12, 20, 3, "eob_drow_stairs_down_7_12_20")
-spawn("eob_drow_door", 14, 20, 3, "eob_drow_door_7_14_20")
-spawn("eob_drow_stairs_down", 15, 20, 1, "eob_drow_stairs_down_7_15_20")
-spawn("eob_teleporter", 30, 20, 1, "eob_teleporter_7_30_20_W")
-spawn("eob_drow_lock_spider", 13, 20, 2, "eob_drow_lock_spider_7_13_20_S")
-spawn("eob_drow_door", 20, 21, 0, "eob_drow_door_7_20_21")
-spawn("eob_drow_door", 24, 21, 0, "eob_drow_door_7_24_21")
-spawn("eob_drow_lever", 25, 20, 2, "eob_drow_lever_7_25_20_S")
-spawn("eob_drow_door", 26, 21, 0, "eob_drow_door_7_26_21")
-spawn("eob_drow_lever", 27, 20, 2, "eob_drow_lever_7_27_20_S")
-spawn("eob_drow_door", 28, 21, 0, "eob_drow_door_7_28_21")
-spawn("eob_drow_lever", 29, 20, 2, "eob_drow_lever_7_29_20_S")
-spawn("eob_teleporter", 20, 22, 2, "eob_teleporter_7_20_22_N")
-spawn("eob_drow_wall_text", 22, 22, 1, "eob_drow_wall_text_7_22_22_E")
-spawn("eob_drow_door", 22, 23, 0, "eob_drow_door_7_22_23")
+spawn("eob_drow_wall_text", 24,20,0, "eob_drow_wall_text_7_24_20_N")
+	:setWallText("")
+spawn("eob_drow_wall_text", 26,20,0, "eob_drow_wall_text_7_26_20_N")
+	:setWallText("")
+spawn("eob_drow_wall_text", 28,18,2, "eob_drow_wall_text_7_28_18_S")
+	:setWallText("")
+spawn("eob_drow_wall_text", 28,20,0, "eob_drow_wall_text_7_28_20_N")
+	:setWallText("")
+spawn("eob_drow_stairs_up", 1,20,2, "eob_drow_stairs_up_7_1_20_N")
+spawn("eob_drow_stairs_down", 12,20,3, "eob_drow_stairs_down_7_12_20")
+spawn("eob_drow_door", 14,20,3, "eob_drow_door_7_14_20")
+spawn("eob_drow_stairs_down", 15,20,1, "eob_drow_stairs_down_7_15_20")
+spawn("eob_teleporter", 30,20,1, "eob_teleporter_7_30_20_W")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_drow_lock_spider", 13,20,2, "eob_drow_lock_spider_7_13_20_S")
+spawn("eob_drow_door", 20,21,0, "eob_drow_door_7_20_21")
+spawn("eob_drow_door", 24,21,0, "eob_drow_door_7_24_21")
+spawn("eob_drow_lever", 25,20,2, "eob_drow_lever_7_25_20_S")
+spawn("eob_drow_door", 26,21,0, "eob_drow_door_7_26_21")
+spawn("eob_drow_lever", 27,20,2, "eob_drow_lever_7_27_20_S")
+spawn("eob_drow_door", 28,21,0, "eob_drow_door_7_28_21")
+spawn("eob_drow_lever", 29,20,2, "eob_drow_lever_7_29_20_S")
+spawn("eob_teleporter", 20,22,2, "eob_teleporter_7_20_22_N")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_drow_wall_text", 22,22,1, "eob_drow_wall_text_7_22_22_E")
+	:setWallText("")
+spawn("eob_drow_door", 22,23,0, "eob_drow_door_7_22_23")
 	:addPullChain()
-spawn("eob_drow_wall_text", 13, 23, 2, "eob_drow_wall_text_7_13_23_S")
-spawn("eob_drow_button", 16, 25, 0, "eob_drow_button_7_16_25_N")
-spawn("eob_drow_door", 17, 24, 2, "eob_drow_door_7_17_24")
-spawn("eob_drow_button", 18, 25, 0, "eob_drow_button_7_18_25_N")
-spawn("eob_drow_door", 19, 24, 2, "eob_drow_door_7_19_24")
-spawn("eob_drow_button", 20, 25, 0, "eob_drow_button_7_20_25_N")
-spawn("eob_drow_button", 24, 25, 0, "eob_drow_button_7_24_25_N")
-spawn("eob_drow_door", 25, 24, 2, "eob_drow_door_7_25_24")
-spawn("eob_drow_button", 26, 25, 0, "eob_drow_button_7_26_25_N")
-spawn("eob_drow_door", 27, 24, 2, "eob_drow_door_7_27_24")
-spawn("eob_drow_door", 15, 25, 1, "eob_drow_door_7_15_25")
-spawn("eob_drow_door", 29, 25, 3, "eob_drow_door_7_29_25")
-spawn("eob_drow_fireball_firing_pad", 4, 26, 3, "eob_drow_fireball_firing_pad_7_4_26_W")
-spawn("eob_drow_fireball_firing_pad", 4, 26, 1, "eob_drow_fireball_firing_pad_7_4_26_E")
-spawn("eob_drow_door", 17, 26, 0, "eob_drow_door_7_17_26")
-spawn("eob_drow_button", 18, 25, 2, "eob_drow_button_7_18_25_S")
-spawn("eob_drow_door", 19, 26, 0, "eob_drow_door_7_19_26")
-spawn("eob_drow_button", 20, 25, 2, "eob_drow_button_7_20_25_S")
-spawn("eob_drow_button", 24, 25, 2, "eob_drow_button_7_24_25_S")
-spawn("eob_drow_door", 25, 26, 0, "eob_drow_door_7_25_26")
-spawn("eob_drow_button", 26, 25, 2, "eob_drow_button_7_26_25_S")
-spawn("eob_drow_door", 27, 26, 0, "eob_drow_door_7_27_26")
-spawn("eob_drow_button", 28, 25, 2, "eob_drow_button_7_28_25_S")
-spawn("eob_drow_fireball_firing_pad", 4, 27, 3, "eob_drow_fireball_firing_pad_7_4_27_W")
-spawn("eob_drow_fireball_firing_pad", 4, 27, 1, "eob_drow_fireball_firing_pad_7_4_27_E")
-spawn("eob_drow_door", 10, 27, 0, "eob_drow_door_7_10_27")
-spawn("eob_drow_portal_necklace", 12, 28, 0, "eob_drow_portal_necklace_7_12_28_N")
-spawn("eob_drow_portal_dagger", 13, 28, 0, "eob_drow_portal_dagger_7_13_28_N")
-spawn("eob_drow_portal_amulet", 14, 28, 0, "eob_drow_portal_amulet_7_14_28_N")
-spawn("eob_drow_button", 22, 26, 2, "eob_drow_button_7_22_26_S")
-spawn("eob_drow_fireball_firing_pad", 4, 28, 3, "eob_drow_fireball_firing_pad_7_4_28_W")
-spawn("eob_drow_fireball_firing_pad", 4, 28, 1, "eob_drow_fireball_firing_pad_7_4_28_E")
-spawn("eob_drow_stairs_down", 8, 28, 3, "eob_drow_stairs_down_7_8_28_E")
-spawn("eob_drow_portal_cross", 12, 28, 3, "eob_drow_portal_cross_7_12_28_W")
-spawn("eob_drow_portal_gem", 14, 28, 1, "eob_drow_portal_gem_7_14_28_E")
-spawn("eob_drow_door", 4, 29, 2, "eob_drow_door_7_4_29")
+spawn("eob_drow_wall_text", 13,23,2, "eob_drow_wall_text_7_13_23_S")
+	:setWallText("")
+spawn("eob_drow_button", 16,25,0, "eob_drow_button_7_16_25_N")
+spawn("eob_drow_door", 17,24,2, "eob_drow_door_7_17_24")
+spawn("eob_drow_button", 18,25,0, "eob_drow_button_7_18_25_N")
+spawn("eob_drow_door", 19,24,2, "eob_drow_door_7_19_24")
+spawn("eob_drow_button", 20,25,0, "eob_drow_button_7_20_25_N")
+spawn("eob_drow_button", 24,25,0, "eob_drow_button_7_24_25_N")
+spawn("eob_drow_door", 25,24,2, "eob_drow_door_7_25_24")
+spawn("eob_drow_button", 26,25,0, "eob_drow_button_7_26_25_N")
+spawn("eob_drow_door", 27,24,2, "eob_drow_door_7_27_24")
+spawn("eob_drow_door", 15,25,1, "eob_drow_door_7_15_25")
+spawn("eob_drow_door", 29,25,3, "eob_drow_door_7_29_25")
+spawn("eob_drow_fireball_firing_pad", 4,26,3, "eob_drow_fireball_firing_pad_7_4_26_W")
+spawn("eob_drow_fireball_firing_pad", 4,26,1, "eob_drow_fireball_firing_pad_7_4_26_E")
+spawn("eob_drow_door", 17,26,0, "eob_drow_door_7_17_26")
+spawn("eob_drow_button", 18,25,2, "eob_drow_button_7_18_25_S")
+spawn("eob_drow_door", 19,26,0, "eob_drow_door_7_19_26")
+spawn("eob_drow_button", 20,25,2, "eob_drow_button_7_20_25_S")
+spawn("eob_drow_button", 24,25,2, "eob_drow_button_7_24_25_S")
+spawn("eob_drow_door", 25,26,0, "eob_drow_door_7_25_26")
+spawn("eob_drow_button", 26,25,2, "eob_drow_button_7_26_25_S")
+spawn("eob_drow_door", 27,26,0, "eob_drow_door_7_27_26")
+spawn("eob_drow_button", 28,25,2, "eob_drow_button_7_28_25_S")
+spawn("eob_drow_fireball_firing_pad", 4,27,3, "eob_drow_fireball_firing_pad_7_4_27_W")
+spawn("eob_drow_fireball_firing_pad", 4,27,1, "eob_drow_fireball_firing_pad_7_4_27_E")
+spawn("eob_drow_door", 10,27,0, "eob_drow_door_7_10_27")
+spawn("eob_drow_portal_necklace", 12,28,0, "eob_drow_portal_necklace_7_12_28_N")
+spawn("eob_drow_portal_dagger", 13,28,0, "eob_drow_portal_dagger_7_13_28_N")
+spawn("eob_drow_portal_amulet", 14,28,0, "eob_drow_portal_amulet_7_14_28_N")
+spawn("eob_drow_button", 22,26,2, "eob_drow_button_7_22_26_S")
+spawn("eob_drow_fireball_firing_pad", 4,28,3, "eob_drow_fireball_firing_pad_7_4_28_W")
+spawn("eob_drow_fireball_firing_pad", 4,28,1, "eob_drow_fireball_firing_pad_7_4_28_E")
+spawn("eob_drow_stairs_down", 8,28,3, "eob_drow_stairs_down_7_8_28_E")
+spawn("eob_drow_portal_cross", 12,28,3, "eob_drow_portal_cross_7_12_28_W")
+spawn("eob_drow_portal_gem", 14,28,1, "eob_drow_portal_gem_7_14_28_E")
+spawn("eob_drow_door", 4,29,2, "eob_drow_door_7_4_29")
 	:addPullChain()
-spawn("eob_drow_door", 10, 29, 2, "eob_drow_door_7_10_29")
-spawn("eob_drow_lock_ornate", 11, 30, 0, "eob_drow_lock_ornate_7_11_30_N")
-spawn("eob_drow_door", 15, 30, 1, "eob_drow_door_7_15_30")
-spawn("eob_drow_door", 17, 30, 1, "eob_drow_door_7_17_30")
-spawn("eob_drow_door", 19, 30, 1, "eob_drow_door_7_19_30")
-spawn("eob_drow_door", 21, 30, 1, "eob_drow_door_7_21_30")
-spawn("eob_drow_alcove", 12, 30, 2, "eob_drow_alcove_7_12_30_S")
-	:addItem(spawn("eob_rock_glowing_u")) -- Rock 
-spawn("eob_drow_alcove", 13, 30, 2, "eob_drow_alcove_7_13_30_S")
-	:addItem(spawn("eob_wand_u")) -- Wand 
-spawn("eob_drow_alcove", 14, 30, 2, "eob_drow_alcove_7_14_30_S")
-spawn("eob_drow_lock_ornate", 16, 30, 2, "eob_drow_lock_ornate_7_16_30_S")
-spawn("eob_drow_lock_ornate", 18, 30, 2, "eob_drow_lock_ornate_7_18_30_S")
-spawn("eob_drow_lock_ornate", 20, 30, 2, "eob_drow_lock_ornate_7_20_30_S")
-spawn("eob_drow_lock_ornate", 22, 30, 2, "eob_drow_lock_ornate_7_22_30_S")
-spawn("eob_banded_armor_u", 25, 23, 0, "eob_banded_armor_u_1")
-spawn("eob_bones_human_ileria_u", 29, 4, 1, "eob_bones_human_ileria_u_1")
-spawn("eob_potion_healing", 4, 26, 0, "eob_potion_healing_7")
-spawn("eob_arrow_u", 27, 23, 0, "eob_arrow_u_13")
-spawn("eob_arrow_u", 12, 16, 2, "eob_arrow_u_14")
-spawn("eob_key_jeweled_u", 19, 23, 0, "eob_key_jeweled_u_1")
-spawn("eob_short_sword_slicer", 24, 22, 2, "eob_short_sword_slicer_1")
-spawn("eob_shield_u", 30, 14, 3, "eob_shield_u_5")
-spawn("eob_cleric_scroll_cure_light_wnds", 19, 27, 2, "eob_cleric_scroll_cure_light_wnds_1")
-spawn("eob_mage_scroll_lightning_bolt", 30, 25, 1, "eob_mage_scroll_lightning_bolt_1")
-spawn("eob_key_drow_u", 17, 27, 3, "eob_key_drow_u_1")
-spawn("eob_cleric_scroll_remove_paralysis", 30, 11, 0, "eob_cleric_scroll_remove_paralysis_1")
-spawn("eob_cleric_scroll_bless", 17, 5, 3, "eob_cleric_scroll_bless_1")
-spawn("eob_ring_protection2_u", 14, 15, 3, "eob_ring_protection2_u_1")
-spawn("eob_cleric_scroll_protect_evil10", 30, 11, 1, "eob_cleric_scroll_protect_evil10_1")
-spawn("eob_key_jeweled_u", 25, 27, 2, "eob_key_jeweled_u_2")
-spawn("eob_ring2_wizardry_u", 28, 22, 2, "eob_ring2_wizardry_u_1")
-spawn("eob_cleric_scroll_create_food", 6, 12, 3, "eob_cleric_scroll_create_food_1")
-spawn("eob_key_u", 4, 26, 1, "eob_key_u_4")
-spawn("eob_mage_scroll_fireball", 2, 3, 2, "eob_mage_scroll_fireball_2")
-spawn("eob_arrow_u", 7, 22, 1, "eob_arrow_u_15")
-spawn("eob_medallion_luck_stone_u", 3, 14, 0, "eob_medallion_luck_stone_u_1")
-spawn("eob_key_u", 30, 12, 2, "eob_key_u_5")
-spawn("eob_bracers_defense3_u", 26, 22, 2, "eob_bracers_defense3_u_1")
-spawn("eob_cleric_scroll_slow_poison", 3, 12, 3, "eob_cleric_scroll_slow_poison_2")
-spawn("eob_medallion_of_adornment_u", 17, 5, 3, "eob_medallion_of_adornment_u_2")
-spawn("eob_arrow_u", 12, 16, 3, "eob_arrow_u_16")
-spawn("eob_arrow_u", 12, 16, 1, "eob_arrow_u_17")
-spawn("eob_arrow_u", 27, 23, 1, "eob_arrow_u_18")
-spawn("eob_rations_iron_u", 17, 5, 3, "eob_rations_iron_u_9")
-spawn("eob_key_drow_u", 14, 25, 0, "eob_key_drow_u_2")
-spawn("eob_arrow_u", 27, 23, 3, "eob_arrow_u_19")
-spawn("eob_mage_scroll_fear", 17, 23, 0, "eob_mage_scroll_fear_1")
-spawn("eob_arrow_u", 22, 8, 0, "eob_arrow_u_20")
-spawn("eob_key_ruby_u", 27, 27, 2, "eob_key_ruby_u_1")
-spawn("eob_holy_symbol", 29, 4, 1, "eob_holy_symbol_1")
-spawn("eob_skelwar2_1_group", 27, 27, 0, "eob_skelwar2_1_group_1")
-spawn("eob_skelwar1_1", 19, 27, 0, "eob_skelwar1_1_1")
-spawn("eob_skelwar1_2", 27, 23, 0, "eob_skelwar1_2_1")
-spawn("eob_drowelf1_1", 3, 16, 0, "eob_drowelf1_1_1")
-spawn("eob_skelwar1_1", 29, 4, 0, "eob_skelwar1_1_2")
-spawn("eob_drowelf1_1", 3, 15, 0, "eob_drowelf1_1_2")
-spawn("eob_skelwar2_1_group", 20, 18, 0, "eob_skelwar2_1_group_2")
-spawn("eob_skelwar1_2", 30, 9, 0, "eob_skelwar1_2_2")
-spawn("eob_drowelf1_1", 6, 2, 0, "eob_drowelf1_1_3")
-spawn("eob_skelwar2_2_group", 30, 25, 0, "eob_skelwar2_2_group_1")
-spawn("eob_skelwar1_1", 30, 7, 0, "eob_skelwar1_1_3")
-spawn("eob_drowelf2_1_group", 2, 2, 0, "eob_drowelf2_1_group_1")
-spawn("eob_skelwar1_2", 17, 27, 0, "eob_skelwar1_2_3")
-spawn("eob_drowelf1_1", 7, 11, 0, "eob_drowelf1_1_4")
-spawn("eob_drowelf1_1", 7, 12, 0, "eob_drowelf1_1_5")
-spawn("eob_drowelf2_1_group", 1, 18, 0, "eob_drowelf2_1_group_2")
-spawn("eob_drowelf1_1", 3, 14, 0, "eob_drowelf1_1_6")
-spawn("eob_drowelf2_1_group", 1, 17, 0, "eob_drowelf2_1_group_3")
-spawn("eob_skelwar1_1", 17, 23, 0, "eob_skelwar1_1_4")
-spawn("eob_drowelf1_1", 17, 4, 0, "eob_drowelf1_1_7")
-spawn("eob_skelwar1_1", 26, 18, 0, "eob_skelwar1_1_5")
-spawn("eob_skelwar1_1", 25, 23, 0, "eob_skelwar1_1_6")
-spawn("eob_skelwar1_1", 14, 25, 0, "eob_skelwar1_1_7")
+spawn("eob_drow_door", 10,29,2, "eob_drow_door_7_10_29")
+spawn("eob_drow_lock_ornate", 11,30,0, "eob_drow_lock_ornate_7_11_30_N")
+spawn("eob_drow_door", 15,30,1, "eob_drow_door_7_15_30")
+spawn("eob_drow_door", 17,30,1, "eob_drow_door_7_17_30")
+spawn("eob_drow_door", 19,30,1, "eob_drow_door_7_19_30")
+spawn("eob_drow_door", 21,30,1, "eob_drow_door_7_21_30")
+spawn("eob_drow_alcove", 12,30,2, "eob_drow_alcove_7_12_30_S")
+	:addItem(spawn("eob_rock_glowing_u"))
+spawn("eob_drow_alcove", 13,30,2, "eob_drow_alcove_7_13_30_S")
+	:addItem(spawn("eob_wand_u"))
+spawn("eob_drow_alcove", 14,30,2, "eob_drow_alcove_7_14_30_S")
+spawn("eob_drow_lock_ornate", 16,30,2, "eob_drow_lock_ornate_7_16_30_S")
+spawn("eob_drow_lock_ornate", 18,30,2, "eob_drow_lock_ornate_7_18_30_S")
+spawn("eob_drow_lock_ornate", 20,30,2, "eob_drow_lock_ornate_7_20_30_S")
+spawn("eob_drow_lock_ornate", 22,30,2, "eob_drow_lock_ornate_7_22_30_S")
+spawn("eob_banded_armor_u", 25,23,0, "eob_banded_armor_u_1")
+spawn("eob_bones_human_ileria_u", 29,4,1, "eob_bones_human_ileria_u_1")
+spawn("eob_potion_healing", 4,26,0, "eob_potion_healing_7")
+spawn("eob_arrow_u", 27,23,0, "eob_arrow_u_13")
+spawn("eob_arrow_u", 12,16,2, "eob_arrow_u_14")
+spawn("eob_key_jeweled_u", 19,23,0, "eob_key_jeweled_u_1")
+spawn("eob_short_sword_slicer", 24,22,2, "eob_short_sword_slicer_1")
+spawn("eob_shield_u", 30,14,3, "eob_shield_u_5")
+spawn("eob_cleric_scroll_cure_light_wnds", 19,27,2, "eob_cleric_scroll_cure_light_wnds_1")
+spawn("eob_mage_scroll_lightning_bolt", 30,25,1, "eob_mage_scroll_lightning_bolt_1")
+spawn("eob_key_drow_u", 17,27,3, "eob_key_drow_u_1")
+spawn("eob_cleric_scroll_remove_paralysis", 30,11,0, "eob_cleric_scroll_remove_paralysis_1")
+spawn("eob_cleric_scroll_bless", 17,5,3, "eob_cleric_scroll_bless_1")
+spawn("eob_ring_protection2_u", 14,15,3, "eob_ring_protection2_u_1")
+spawn("eob_cleric_scroll_protect_evil10", 30,11,1, "eob_cleric_scroll_protect_evil10_1")
+spawn("eob_key_jeweled_u", 25,27,2, "eob_key_jeweled_u_2")
+spawn("eob_ring2_wizardry_u", 28,22,2, "eob_ring2_wizardry_u_1")
+spawn("eob_cleric_scroll_create_food", 6,12,3, "eob_cleric_scroll_create_food_1")
+spawn("eob_key_u", 4,26,1, "eob_key_u_4")
+spawn("eob_mage_scroll_fireball", 2,3,2, "eob_mage_scroll_fireball_2")
+spawn("eob_arrow_u", 7,22,1, "eob_arrow_u_15")
+spawn("eob_medallion_luck_stone_u", 3,14,0, "eob_medallion_luck_stone_u_1")
+spawn("eob_key_u", 30,12,2, "eob_key_u_5")
+spawn("eob_bracers_defense3_u", 26,22,2, "eob_bracers_defense3_u_1")
+spawn("eob_cleric_scroll_slow_poison", 3,12,3, "eob_cleric_scroll_slow_poison_2")
+spawn("eob_medallion_of_adornment_u", 17,5,3, "eob_medallion_of_adornment_u_2")
+spawn("eob_arrow_u", 12,16,3, "eob_arrow_u_16")
+spawn("eob_arrow_u", 12,16,1, "eob_arrow_u_17")
+spawn("eob_arrow_u", 27,23,1, "eob_arrow_u_18")
+spawn("eob_rations_iron_u", 17,5,3, "eob_rations_iron_u_9")
+spawn("eob_key_drow_u", 14,25,0, "eob_key_drow_u_2")
+spawn("eob_arrow_u", 27,23,3, "eob_arrow_u_19")
+spawn("eob_mage_scroll_fear", 17,23,0, "eob_mage_scroll_fear_1")
+spawn("eob_arrow_u", 22,8,0, "eob_arrow_u_20")
+spawn("eob_key_ruby_u", 27,27,2, "eob_key_ruby_u_1")
+spawn("eob_holy_symbol", 29,4,1, "eob_holy_symbol_1")
+spawn("eob_skelwar2_1_group", 27,27,0, "eob_skelwar2_1_group_1")
+spawn("eob_skelwar1_1", 19,27,0, "eob_skelwar1_1_1")
+spawn("eob_skelwar1_2", 27,23,0, "eob_skelwar1_2_1")
+spawn("eob_drowelf1_1", 3,16,0, "eob_drowelf1_1_1")
+spawn("eob_skelwar1_1", 29,4,0, "eob_skelwar1_1_2")
+spawn("eob_drowelf1_1", 3,15,0, "eob_drowelf1_1_2")
+spawn("eob_skelwar2_1_group", 20,18,0, "eob_skelwar2_1_group_2")
+spawn("eob_skelwar1_2", 30,9,0, "eob_skelwar1_2_2")
+spawn("eob_drowelf1_1", 6,2,0, "eob_drowelf1_1_3")
+spawn("eob_skelwar2_2_group", 30,25,0, "eob_skelwar2_2_group_1")
+spawn("eob_skelwar1_1", 30,7,0, "eob_skelwar1_1_3")
+spawn("eob_drowelf2_1_group", 2,2,0, "eob_drowelf2_1_group_1")
+spawn("eob_skelwar1_2", 17,27,0, "eob_skelwar1_2_3")
+spawn("eob_drowelf1_1", 7,11,0, "eob_drowelf1_1_4")
+spawn("eob_drowelf1_1", 7,12,0, "eob_drowelf1_1_5")
+spawn("eob_drowelf2_1_group", 1,18,0, "eob_drowelf2_1_group_2")
+spawn("eob_drowelf1_1", 3,14,0, "eob_drowelf1_1_6")
+spawn("eob_drowelf2_1_group", 1,17,0, "eob_drowelf2_1_group_3")
+spawn("eob_skelwar1_1", 17,23,0, "eob_skelwar1_1_4")
+spawn("eob_drowelf1_1", 17,4,0, "eob_drowelf1_1_7")
+spawn("eob_skelwar1_1", 26,18,0, "eob_skelwar1_1_5")
+spawn("eob_skelwar1_1", 25,23,0, "eob_skelwar1_1_6")
+spawn("eob_skelwar1_1", 14,25,0, "eob_skelwar1_1_7")
 
 --- level 8 ---
 
@@ -3839,210 +4480,223 @@ mapDesc([[
 #..........#........######.....#
 ################################
 ]])
-spawn("eob_drow_button", 5, 1, 3, "eob_drow_button_8_5_1_W")
-spawn("eob_drow_door", 23, 1, 1, "eob_drow_door_8_23_1")
+spawn("eob_drow_button", 5,1,3, "eob_drow_button_8_5_1_W")
+spawn("eob_drow_door", 23,1,1, "eob_drow_door_8_23_1")
 	:addPullChain()
-spawn("eob_drow_door", 6, 2, 0, "eob_drow_door_8_6_2")
-spawn("eob_drow_door", 8, 2, 0, "eob_drow_door_8_8_2")
-spawn("eob_drow_door", 10, 2, 0, "eob_drow_door_8_10_2")
-spawn("eob_drow_door", 12, 2, 0, "eob_drow_door_8_12_2")
-spawn("eob_drow_door", 15, 2, 0, "eob_drow_door_8_15_2")
+spawn("eob_drow_door", 6,2,0, "eob_drow_door_8_6_2")
+spawn("eob_drow_door", 8,2,0, "eob_drow_door_8_8_2")
+spawn("eob_drow_door", 10,2,0, "eob_drow_door_8_10_2")
+spawn("eob_drow_door", 12,2,0, "eob_drow_door_8_12_2")
+spawn("eob_drow_door", 15,2,0, "eob_drow_door_8_15_2")
 	:addPullChain()
-spawn("eob_drow_dart_firing_pad", 24, 3, 0, "eob_drow_dart_firing_pad_8_24_3_N")
-spawn("eob_drow_dart_firing_pad", 25, 3, 0, "eob_drow_dart_firing_pad_8_25_3_N")
-spawn("eob_drow_dart_firing_pad", 26, 3, 0, "eob_drow_dart_firing_pad_8_26_3_N")
-spawn("eob_drow_dart_firing_pad", 27, 3, 0, "eob_drow_dart_firing_pad_8_27_3_N")
-spawn("eob_drow_dart_firing_pad", 28, 3, 0, "eob_drow_dart_firing_pad_8_28_3_N")
-spawn("eob_drow_door", 23, 3, 1, "eob_drow_door_8_23_3")
+spawn("eob_drow_dart_firing_pad", 24,3,0, "eob_drow_dart_firing_pad_8_24_3_N")
+spawn("eob_drow_dart_firing_pad", 25,3,0, "eob_drow_dart_firing_pad_8_25_3_N")
+spawn("eob_drow_dart_firing_pad", 26,3,0, "eob_drow_dart_firing_pad_8_26_3_N")
+spawn("eob_drow_dart_firing_pad", 27,3,0, "eob_drow_dart_firing_pad_8_27_3_N")
+spawn("eob_drow_dart_firing_pad", 28,3,0, "eob_drow_dart_firing_pad_8_28_3_N")
+spawn("eob_drow_door", 23,3,1, "eob_drow_door_8_23_3")
 	:addPullChain()
-spawn("eob_drow_pressure_plate", 24, 3, 1, "eob_drow_pressure_plate_8_24_3")
+spawn("eob_drow_pressure_plate", 24,3,1, "eob_drow_pressure_plate_8_24_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_dart_firing_pad", 28, 3, 1, "eob_drow_dart_firing_pad_8_28_3_E")
-spawn("eob_drow_stairs_down", 20, 4, 1, "eob_drow_stairs_down_8_20_4_W")
-spawn("eob_drow_dart_firing_pad", 28, 4, 1, "eob_drow_dart_firing_pad_8_28_4_E")
-spawn("eob_drow_alcove", 3, 5, 1, "eob_drow_alcove_8_3_5_E")
-	:addItem(spawn("eob_ring2_sustenance_u")) -- Ring 
-spawn("eob_drow_dart_firing_pad", 24, 4, 2, "eob_drow_dart_firing_pad_8_24_4_S")
-spawn("eob_drow_dart_firing_pad", 25, 4, 2, "eob_drow_dart_firing_pad_8_25_4_S")
-spawn("eob_drow_dart_firing_pad", 26, 4, 2, "eob_drow_dart_firing_pad_8_26_4_S")
-spawn("eob_drow_dart_firing_pad", 27, 4, 2, "eob_drow_dart_firing_pad_8_27_4_S")
-spawn("eob_drow_dart_firing_pad", 28, 4, 2, "eob_drow_dart_firing_pad_8_28_4_S")
-spawn("eob_drow_wall_text", 16, 6, 3, "eob_drow_wall_text_8_16_6_W")
-spawn("eob_drow_wall_text", 14, 6, 1, "eob_drow_wall_text_8_14_6_E")
-spawn("eob_drow_door", 19, 6, 1, "eob_drow_door_8_19_6")
-spawn("eob_drow_door", 24, 6, 1, "eob_drow_door_8_24_6")
+spawn("eob_drow_dart_firing_pad", 28,3,1, "eob_drow_dart_firing_pad_8_28_3_E")
+spawn("eob_drow_stairs_down", 20,4,1, "eob_drow_stairs_down_8_20_4_W")
+spawn("eob_drow_dart_firing_pad", 28,4,1, "eob_drow_dart_firing_pad_8_28_4_E")
+spawn("eob_drow_alcove", 3,5,1, "eob_drow_alcove_8_3_5_E")
+	:addItem(spawn("eob_ring2_sustenance_u"))
+spawn("eob_drow_dart_firing_pad", 24,4,2, "eob_drow_dart_firing_pad_8_24_4_S")
+spawn("eob_drow_dart_firing_pad", 25,4,2, "eob_drow_dart_firing_pad_8_25_4_S")
+spawn("eob_drow_dart_firing_pad", 26,4,2, "eob_drow_dart_firing_pad_8_26_4_S")
+spawn("eob_drow_dart_firing_pad", 27,4,2, "eob_drow_dart_firing_pad_8_27_4_S")
+spawn("eob_drow_dart_firing_pad", 28,4,2, "eob_drow_dart_firing_pad_8_28_4_S")
+spawn("eob_drow_wall_text", 16,6,3, "eob_drow_wall_text_8_16_6_W")
+	:setWallText("")
+spawn("eob_drow_wall_text", 14,6,1, "eob_drow_wall_text_8_14_6_E")
+	:setWallText("")
+spawn("eob_drow_door", 19,6,1, "eob_drow_door_8_19_6")
+spawn("eob_drow_door", 24,6,1, "eob_drow_door_8_24_6")
 	:addPullChain()
-spawn("eob_teleporter", 27, 6, 1, "eob_teleporter_8_27_6")
-spawn("eob_drow_button", 11, 8, 0, "eob_drow_button_8_11_8_N")
-spawn("eob_drow_door", 6, 8, 0, "eob_drow_door_8_6_8")
-	:addPullChain()
-spawn("eob_drow_ceiling_shaft", 26, 8, 2, "eob_drow_ceiling_shaft_8_26_8")
-spawn("eob_drow_pressure_plate", 6, 9, 2, "eob_drow_pressure_plate_8_6_9")
+spawn("eob_teleporter", 27,6,1, "eob_teleporter_8_27_6")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_wall_illusion", 18, 9, 3, "eob_drow_wall_illusion_8_18_9_W")
-spawn("eob_drow_wall_illusion", 16, 9, 1, "eob_drow_wall_illusion_8_16_9_E")
-spawn("eob_drow_ceiling_shaft", 26, 9, 2, "eob_drow_ceiling_shaft_8_26_9")
-spawn("eob_drow_secret_button_tiny", 9, 9, 2, "eob_drow_secret_button_tiny_8_9_9_S")
-spawn("eob_drow_pressure_plate", 28, 11, 1, "eob_drow_pressure_plate_8_28_11")
+spawn("eob_drow_button", 11,8,0, "eob_drow_button_8_11_8_N")
+spawn("eob_drow_door", 6,8,0, "eob_drow_door_8_6_8")
+	:addPullChain()
+spawn("eob_drow_ceiling_shaft", 26,8,2, "eob_drow_ceiling_shaft_8_26_8")
+spawn("eob_drow_pressure_plate", 6,9,2, "eob_drow_pressure_plate_8_6_9")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pit", 29, 11, 1, "eob_drow_pit_8_29_11")
-spawn("eob_drow_button", 30, 11, 1, "eob_drow_button_8_30_11_E")
-spawn("eob_drow_door", 25, 12, 0, "eob_drow_door_8_25_12")
-	:addPullChain()
-spawn("eob_drow_pressure_plate", 28, 12, 2, "eob_drow_pressure_plate_8_28_12")
+spawn("eob_drow_wall_illusion", 18,9,3, "eob_drow_wall_illusion_8_18_9_W")
+spawn("eob_drow_wall_illusion", 16,9,1, "eob_drow_wall_illusion_8_16_9_E")
+spawn("eob_drow_ceiling_shaft", 26,9,2, "eob_drow_ceiling_shaft_8_26_9")
+spawn("eob_drow_secret_button_tiny", 9,9,2, "eob_drow_secret_button_tiny_8_9_9_S")
+spawn("eob_drow_pressure_plate", 28,11,1, "eob_drow_pressure_plate_8_28_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pit", 29, 12, 2, "eob_drow_pit_8_29_12")
-spawn("eob_drow_button", 30, 12, 1, "eob_drow_button_8_30_12_E")
-spawn("eob_drow_stairs_down", 18, 13, 3, "eob_drow_stairs_down_8_18_13_E")
-spawn("eob_drow_pressure_plate", 28, 13, 2, "eob_drow_pressure_plate_8_28_13")
+spawn("eob_drow_pit", 29,11,1, "eob_drow_pit_8_29_11")
+spawn("eob_drow_button", 30,11,1, "eob_drow_button_8_30_11_E")
+spawn("eob_drow_door", 25,12,0, "eob_drow_door_8_25_12")
+	:addPullChain()
+spawn("eob_drow_pressure_plate", 28,12,2, "eob_drow_pressure_plate_8_28_12")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pit", 29, 13, 2, "eob_drow_pit_8_29_13")
-spawn("eob_drow_button", 30, 13, 1, "eob_drow_button_8_30_13_E")
-spawn("eob_drow_fireball_firing_pad", 2, 15, 0, "eob_drow_fireball_firing_pad_8_2_15_N")
-spawn("eob_drow_portal_scepter", 6, 15, 0, "eob_drow_portal_scepter_8_6_15_N")
-spawn("eob_teleporter", 17, 14, 0, "eob_teleporter_8_17_14")
-spawn("eob_drow_pressure_plate", 28, 14, 2, "eob_drow_pressure_plate_8_28_14")
+spawn("eob_drow_pit", 29,12,2, "eob_drow_pit_8_29_12")
+spawn("eob_drow_button", 30,12,1, "eob_drow_button_8_30_12_E")
+spawn("eob_drow_stairs_down", 18,13,3, "eob_drow_stairs_down_8_18_13_E")
+spawn("eob_drow_pressure_plate", 28,13,2, "eob_drow_pressure_plate_8_28_13")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pit", 29, 14, 2, "eob_drow_pit_8_29_14")
-spawn("eob_drow_button", 30, 14, 1, "eob_drow_button_8_30_14_E")
-spawn("eob_blocker", 1, 15, 2, "eob_blocker_8_1_15")
-spawn("eob_blocker", 3, 15, 2, "eob_blocker_8_3_15")
-spawn("eob_drow_door", 13, 15, 0, "eob_drow_door_8_13_15")
-spawn("eob_drow_ceiling_shaft", 16, 15, 3, "eob_drow_ceiling_shaft_8_16_15")
-spawn("eob_drow_wall_text", 17, 15, 1, "eob_drow_wall_text_8_17_15_E")
-spawn("eob_drow_lock_spider", 13, 16, 3, "eob_drow_lock_spider_8_13_16_W")
-spawn("eob_drow_stairs_down", 18, 16, 0, "eob_drow_stairs_down_8_18_16_S")
-spawn("eob_drow_door", 21, 16, 2, "eob_drow_door_8_21_16")
-spawn("eob_drow_stairs_up", 23, 16, 3, "eob_drow_stairs_up_8_23_16_E")
-spawn("eob_drow_stairs_up", 28, 16, 1, "eob_drow_stairs_up_8_28_16_W")
-spawn("eob_drow_pit", 1, 17, 3, "eob_drow_pit_8_1_17")
-spawn("eob_drow_door", 6, 17, 0, "eob_drow_door_8_6_17")
-	:addPullChain()
-spawn("eob_drow_wall_illusion_with_spider", 15, 16, 2, "eob_drow_wall_illusion_with_spider_8_15_16_S")
-spawn("eob_drow_wall_illusion_with_spider", 15, 18, 0, "eob_drow_wall_illusion_with_spider_8_15_18_N")
-spawn("eob_drow_lock_gem", 24, 18, 0, "eob_drow_lock_gem_8_24_18_N")
-spawn("eob_drow_door", 25, 17, 0, "eob_drow_door_8_25_17")
-spawn("eob_drow_stairs_up", 12, 18, 3, "eob_drow_stairs_up_8_12_18_E")
-spawn("eob_teleporter", 21, 18, 2, "eob_teleporter_8_21_18")
-spawn("eob_drow_button", 27, 18, 1, "eob_drow_button_8_27_18_E")
-spawn("eob_drow_alcove", 27, 19, 1, "eob_drow_alcove_8_27_19_E")
-spawn("eob_drow_door", 6, 20, 0, "eob_drow_door_8_6_20")
-	:addPullChain()
-spawn("eob_drow_stairs_up", 14, 20, 2, "eob_drow_stairs_up_8_14_20_N")
-spawn("eob_drow_stairs_up", 16, 20, 0, "eob_drow_stairs_up_8_16_20")
-spawn("eob_drow_wall_text", 25, 19, 2, "eob_drow_wall_text_8_25_19_S")
-spawn("eob_drow_portal_scepter", 29, 20, 3, "eob_drow_portal_scepter_8_29_20_W")
-spawn("eob_drow_pit", 3, 21, 2, "eob_drow_pit_8_3_21")
-spawn("eob_drow_stairs_down", 19, 22, 1, "eob_drow_stairs_down_8_19_22")
-spawn("eob_drow_door", 21, 22, 2, "eob_drow_door_8_21_22")
-spawn("eob_drow_alcove", 29, 21, 2, "eob_drow_alcove_8_29_21_S")
-	:addItem(spawn("eob_wand_lightning_bolt_10_u")) -- Wand 
-spawn("eob_drow_stairs_down", 24, 23, 3, "eob_drow_stairs_down_8_24_23_E")
-spawn("eob_drow_door", 5, 24, 1, "eob_drow_door_8_5_24")
-	:addPullChain()
-spawn("eob_drow_door", 7, 24, 3, "eob_drow_door_8_7_24")
-	:addPullChain()
-spawn("eob_drow_secret_button_tiny", 25, 23, 2, "eob_drow_secret_button_tiny_8_25_23_S")
-spawn("eob_drow_wall_illusion_with_spider", 28, 23, 2, "eob_drow_wall_illusion_with_spider_8_28_23_S")
-spawn("eob_drow_wall_illusion_with_spider", 28, 25, 0, "eob_drow_wall_illusion_with_spider_8_28_25_N")
-spawn("eob_drow_door", 2, 25, 0, "eob_drow_door_8_2_25")
-spawn("eob_drow_button", 2, 26, 3, "eob_drow_button_8_2_26_W")
-spawn("eob_drow_door", 3, 26, 1, "eob_drow_door_8_3_26")
-	:addPullChain()
-spawn("eob_drow_door", 4, 26, 1, "eob_drow_door_8_4_26")
-	:addPullChain()
-spawn("eob_drow_door", 5, 26, 1, "eob_drow_door_8_5_26")
-	:addPullChain()
-spawn("eob_drow_door", 30, 26, 2, "eob_drow_door_8_30_26")
-	:addPullChain()
-spawn("eob_drow_fireball_firing_pad", 2, 26, 2, "eob_drow_fireball_firing_pad_8_2_26_S")
-spawn("eob_drow_pressure_plate", 21, 27, 1, "eob_drow_pressure_plate_8_21_27")
+spawn("eob_drow_pit", 29,13,2, "eob_drow_pit_8_29_13")
+spawn("eob_drow_button", 30,13,1, "eob_drow_button_8_30_13_E")
+spawn("eob_drow_fireball_firing_pad", 2,15,0, "eob_drow_fireball_firing_pad_8_2_15_N")
+spawn("eob_drow_portal_scepter", 6,15,0, "eob_drow_portal_scepter_8_6_15_N")
+spawn("eob_teleporter", 17,14,0, "eob_teleporter_8_17_14")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_door", 22, 27, 1, "eob_drow_door_8_22_27")
-	:addPullChain()
-spawn("eob_drow_stairs_up", 8, 28, 1, "eob_drow_stairs_up_8_8_28_W")
-spawn("eob_drow_door", 25, 28, 1, "eob_drow_door_8_25_28")
-	:addPullChain()
-spawn("eob_drow_pressure_plate", 21, 29, 1, "eob_drow_pressure_plate_8_21_29")
+spawn("eob_drow_pressure_plate", 28,14,2, "eob_drow_pressure_plate_8_28_14")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_door", 22, 29, 1, "eob_drow_door_8_22_29")
+spawn("eob_drow_pit", 29,14,2, "eob_drow_pit_8_29_14")
+spawn("eob_drow_button", 30,14,1, "eob_drow_button_8_30_14_E")
+spawn("eob_blocker", 1,15,2, "eob_blocker_8_1_15")
+spawn("eob_blocker", 3,15,2, "eob_blocker_8_3_15")
+spawn("eob_drow_door", 13,15,0, "eob_drow_door_8_13_15")
+spawn("eob_drow_ceiling_shaft", 16,15,3, "eob_drow_ceiling_shaft_8_16_15")
+spawn("eob_drow_wall_text", 17,15,1, "eob_drow_wall_text_8_17_15_E")
+	:setWallText("")
+spawn("eob_drow_lock_spider", 13,16,3, "eob_drow_lock_spider_8_13_16_W")
+spawn("eob_drow_stairs_down", 18,16,0, "eob_drow_stairs_down_8_18_16_S")
+spawn("eob_drow_door", 21,16,2, "eob_drow_door_8_21_16")
+spawn("eob_drow_stairs_up", 23,16,3, "eob_drow_stairs_up_8_23_16_E")
+spawn("eob_drow_stairs_up", 28,16,1, "eob_drow_stairs_up_8_28_16_W")
+spawn("eob_drow_pit", 1,17,3, "eob_drow_pit_8_1_17")
+spawn("eob_drow_door", 6,17,0, "eob_drow_door_8_6_17")
 	:addPullChain()
-spawn("eob_drow_door", 5, 30, 3, "eob_drow_door_8_5_30")
+spawn("eob_drow_wall_illusion_with_spider", 15,16,2, "eob_drow_wall_illusion_with_spider_8_15_16_S")
+spawn("eob_drow_wall_illusion_with_spider", 15,18,0, "eob_drow_wall_illusion_with_spider_8_15_18_N")
+spawn("eob_drow_lock_gem", 24,18,0, "eob_drow_lock_gem_8_24_18_N")
+spawn("eob_drow_door", 25,17,0, "eob_drow_door_8_25_17")
+spawn("eob_drow_stairs_up", 12,18,3, "eob_drow_stairs_up_8_12_18_E")
+spawn("eob_teleporter", 21,18,2, "eob_teleporter_8_21_18")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_drow_button", 27,18,1, "eob_drow_button_8_27_18_E")
+spawn("eob_drow_alcove", 27,19,1, "eob_drow_alcove_8_27_19_E")
+spawn("eob_drow_door", 6,20,0, "eob_drow_door_8_6_20")
 	:addPullChain()
-spawn("eob_drow_door", 9, 30, 1, "eob_drow_door_8_9_30")
+spawn("eob_drow_stairs_up", 14,20,2, "eob_drow_stairs_up_8_14_20_N")
+spawn("eob_drow_stairs_up", 16,20,0, "eob_drow_stairs_up_8_16_20")
+spawn("eob_drow_wall_text", 25,19,2, "eob_drow_wall_text_8_25_19_S")
+	:setWallText("")
+spawn("eob_drow_portal_scepter", 29,20,3, "eob_drow_portal_scepter_8_29_20_W")
+spawn("eob_drow_pit", 3,21,2, "eob_drow_pit_8_3_21")
+spawn("eob_drow_stairs_down", 19,22,1, "eob_drow_stairs_down_8_19_22")
+spawn("eob_drow_door", 21,22,2, "eob_drow_door_8_21_22")
+spawn("eob_drow_alcove", 29,21,2, "eob_drow_alcove_8_29_21_S")
+	:addItem(spawn("eob_wand_lightning_bolt_10_u"))
+spawn("eob_drow_stairs_down", 24,23,3, "eob_drow_stairs_down_8_24_23_E")
+spawn("eob_drow_door", 5,24,1, "eob_drow_door_8_5_24")
 	:addPullChain()
-spawn("eob_gem_red_u", 20, 20, 2, "eob_gem_red_u_2")
-spawn("eob_mage_scroll_vampiric_touch", 15, 14, 2, "eob_mage_scroll_vampiric_touch_1")
-spawn("eob_key_drow_u", 28, 23, 1, "eob_key_drow_u_3")
-spawn("eob_key_ruby_u", 25, 16, 0, "eob_key_ruby_u_2")
-spawn("eob_robe_u", 1, 28, 0, "eob_robe_u_2")
-spawn("eob_cleric_scroll_cure_critical_wnds", 28, 3, 2, "eob_cleric_scroll_cure_critical_wnds_1")
-spawn("eob_bow_u", 15, 14, 2, "eob_bow_u_2")
-spawn("eob_key_jeweled_u", 21, 21, 0, "eob_key_jeweled_u_3")
-spawn("eob_mace_u", 1, 28, 0, "eob_mace_u_3")
-spawn("eob_flail_u", 8, 23, 1, "eob_flail_u_1")
-spawn("eob_medallion_of_adornment_u", 5, 4, 0, "eob_medallion_of_adornment_u_3")
-spawn("eob_key_ruby_u", 15, 13, 1, "eob_key_ruby_u_3")
-spawn("eob_plate_mail_cursed3_u", 4, 23, 0, "eob_plate_mail_cursed3_u_1")
-spawn("eob_rock_glowing_u", 28, 12, 3, "eob_rock_glowing_u_1")
-spawn("eob_ring2_u", 5, 4, 0, "eob_ring2_u_3")
-spawn("eob_long_sword_night_stalker_u", 18, 8, 0, "eob_long_sword_night_stalker_u_1")
-spawn("eob_cleric_scroll_neutral_poison", 28, 3, 2, "eob_cleric_scroll_neutral_poison_1")
-spawn("eob_potion_extra_healing", 21, 15, 0, "eob_potion_extra_healing_4")
-spawn("eob_cleric_scroll_prayer", 28, 3, 1, "eob_cleric_scroll_prayer_2")
-spawn("eob_key_drow_u", 20, 14, 2, "eob_key_drow_u_4")
-spawn("eob_mage_scroll_shield", 21, 21, 0, "eob_mage_scroll_shield_2")
-spawn("eob_key_drow_u", 20, 20, 3, "eob_key_drow_u_5")
-spawn("eob_cleric_scroll_protect_evil", 5, 15, 0, "eob_cleric_scroll_protect_evil_1")
-spawn("eob_mage_scroll_ice_storm", 14, 28, 3, "eob_mage_scroll_ice_storm_1")
-spawn("eob_cleric_scroll_hold_person", 12, 9, 2, "eob_cleric_scroll_hold_person_2")
-spawn("eob_cleric_scroll_raise_dead", 21, 15, 0, "eob_cleric_scroll_raise_dead_1")
-spawn("eob_mage_scroll_invisibility 10'", 9, 14, 2, "eob_mage_scroll_invisibility 10'_2")
-spawn("eob_leather_boots_u", 7, 15, 1, "eob_leather_boots_u_3")
-spawn("eob_lock_picks_u", 12, 29, 0, "eob_lock_picks_u_2")
-spawn("eob_drider", 8, 4, 0, "eob_drider_1")
-spawn("eob_drider", 5, 12, 0, "eob_drider_2")
-spawn("eob_drider", 6, 10, 0, "eob_drider_3")
-spawn("eob_hellhnd1_1", 5, 16, 0, "eob_hellhnd1_1_1")
-spawn("eob_drider", 24, 13, 0, "eob_drider_4")
-spawn("eob_hellhnd1_1", 5, 19, 0, "eob_hellhnd1_1_2")
-spawn("eob_drider", 9, 11, 0, "eob_drider_5")
-spawn("eob_drider", 15, 28, 0, "eob_drider_6")
-spawn("eob_drider", 8, 9, 0, "eob_drider_7")
-spawn("eob_drider2_group", 2, 5, 0, "eob_drider2_group_1")
-spawn("eob_drider", 10, 4, 0, "eob_drider_8")
-spawn("eob_hellhnd1_1", 4, 19, 0, "eob_hellhnd1_1_3")
-spawn("eob_hellhnd1_1", 29, 6, 0, "eob_hellhnd1_1_4")
-spawn("eob_hellhnd1_1", 29, 7, 0, "eob_hellhnd1_1_5")
-spawn("eob_hellhnd1_1", 7, 19, 0, "eob_hellhnd1_1_6")
-spawn("eob_drider", 6, 4, 0, "eob_drider_9")
-spawn("eob_drider", 7, 13, 0, "eob_drider_10")
-spawn("eob_hellhnd1_1", 2, 28, 0, "eob_hellhnd1_1_7")
-spawn("eob_drider", 7, 4, 0, "eob_drider_11")
-spawn("eob_hellhnd1_1", 7, 16, 0, "eob_hellhnd1_1_8")
-spawn("eob_hellhnd1_1", 14, 11, 0, "eob_hellhnd1_1_9")
-spawn("eob_drider", 9, 4, 0, "eob_drider_12")
-spawn("eob_drider", 25, 14, 0, "eob_drider_13")
-spawn("eob_drider", 8, 13, 0, "eob_drider_14")
-spawn("eob_drider", 8, 19, 0, "eob_drider_15")
-spawn("eob_drider", 26, 7, 0, "eob_drider_16")
-spawn("eob_hellhnd1_1", 10, 26, 0, "eob_hellhnd1_1_10")
+spawn("eob_drow_door", 7,24,3, "eob_drow_door_8_7_24")
+	:addPullChain()
+spawn("eob_drow_secret_button_tiny", 25,23,2, "eob_drow_secret_button_tiny_8_25_23_S")
+spawn("eob_drow_wall_illusion_with_spider", 28,23,2, "eob_drow_wall_illusion_with_spider_8_28_23_S")
+spawn("eob_drow_wall_illusion_with_spider", 28,25,0, "eob_drow_wall_illusion_with_spider_8_28_25_N")
+spawn("eob_drow_door", 2,25,0, "eob_drow_door_8_2_25")
+spawn("eob_drow_button", 2,26,3, "eob_drow_button_8_2_26_W")
+spawn("eob_drow_door", 3,26,1, "eob_drow_door_8_3_26")
+	:addPullChain()
+spawn("eob_drow_door", 4,26,1, "eob_drow_door_8_4_26")
+	:addPullChain()
+spawn("eob_drow_door", 5,26,1, "eob_drow_door_8_5_26")
+	:addPullChain()
+spawn("eob_drow_door", 30,26,2, "eob_drow_door_8_30_26")
+	:addPullChain()
+spawn("eob_drow_fireball_firing_pad", 2,26,2, "eob_drow_fireball_firing_pad_8_2_26_S")
+spawn("eob_drow_pressure_plate", 21,27,1, "eob_drow_pressure_plate_8_21_27")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_drow_door", 22,27,1, "eob_drow_door_8_22_27")
+	:addPullChain()
+spawn("eob_drow_stairs_up", 8,28,1, "eob_drow_stairs_up_8_8_28_W")
+spawn("eob_drow_door", 25,28,1, "eob_drow_door_8_25_28")
+	:addPullChain()
+spawn("eob_drow_pressure_plate", 21,29,1, "eob_drow_pressure_plate_8_21_29")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_drow_door", 22,29,1, "eob_drow_door_8_22_29")
+	:addPullChain()
+spawn("eob_drow_door", 5,30,3, "eob_drow_door_8_5_30")
+	:addPullChain()
+spawn("eob_drow_door", 9,30,1, "eob_drow_door_8_9_30")
+	:addPullChain()
+spawn("eob_gem_red_u", 20,20,2, "eob_gem_red_u_2")
+spawn("eob_mage_scroll_vampiric_touch", 15,14,2, "eob_mage_scroll_vampiric_touch_1")
+spawn("eob_key_drow_u", 28,23,1, "eob_key_drow_u_3")
+spawn("eob_key_ruby_u", 25,16,0, "eob_key_ruby_u_2")
+spawn("eob_robe_u", 1,28,0, "eob_robe_u_2")
+spawn("eob_cleric_scroll_cure_critical_wnds", 28,3,2, "eob_cleric_scroll_cure_critical_wnds_1")
+spawn("eob_bow_u", 15,14,2, "eob_bow_u_2")
+spawn("eob_key_jeweled_u", 21,21,0, "eob_key_jeweled_u_3")
+spawn("eob_mace_u", 1,28,0, "eob_mace_u_3")
+spawn("eob_flail_u", 8,23,1, "eob_flail_u_1")
+spawn("eob_medallion_of_adornment_u", 5,4,0, "eob_medallion_of_adornment_u_3")
+spawn("eob_key_ruby_u", 15,13,1, "eob_key_ruby_u_3")
+spawn("eob_plate_mail_cursed3_u", 4,23,0, "eob_plate_mail_cursed3_u_1")
+spawn("eob_rock_glowing_u", 28,12,3, "eob_rock_glowing_u_1")
+spawn("eob_ring2_u", 5,4,0, "eob_ring2_u_3")
+spawn("eob_long_sword_night_stalker_u", 18,8,0, "eob_long_sword_night_stalker_u_1")
+spawn("eob_cleric_scroll_neutral_poison", 28,3,2, "eob_cleric_scroll_neutral_poison_1")
+spawn("eob_potion_extra_healing", 21,15,0, "eob_potion_extra_healing_4")
+spawn("eob_cleric_scroll_prayer", 28,3,1, "eob_cleric_scroll_prayer_2")
+spawn("eob_key_drow_u", 20,14,2, "eob_key_drow_u_4")
+spawn("eob_mage_scroll_shield", 21,21,0, "eob_mage_scroll_shield_2")
+spawn("eob_key_drow_u", 20,20,3, "eob_key_drow_u_5")
+spawn("eob_cleric_scroll_protect_evil", 5,15,0, "eob_cleric_scroll_protect_evil_1")
+spawn("eob_mage_scroll_ice_storm", 14,28,3, "eob_mage_scroll_ice_storm_1")
+spawn("eob_cleric_scroll_hold_person", 12,9,2, "eob_cleric_scroll_hold_person_2")
+spawn("eob_cleric_scroll_raise_dead", 21,15,0, "eob_cleric_scroll_raise_dead_1")
+spawn("eob_mage_scroll_invisibility 10'", 9,14,2, "eob_mage_scroll_invisibility 10'_2")
+spawn("eob_leather_boots_u", 7,15,1, "eob_leather_boots_u_3")
+spawn("eob_lock_picks_u", 12,29,0, "eob_lock_picks_u_2")
+spawn("eob_drider", 8,4,0, "eob_drider_1")
+spawn("eob_drider", 5,12,0, "eob_drider_2")
+spawn("eob_drider", 6,10,0, "eob_drider_3")
+spawn("eob_hellhnd1_1", 5,16,0, "eob_hellhnd1_1_1")
+spawn("eob_drider", 24,13,0, "eob_drider_4")
+spawn("eob_hellhnd1_1", 5,19,0, "eob_hellhnd1_1_2")
+spawn("eob_drider", 9,11,0, "eob_drider_5")
+spawn("eob_drider", 15,28,0, "eob_drider_6")
+spawn("eob_drider", 8,9,0, "eob_drider_7")
+spawn("eob_drider2_group", 2,5,0, "eob_drider2_group_1")
+spawn("eob_drider", 10,4,0, "eob_drider_8")
+spawn("eob_hellhnd1_1", 4,19,0, "eob_hellhnd1_1_3")
+spawn("eob_hellhnd1_1", 29,6,0, "eob_hellhnd1_1_4")
+spawn("eob_hellhnd1_1", 29,7,0, "eob_hellhnd1_1_5")
+spawn("eob_hellhnd1_1", 7,19,0, "eob_hellhnd1_1_6")
+spawn("eob_drider", 6,4,0, "eob_drider_9")
+spawn("eob_drider", 7,13,0, "eob_drider_10")
+spawn("eob_hellhnd1_1", 2,28,0, "eob_hellhnd1_1_7")
+spawn("eob_drider", 7,4,0, "eob_drider_11")
+spawn("eob_hellhnd1_1", 7,16,0, "eob_hellhnd1_1_8")
+spawn("eob_hellhnd1_1", 14,11,0, "eob_hellhnd1_1_9")
+spawn("eob_drider", 9,4,0, "eob_drider_12")
+spawn("eob_drider", 25,14,0, "eob_drider_13")
+spawn("eob_drider", 8,13,0, "eob_drider_14")
+spawn("eob_drider", 8,19,0, "eob_drider_15")
+spawn("eob_drider", 26,7,0, "eob_drider_16")
+spawn("eob_hellhnd1_1", 10,26,0, "eob_hellhnd1_1_10")
 
 --- level 9 ---
 
@@ -4083,278 +4737,291 @@ mapDesc([[
 ####.......#......####.........#
 ################################
 ]])
-spawn("eob_drow_door", 5, 1, 1, "eob_drow_door_9_5_1")
-spawn("eob_drow_door", 11, 1, 1, "eob_drow_door_9_11_1")
+spawn("eob_drow_door", 5,1,1, "eob_drow_door_9_5_1")
+spawn("eob_drow_door", 11,1,1, "eob_drow_door_9_11_1")
 	:addPullChain()
-spawn("eob_drow_lock_spider", 4, 1, 2, "eob_drow_lock_spider_9_4_1_S")
-spawn("eob_drow_lock_spider", 6, 1, 2, "eob_drow_lock_spider_9_6_1_S")
-spawn("eob_drow_door", 22, 2, 2, "eob_drow_door_9_22_2")
+spawn("eob_drow_lock_spider", 4,1,2, "eob_drow_lock_spider_9_4_1_S")
+spawn("eob_drow_lock_spider", 6,1,2, "eob_drow_lock_spider_9_6_1_S")
+spawn("eob_drow_door", 22,2,2, "eob_drow_door_9_22_2")
 	:addPullChain()
-spawn("eob_drow_door", 25, 2, 2, "eob_drow_door_9_25_2")
+spawn("eob_drow_door", 25,2,2, "eob_drow_door_9_25_2")
 	:addPullChain()
-spawn("eob_drow_door", 28, 3, 3, "eob_drow_door_9_28_3")
-spawn("eob_drow_door", 11, 4, 1, "eob_drow_door_9_11_4")
+spawn("eob_drow_door", 28,3,3, "eob_drow_door_9_28_3")
+spawn("eob_drow_door", 11,4,1, "eob_drow_door_9_11_4")
 	:addPullChain()
-spawn("eob_drow_door", 14, 4, 1, "eob_drow_door_9_14_4")
+spawn("eob_drow_door", 14,4,1, "eob_drow_door_9_14_4")
 	:addPullChain()
-spawn("eob_drow_door", 17, 4, 1, "eob_drow_door_9_17_4")
+spawn("eob_drow_door", 17,4,1, "eob_drow_door_9_17_4")
 	:addPullChain()
-spawn("eob_drow_stairs_up", 20, 4, 3, "eob_drow_stairs_up_9_20_4_E")
-spawn("eob_drow_lock_gem", 27, 4, 1, "eob_drow_lock_gem_9_27_4_E")
-spawn("eob_drow_door", 22, 5, 0, "eob_drow_door_9_22_5")
+spawn("eob_drow_stairs_up", 20,4,3, "eob_drow_stairs_up_9_20_4_E")
+spawn("eob_drow_lock_gem", 27,4,1, "eob_drow_lock_gem_9_27_4_E")
+spawn("eob_drow_door", 22,5,0, "eob_drow_door_9_22_5")
 	:addPullChain()
-spawn("eob_drow_door", 25, 5, 0, "eob_drow_door_9_25_5")
+spawn("eob_drow_door", 25,5,0, "eob_drow_door_9_25_5")
 	:addPullChain()
-spawn("eob_drow_door", 3, 6, 0, "eob_drow_door_9_3_6")
+spawn("eob_drow_door", 3,6,0, "eob_drow_door_9_3_6")
 	:addPullChain()
-spawn("eob_drow_wall_text", 21, 6, 3, "eob_drow_wall_text_9_21_6_W")
-spawn("eob_drow_pressure_plate", 21, 6, 3, "eob_drow_pressure_plate_9_21_6")
+spawn("eob_drow_wall_text", 21,6,3, "eob_drow_wall_text_9_21_6_W")
+	:setWallText("")
+spawn("eob_drow_pressure_plate", 21,6,3, "eob_drow_pressure_plate_9_21_6")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pressure_plate", 23, 6, 1, "eob_drow_pressure_plate_9_23_6")
+spawn("eob_drow_pressure_plate", 23,6,1, "eob_drow_pressure_plate_9_23_6")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_wall_text", 25, 6, 3, "eob_drow_wall_text_9_25_6_W")
-spawn("eob_drow_wall_text", 23, 6, 1, "eob_drow_wall_text_9_23_6_E")
-spawn("eob_drow_door", 8, 7, 1, "eob_drow_door_9_8_7")
+spawn("eob_drow_wall_text", 25,6,3, "eob_drow_wall_text_9_25_6_W")
+	:setWallText("")
+spawn("eob_drow_wall_text", 23,6,1, "eob_drow_wall_text_9_23_6_E")
+	:setWallText("")
+spawn("eob_drow_door", 8,7,1, "eob_drow_door_9_8_7")
 	:addPullChain()
-spawn("eob_drow_door", 11, 7, 1, "eob_drow_door_9_11_7")
+spawn("eob_drow_door", 11,7,1, "eob_drow_door_9_11_7")
 	:addPullChain()
-spawn("eob_drow_door", 14, 7, 1, "eob_drow_door_9_14_7")
+spawn("eob_drow_door", 14,7,1, "eob_drow_door_9_14_7")
 	:addPullChain()
-spawn("eob_drow_door", 17, 7, 1, "eob_drow_door_9_17_7")
+spawn("eob_drow_door", 17,7,1, "eob_drow_door_9_17_7")
 	:addPullChain()
-spawn("eob_drow_alcove", 25, 7, 3, "eob_drow_alcove_9_25_7_W")
-spawn("eob_drow_door", 28, 7, 3, "eob_drow_door_9_28_7")
-spawn("eob_drow_wall_text", 21, 8, 3, "eob_drow_wall_text_9_21_8_W")
-spawn("eob_drow_pressure_plate", 21, 8, 3, "eob_drow_pressure_plate_9_21_8")
+spawn("eob_drow_alcove", 25,7,3, "eob_drow_alcove_9_25_7_W")
+spawn("eob_drow_door", 28,7,3, "eob_drow_door_9_28_7")
+spawn("eob_drow_wall_text", 21,8,3, "eob_drow_wall_text_9_21_8_W")
+	:setWallText("")
+spawn("eob_drow_pressure_plate", 21,8,3, "eob_drow_pressure_plate_9_21_8")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pressure_plate", 23, 8, 1, "eob_drow_pressure_plate_9_23_8")
+spawn("eob_drow_pressure_plate", 23,8,1, "eob_drow_pressure_plate_9_23_8")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_alcove", 25, 8, 3, "eob_drow_alcove_9_25_8_W")
-spawn("eob_drow_wall_text", 23, 8, 1, "eob_drow_wall_text_9_23_8_E")
-spawn("eob_drow_lock_gem", 27, 8, 1, "eob_drow_lock_gem_9_27_8_E")
-spawn("eob_drow_dart_firing_pad", 7, 10, 0, "eob_drow_dart_firing_pad_9_7_10_N")
-spawn("eob_drow_dart_firing_pad", 8, 10, 0, "eob_drow_dart_firing_pad_9_8_10_N")
-spawn("eob_drow_dart_firing_pad", 9, 10, 0, "eob_drow_dart_firing_pad_9_9_10_N")
-spawn("eob_drow_dart_firing_pad", 10, 10, 0, "eob_drow_dart_firing_pad_9_10_10_N")
-spawn("eob_drow_dart_firing_pad", 11, 10, 0, "eob_drow_dart_firing_pad_9_11_10_N")
-spawn("eob_drow_dart_firing_pad", 14, 10, 0, "eob_drow_dart_firing_pad_9_14_10_N")
-spawn("eob_drow_door", 18, 9, 2, "eob_drow_door_9_18_9")
+spawn("eob_drow_alcove", 25,8,3, "eob_drow_alcove_9_25_8_W")
+spawn("eob_drow_wall_text", 23,8,1, "eob_drow_wall_text_9_23_8_E")
+	:setWallText("")
+spawn("eob_drow_lock_gem", 27,8,1, "eob_drow_lock_gem_9_27_8_E")
+spawn("eob_drow_dart_firing_pad", 7,10,0, "eob_drow_dart_firing_pad_9_7_10_N")
+spawn("eob_drow_dart_firing_pad", 8,10,0, "eob_drow_dart_firing_pad_9_8_10_N")
+spawn("eob_drow_dart_firing_pad", 9,10,0, "eob_drow_dart_firing_pad_9_9_10_N")
+spawn("eob_drow_dart_firing_pad", 10,10,0, "eob_drow_dart_firing_pad_9_10_10_N")
+spawn("eob_drow_dart_firing_pad", 11,10,0, "eob_drow_dart_firing_pad_9_11_10_N")
+spawn("eob_drow_dart_firing_pad", 14,10,0, "eob_drow_dart_firing_pad_9_14_10_N")
+spawn("eob_drow_door", 18,9,2, "eob_drow_door_9_18_9")
 	:addPullChain()
-spawn("eob_drow_door", 22, 9, 2, "eob_drow_door_9_22_9")
-spawn("eob_drow_alcove", 25, 9, 3, "eob_drow_alcove_9_25_9_W")
-spawn("eob_drow_wall_illusion", 8, 10, 3, "eob_drow_wall_illusion_9_8_10_W")
-spawn("eob_drow_wall_illusion", 7, 11, 0, "eob_drow_wall_illusion_9_7_11_N")
-spawn("eob_drow_wall_illusion", 10, 10, 3, "eob_drow_wall_illusion_9_10_10_W")
-spawn("eob_drow_wall_illusion", 9, 11, 0, "eob_drow_wall_illusion_9_9_11_N")
-spawn("eob_drow_wall_illusion", 8, 10, 1, "eob_drow_wall_illusion_9_8_10_E")
-spawn("eob_drow_wall_illusion", 11, 11, 0, "eob_drow_wall_illusion_9_11_11_N")
-spawn("eob_drow_wall_illusion", 10, 10, 1, "eob_drow_wall_illusion_9_10_10_E")
-spawn("eob_drow_alcove", 25, 10, 3, "eob_drow_alcove_9_25_10_W")
-spawn("eob_drow_wall_text", 29, 10, 1, "eob_drow_wall_text_9_29_10_E")
-spawn("eob_drow_pressure_plate", 8, 11, 2, "eob_drow_pressure_plate_9_8_11")
+spawn("eob_drow_door", 22,9,2, "eob_drow_door_9_22_9")
+spawn("eob_drow_alcove", 25,9,3, "eob_drow_alcove_9_25_9_W")
+spawn("eob_drow_wall_illusion", 8,10,3, "eob_drow_wall_illusion_9_8_10_W")
+spawn("eob_drow_wall_illusion", 7,11,0, "eob_drow_wall_illusion_9_7_11_N")
+spawn("eob_drow_wall_illusion", 10,10,3, "eob_drow_wall_illusion_9_10_10_W")
+spawn("eob_drow_wall_illusion", 9,11,0, "eob_drow_wall_illusion_9_9_11_N")
+spawn("eob_drow_wall_illusion", 8,10,1, "eob_drow_wall_illusion_9_8_10_E")
+spawn("eob_drow_wall_illusion", 11,11,0, "eob_drow_wall_illusion_9_11_11_N")
+spawn("eob_drow_wall_illusion", 10,10,1, "eob_drow_wall_illusion_9_10_10_E")
+spawn("eob_drow_alcove", 25,10,3, "eob_drow_alcove_9_25_10_W")
+spawn("eob_drow_wall_text", 29,10,1, "eob_drow_wall_text_9_29_10_E")
+	:setWallText("")
+spawn("eob_drow_pressure_plate", 8,11,2, "eob_drow_pressure_plate_9_8_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pressure_plate", 10, 11, 2, "eob_drow_pressure_plate_9_10_11")
+spawn("eob_drow_pressure_plate", 10,11,2, "eob_drow_pressure_plate_9_10_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_pressure_plate", 14, 11, 2, "eob_drow_pressure_plate_9_14_11")
+spawn("eob_drow_pressure_plate", 14,11,2, "eob_drow_pressure_plate_9_14_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("prison_secret_door", 16, 11, 3, "wall_9_16_11_W")
-spawn("eob_drow_dart_firing_pad", 15, 11, 1, "eob_drow_dart_firing_pad_9_15_11_E")
-spawn("eob_drow_alcove", 25, 11, 3, "eob_drow_alcove_9_25_11_W")
-spawn("eob_drow_ceiling_shaft", 29, 11, 2, "eob_drow_ceiling_shaft_9_29_11")
-spawn("eob_drow_stairs_down", 1, 12, 0, "eob_drow_stairs_down_9_1_12_S")
-spawn("eob_drow_wall_text", 5, 12, 1, "eob_drow_wall_text_9_5_12_E")
-spawn("eob_drow_wall_illusion", 7, 11, 2, "eob_drow_wall_illusion_9_7_11_S")
-spawn("eob_drow_wall_illusion", 8, 12, 3, "eob_drow_wall_illusion_9_8_12_W")
-spawn("eob_drow_wall_illusion", 9, 11, 2, "eob_drow_wall_illusion_9_9_11_S")
-spawn("eob_drow_wall_illusion", 10, 12, 3, "eob_drow_wall_illusion_9_10_12_W")
-spawn("eob_drow_wall_illusion", 8, 12, 1, "eob_drow_wall_illusion_9_8_12_E")
-spawn("eob_drow_wall_illusion", 11, 11, 2, "eob_drow_wall_illusion_9_11_11_S")
-spawn("eob_drow_wall_illusion", 10, 12, 1, "eob_drow_wall_illusion_9_10_12_E")
-spawn("eob_drow_wall_illusion", 15, 11, 2, "eob_drow_wall_illusion_9_15_11_S")
-spawn("eob_drow_wall_illusion", 14, 12, 1, "eob_drow_wall_illusion_9_14_12_E")
-spawn("eob_drow_pressure_plate", 26, 12, 1, "eob_drow_pressure_plate_9_26_12")
+spawn("prison_secret_door", 16,11,3, "wall_9_16_11_W")
+spawn("eob_drow_dart_firing_pad", 15,11,1, "eob_drow_dart_firing_pad_9_15_11_E")
+spawn("eob_drow_alcove", 25,11,3, "eob_drow_alcove_9_25_11_W")
+spawn("eob_drow_ceiling_shaft", 29,11,2, "eob_drow_ceiling_shaft_9_29_11")
+spawn("eob_drow_stairs_down", 1,12,0, "eob_drow_stairs_down_9_1_12_S")
+spawn("eob_drow_wall_text", 5,12,1, "eob_drow_wall_text_9_5_12_E")
+	:setWallText("")
+spawn("eob_drow_wall_illusion", 7,11,2, "eob_drow_wall_illusion_9_7_11_S")
+spawn("eob_drow_wall_illusion", 8,12,3, "eob_drow_wall_illusion_9_8_12_W")
+spawn("eob_drow_wall_illusion", 9,11,2, "eob_drow_wall_illusion_9_9_11_S")
+spawn("eob_drow_wall_illusion", 10,12,3, "eob_drow_wall_illusion_9_10_12_W")
+spawn("eob_drow_wall_illusion", 8,12,1, "eob_drow_wall_illusion_9_8_12_E")
+spawn("eob_drow_wall_illusion", 11,11,2, "eob_drow_wall_illusion_9_11_11_S")
+spawn("eob_drow_wall_illusion", 10,12,1, "eob_drow_wall_illusion_9_10_12_E")
+spawn("eob_drow_wall_illusion", 15,11,2, "eob_drow_wall_illusion_9_15_11_S")
+spawn("eob_drow_wall_illusion", 14,12,1, "eob_drow_wall_illusion_9_14_12_E")
+spawn("eob_drow_pressure_plate", 26,12,1, "eob_drow_pressure_plate_9_26_12")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_ceiling_shaft", 29, 12, 2, "eob_drow_ceiling_shaft_9_29_12")
-spawn("eob_drow_button", 3, 14, 0, "eob_drow_button_9_3_14_N")
-spawn("eob_drow_dart_firing_pad", 7, 12, 2, "eob_drow_dart_firing_pad_9_7_12_S")
-spawn("eob_drow_dart_firing_pad", 8, 12, 2, "eob_drow_dart_firing_pad_9_8_12_S")
-spawn("eob_drow_dart_firing_pad", 9, 12, 2, "eob_drow_dart_firing_pad_9_9_12_S")
-spawn("eob_drow_dart_firing_pad", 10, 12, 2, "eob_drow_dart_firing_pad_9_10_12_S")
-spawn("eob_drow_dart_firing_pad", 11, 12, 2, "eob_drow_dart_firing_pad_9_11_12_S")
-spawn("eob_drow_stairs_up", 18, 13, 1, "eob_drow_stairs_up_9_18_13_W")
-spawn("eob_drow_lock_spider", 22, 13, 1, "eob_drow_lock_spider_9_22_13_E")
-spawn("eob_drow_wall_text", 25, 12, 2, "eob_drow_wall_text_9_25_12_S")
-spawn("eob_drow_ceiling_shaft", 29, 13, 2, "eob_drow_ceiling_shaft_9_29_13")
-spawn("eob_drow_wall_throwable", 3, 15, 0, "eob_drow_wall_throwable_9_3_15_N")
-spawn("eob_drow_magic_missile_firing_pad", 7, 15, 0, "eob_drow_magic_missile_firing_pad_9_7_15_N")
-spawn("eob_drow_button", 9, 15, 0, "eob_drow_button_9_9_15_N")
-spawn("eob_drow_wall_text", 12, 14, 3, "eob_drow_wall_text_9_12_14_W")
-spawn("eob_drow_magic_missile_firing_pad", 11, 15, 0, "eob_drow_magic_missile_firing_pad_9_11_15_N")
-spawn("eob_drow_door", 16, 14, 2, "eob_drow_door_9_16_14")
-spawn("eob_drow_door", 22, 14, 0, "eob_drow_door_9_22_14")
-spawn("eob_drow_ceiling_shaft", 29, 14, 2, "eob_drow_ceiling_shaft_9_29_14")
-spawn("eob_drow_pit", 2, 15, 3, "eob_drow_pit_9_2_15")
-spawn("eob_drow_pressure_plate", 12, 15, 2, "eob_drow_pressure_plate_9_12_15")
+spawn("eob_drow_ceiling_shaft", 29,12,2, "eob_drow_ceiling_shaft_9_29_12")
+spawn("eob_drow_button", 3,14,0, "eob_drow_button_9_3_14_N")
+spawn("eob_drow_dart_firing_pad", 7,12,2, "eob_drow_dart_firing_pad_9_7_12_S")
+spawn("eob_drow_dart_firing_pad", 8,12,2, "eob_drow_dart_firing_pad_9_8_12_S")
+spawn("eob_drow_dart_firing_pad", 9,12,2, "eob_drow_dart_firing_pad_9_9_12_S")
+spawn("eob_drow_dart_firing_pad", 10,12,2, "eob_drow_dart_firing_pad_9_10_12_S")
+spawn("eob_drow_dart_firing_pad", 11,12,2, "eob_drow_dart_firing_pad_9_11_12_S")
+spawn("eob_drow_stairs_up", 18,13,1, "eob_drow_stairs_up_9_18_13_W")
+spawn("eob_drow_lock_spider", 22,13,1, "eob_drow_lock_spider_9_22_13_E")
+spawn("eob_drow_wall_text", 25,12,2, "eob_drow_wall_text_9_25_12_S")
+	:setWallText("")
+spawn("eob_drow_ceiling_shaft", 29,13,2, "eob_drow_ceiling_shaft_9_29_13")
+spawn("eob_drow_wall_throwable", 3,15,0, "eob_drow_wall_throwable_9_3_15_N")
+spawn("eob_drow_magic_missile_firing_pad", 7,15,0, "eob_drow_magic_missile_firing_pad_9_7_15_N")
+spawn("eob_drow_button", 9,15,0, "eob_drow_button_9_9_15_N")
+spawn("eob_drow_wall_text", 12,14,3, "eob_drow_wall_text_9_12_14_W")
+	:setWallText("")
+spawn("eob_drow_magic_missile_firing_pad", 11,15,0, "eob_drow_magic_missile_firing_pad_9_11_15_N")
+spawn("eob_drow_door", 16,14,2, "eob_drow_door_9_16_14")
+spawn("eob_drow_door", 22,14,0, "eob_drow_door_9_22_14")
+spawn("eob_drow_ceiling_shaft", 29,14,2, "eob_drow_ceiling_shaft_9_29_14")
+spawn("eob_drow_pit", 2,15,3, "eob_drow_pit_9_2_15")
+spawn("eob_drow_pressure_plate", 12,15,2, "eob_drow_pressure_plate_9_12_15")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_magic_missile_firing_pad", 14, 14, 2, "eob_drow_magic_missile_firing_pad_9_14_14_S")
-spawn("eob_drow_lock_spider", 16, 15, 3, "eob_drow_lock_spider_9_16_15_W")
-spawn("eob_blocker", 25, 15, 2, "eob_blocker_9_25_15")
-spawn("eob_drow_pit", 3, 16, 2, "eob_drow_pit_9_3_16")
-spawn("eob_drow_magic_missile_firing_pad", 7, 16, 3, "eob_drow_magic_missile_firing_pad_9_7_16_W")
-spawn("eob_drow_button", 11, 16, 1, "eob_drow_button_9_11_16_E")
-spawn("eob_blocker", 24, 16, 2, "eob_blocker_9_24_16")
-spawn("eob_drow_pressure_plate", 25, 16, 2, "eob_drow_pressure_plate_9_25_16")
+spawn("eob_drow_magic_missile_firing_pad", 14,14,2, "eob_drow_magic_missile_firing_pad_9_14_14_S")
+spawn("eob_drow_lock_spider", 16,15,3, "eob_drow_lock_spider_9_16_15_W")
+spawn("eob_blocker", 25,15,2, "eob_blocker_9_25_15")
+spawn("eob_drow_pit", 3,16,2, "eob_drow_pit_9_3_16")
+spawn("eob_drow_magic_missile_firing_pad", 7,16,3, "eob_drow_magic_missile_firing_pad_9_7_16_W")
+spawn("eob_drow_button", 11,16,1, "eob_drow_button_9_11_16_E")
+spawn("eob_blocker", 24,16,2, "eob_blocker_9_24_16")
+spawn("eob_drow_pressure_plate", 25,16,2, "eob_drow_pressure_plate_9_25_16")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_door", 26, 16, 1, "eob_drow_door_9_26_16")
+spawn("eob_drow_door", 26,16,1, "eob_drow_door_9_26_16")
 	:addPullChain()
-spawn("eob_drow_door", 28, 16, 3, "eob_drow_door_9_28_16")
+spawn("eob_drow_door", 28,16,3, "eob_drow_door_9_28_16")
 	:addPullChain()
-spawn("eob_drow_ceiling_shaft", 1, 17, 2, "eob_drow_ceiling_shaft_9_1_17")
-spawn("eob_drow_pressure_plate", 3, 17, 2, "eob_drow_pressure_plate_9_3_17")
+spawn("eob_drow_ceiling_shaft", 1,17,2, "eob_drow_ceiling_shaft_9_1_17")
+spawn("eob_drow_pressure_plate", 3,17,2, "eob_drow_pressure_plate_9_3_17")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_drow_button", 7, 17, 3, "eob_drow_button_9_7_17_W")
-spawn("eob_drow_magic_missile_firing_pad", 11, 17, 1, "eob_drow_magic_missile_firing_pad_9_11_17_E")
-spawn("eob_drow_stairs_up", 17, 17, 2, "eob_drow_stairs_up_9_17_17")
-spawn("eob_drow_wall_text", 19, 17, 3, "eob_drow_wall_text_9_19_17_W")
-spawn("eob_drow_wall_illusion", 2, 17, 2, "eob_drow_wall_illusion_9_2_17_S")
-spawn("eob_drow_wall_illusion", 2, 19, 0, "eob_drow_wall_illusion_9_2_19_N")
-spawn("eob_drow_magic_missile_firing_pad", 7, 18, 3, "eob_drow_magic_missile_firing_pad_9_7_18_W")
-spawn("eob_drow_button", 11, 18, 1, "eob_drow_button_9_11_18_E")
-spawn("eob_drow_alcove", 19, 18, 3, "eob_drow_alcove_9_19_18_W")
-spawn("eob_drow_wall_text", 22, 18, 1, "eob_drow_wall_text_9_22_18_E")
-spawn("eob_drow_button", 24, 18, 1, "eob_drow_button_9_24_18_E")
-spawn("eob_drow_door", 3, 19, 1, "eob_drow_door_9_3_19")
+spawn("eob_drow_button", 7,17,3, "eob_drow_button_9_7_17_W")
+spawn("eob_drow_magic_missile_firing_pad", 11,17,1, "eob_drow_magic_missile_firing_pad_9_11_17_E")
+spawn("eob_drow_stairs_up", 17,17,2, "eob_drow_stairs_up_9_17_17")
+spawn("eob_drow_wall_text", 19,17,3, "eob_drow_wall_text_9_19_17_W")
+	:setWallText("")
+spawn("eob_drow_wall_illusion", 2,17,2, "eob_drow_wall_illusion_9_2_17_S")
+spawn("eob_drow_wall_illusion", 2,19,0, "eob_drow_wall_illusion_9_2_19_N")
+spawn("eob_drow_magic_missile_firing_pad", 7,18,3, "eob_drow_magic_missile_firing_pad_9_7_18_W")
+spawn("eob_drow_button", 11,18,1, "eob_drow_button_9_11_18_E")
+spawn("eob_drow_alcove", 19,18,3, "eob_drow_alcove_9_19_18_W")
+spawn("eob_drow_wall_text", 22,18,1, "eob_drow_wall_text_9_22_18_E")
+	:setWallText("")
+spawn("eob_drow_button", 24,18,1, "eob_drow_button_9_24_18_E")
+spawn("eob_drow_door", 3,19,1, "eob_drow_door_9_3_19")
 	:addPullChain()
-spawn("eob_drow_door", 6, 19, 1, "eob_drow_door_9_6_19")
-spawn("eob_drow_lock_spider", 7, 19, 1, "eob_drow_lock_spider_9_7_19_E")
-spawn("eob_drow_wall_illusion", 14, 20, 0, "eob_drow_wall_illusion_9_14_20_N")
-spawn("eob_drow_wall_illusion", 13, 19, 1, "eob_drow_wall_illusion_9_13_19_E")
-spawn("eob_drow_door", 16, 19, 2, "eob_drow_door_9_16_19")
-spawn("eob_drow_button", 19, 19, 3, "eob_drow_button_9_19_19_W")
-spawn("eob_drow_wall_illusion", 30, 18, 2, "eob_drow_wall_illusion_9_30_18_S")
-spawn("eob_drow_wall_illusion", 30, 20, 0, "eob_drow_wall_illusion_9_30_20_N")
-spawn("eob_drow_door", 5, 20, 0, "eob_drow_door_9_5_20")
-spawn("eob_drow_button", 7, 19, 2, "eob_drow_button_9_7_19_S")
-spawn("eob_drow_magic_missile_firing_pad", 9, 19, 2, "eob_drow_magic_missile_firing_pad_9_9_19_S")
-spawn("eob_drow_button", 11, 19, 2, "eob_drow_button_9_11_19_S")
-spawn("eob_drow_door", 15, 20, 1, "eob_drow_door_9_15_20")
+spawn("eob_drow_door", 6,19,1, "eob_drow_door_9_6_19")
+spawn("eob_drow_lock_spider", 7,19,1, "eob_drow_lock_spider_9_7_19_E")
+spawn("eob_drow_wall_illusion", 14,20,0, "eob_drow_wall_illusion_9_14_20_N")
+spawn("eob_drow_wall_illusion", 13,19,1, "eob_drow_wall_illusion_9_13_19_E")
+spawn("eob_drow_door", 16,19,2, "eob_drow_door_9_16_19")
+spawn("eob_drow_button", 19,19,3, "eob_drow_button_9_19_19_W")
+spawn("eob_drow_wall_illusion", 30,18,2, "eob_drow_wall_illusion_9_30_18_S")
+spawn("eob_drow_wall_illusion", 30,20,0, "eob_drow_wall_illusion_9_30_20_N")
+spawn("eob_drow_door", 5,20,0, "eob_drow_door_9_5_20")
+spawn("eob_drow_button", 7,19,2, "eob_drow_button_9_7_19_S")
+spawn("eob_drow_magic_missile_firing_pad", 9,19,2, "eob_drow_magic_missile_firing_pad_9_9_19_S")
+spawn("eob_drow_button", 11,19,2, "eob_drow_button_9_11_19_S")
+spawn("eob_drow_door", 15,20,1, "eob_drow_door_9_15_20")
 	:addPullChain()
-spawn("eob_drow_lock_spider", 22, 20, 1, "eob_drow_lock_spider_9_22_20_E")
-spawn("eob_drow_wall_illusion", 26, 20, 3, "eob_drow_wall_illusion_9_26_20_W")
-spawn("eob_drow_wall_illusion", 24, 20, 1, "eob_drow_wall_illusion_9_24_20_E")
-spawn("eob_drow_portal_dagger", 28, 20, 1, "eob_drow_portal_dagger_9_28_20_E")
-spawn("eob_drow_ceiling_shaft", 3, 21, 3, "eob_drow_ceiling_shaft_9_3_21")
-spawn("eob_drow_stairs_up", 20, 21, 0, "eob_drow_stairs_up_9_20_21")
-spawn("eob_drow_door", 22, 21, 0, "eob_drow_door_9_22_21")
-spawn("eob_drow_door", 22, 22, 0, "eob_drow_door_9_22_22")
+spawn("eob_drow_lock_spider", 22,20,1, "eob_drow_lock_spider_9_22_20_E")
+spawn("eob_drow_wall_illusion", 26,20,3, "eob_drow_wall_illusion_9_26_20_W")
+spawn("eob_drow_wall_illusion", 24,20,1, "eob_drow_wall_illusion_9_24_20_E")
+spawn("eob_drow_portal_dagger", 28,20,1, "eob_drow_portal_dagger_9_28_20_E")
+spawn("eob_drow_ceiling_shaft", 3,21,3, "eob_drow_ceiling_shaft_9_3_21")
+spawn("eob_drow_stairs_up", 20,21,0, "eob_drow_stairs_up_9_20_21")
+spawn("eob_drow_door", 22,21,0, "eob_drow_door_9_22_21")
+spawn("eob_drow_door", 22,22,0, "eob_drow_door_9_22_22")
 	:addPullChain()
-spawn("eob_drow_door", 15, 23, 1, "eob_drow_door_9_15_23")
+spawn("eob_drow_door", 15,23,1, "eob_drow_door_9_15_23")
 	:addPullChain()
-spawn("eob_drow_stairs_up", 24, 23, 1, "eob_drow_stairs_up_9_24_23_W")
-spawn("eob_drow_wall_text", 20, 23, 2, "eob_drow_wall_text_9_20_23_S")
-spawn("eob_drow_secret_button_tiny", 9, 24, 2, "eob_drow_secret_button_tiny_9_9_24_S")
-spawn("eob_drow_door", 18, 25, 1, "eob_drow_door_9_18_25")
+spawn("eob_drow_stairs_up", 24,23,1, "eob_drow_stairs_up_9_24_23_W")
+spawn("eob_drow_wall_text", 20,23,2, "eob_drow_wall_text_9_20_23_S")
+	:setWallText("")
+spawn("eob_drow_secret_button_tiny", 9,24,2, "eob_drow_secret_button_tiny_9_9_24_S")
+spawn("eob_drow_door", 18,25,1, "eob_drow_door_9_18_25")
 	:addPullChain()
-spawn("eob_drow_door", 21, 25, 1, "eob_drow_door_9_21_25")
-spawn("eob_drow_wall_text", 24, 25, 3, "eob_drow_wall_text_9_24_25_W")
-spawn("eob_drow_stairs_down", 6, 26, 3, "eob_drow_stairs_down_9_6_26_E")
-spawn("eob_drow_alcove", 24, 26, 3, "eob_drow_alcove_9_24_26_W")
-spawn("eob_drow_door", 26, 26, 1, "eob_drow_door_9_26_26")
+spawn("eob_drow_door", 21,25,1, "eob_drow_door_9_21_25")
+spawn("eob_drow_wall_text", 24,25,3, "eob_drow_wall_text_9_24_25_W")
+	:setWallText("")
+spawn("eob_drow_stairs_down", 6,26,3, "eob_drow_stairs_down_9_6_26_E")
+spawn("eob_drow_alcove", 24,26,3, "eob_drow_alcove_9_24_26_W")
+spawn("eob_drow_door", 26,26,1, "eob_drow_door_9_26_26")
 	:addPullChain()
-spawn("eob_drow_door", 28, 26, 3, "eob_drow_door_9_28_26")
+spawn("eob_drow_door", 28,26,3, "eob_drow_door_9_28_26")
 	:addPullChain()
-spawn("eob_drow_stairs_down", 6, 28, 3, "eob_drow_stairs_down_9_6_28_E")
-spawn("eob_drow_button", 19, 28, 3, "eob_drow_button_9_19_28_W")
-spawn("eob_drow_alcove", 19, 29, 3, "eob_drow_alcove_9_19_29_W")
-spawn("eob_drow_door", 21, 29, 1, "eob_drow_door_9_21_29")
+spawn("eob_drow_stairs_down", 6,28,3, "eob_drow_stairs_down_9_6_28_E")
+spawn("eob_drow_button", 19,28,3, "eob_drow_button_9_19_28_W")
+spawn("eob_drow_alcove", 19,29,3, "eob_drow_alcove_9_19_29_W")
+spawn("eob_drow_door", 21,29,1, "eob_drow_door_9_21_29")
 	:addPullChain()
-spawn("eob_drow_wall_illusion", 29, 30, 3, "eob_drow_wall_illusion_9_29_30_W")
-spawn("eob_drow_wall_illusion", 27, 30, 1, "eob_drow_wall_illusion_9_27_30_E")
-spawn("eob_spear_u", 14, 23, 0, "eob_spear_u_3")
-spawn("eob_arrow_u", 25, 14, 3, "eob_arrow_u_21")
-spawn("eob_holy_symbol_u", 11, 11, 1, "eob_holy_symbol_u_1")
-spawn("eob_dart_plus4_u", 10, 9, 0, "eob_dart_plus4_u_1")
-spawn("eob_mage_scroll_stone_skin", 30, 8, 2, "eob_mage_scroll_stone_skin_1")
-spawn("eob_arrow_u", 25, 14, 2, "eob_arrow_u_22")
-spawn("eob_long_sword_severious_u", 11, 11, 1, "eob_long_sword_severious_u_1")
-spawn("eob_dart_plus4_u", 11, 13, 0, "eob_dart_plus4_u_2")
-spawn("eob_dart_plus4_u", 8, 9, 0, "eob_dart_plus4_u_3")
-spawn("eob_key_drow_u", 9, 15, 3, "eob_key_drow_u_6")
-spawn("eob_plate_mail_u", 11, 11, 1, "eob_plate_mail_u_2")
-spawn("eob_shield_u", 11, 11, 1, "eob_shield_u_6")
-spawn("eob_cleric_scroll_raise_dead", 8, 28, 1, "eob_cleric_scroll_raise_dead_2")
-spawn("eob_potion_poison", 15, 6, 0, "eob_potion_poison_2")
-spawn("eob_bones_human_beohram_u", 11, 11, 1, "eob_bones_human_beohram_u_1")
-spawn("eob_wand_fireball_10_u", 20, 26, 2, "eob_wand_fireball_10_u_1")
-spawn("eob_cleric_scroll_dispel_magic", 2, 16, 1, "eob_cleric_scroll_dispel_magic_2")
-spawn("eob_mage_scroll_invisibility", 29, 18, 3, "eob_mage_scroll_invisibility_2")
-spawn("eob_dart_plus4_u", 11, 9, 0, "eob_dart_plus4_u_4")
-spawn("eob_potion_extra_healing", 3, 22, 3, "eob_potion_extra_healing_5")
-spawn("eob_cleric_scroll_raise_dead", 12, 21, 3, "eob_cleric_scroll_raise_dead_3")
-spawn("eob_orb_of_power_u", 24, 18, 2, "eob_orb_of_power_u_1")
-spawn("eob_cleric_scroll_detect_magic", 12, 3, 0, "eob_cleric_scroll_detect_magic_2")
-spawn("eob_shield_drow_u", 24, 20, 0, "eob_shield_drow_u_1")
-spawn("eob_leather_boots_u", 28, 21, 2, "eob_leather_boots_u_4")
-spawn("eob_dart_plus4_u", 8, 13, 0, "eob_dart_plus4_u_5")
-spawn("eob_dart_plus4_u", 9, 9, 0, "eob_dart_plus4_u_6")
-spawn("eob_cleric_scroll_cure_serious_wnds", 2, 16, 2, "eob_cleric_scroll_cure_serious_wnds_2")
-spawn("eob_chain_mail_u", 30, 29, 1, "eob_chain_mail_u_2")
-spawn("eob_cleric_scroll_protect_evil10", 1, 20, 3, "eob_cleric_scroll_protect_evil10_2")
-spawn("eob_orb_of_power_u", 24, 18, 0, "eob_orb_of_power_u_2")
-spawn("eob_dart_plus4_u", 10, 13, 0, "eob_dart_plus4_u_7")
-spawn("eob_arrow_u", 25, 14, 1, "eob_arrow_u_23")
-spawn("eob_dart_plus4_u", 9, 13, 0, "eob_dart_plus4_u_8")
-spawn("eob_orb_of_power_u", 24, 18, 1, "eob_orb_of_power_u_3")
-spawn("eob_mage_scroll_armor", 14, 20, 0, "eob_mage_scroll_armor_1")
-spawn("eob_cleric_scroll_flame_blade", 13, 19, 0, "eob_cleric_scroll_flame_blade_3")
-spawn("eob_dart_plus4_u", 7, 13, 0, "eob_dart_plus4_u_9")
-spawn("eob_dwarven_helmet_u", 11, 11, 1, "eob_dwarven_helmet_u_2")
-spawn("eob_dart_plus4_u", 7, 9, 0, "eob_dart_plus4_u_10")
-spawn("eob_key_drow_u", 30, 2, 1, "eob_key_drow_u_7")
-spawn("eob_rust", 15, 4, 0, "eob_rust_1")
-spawn("eob_disbeast", 13, 28, 0, "eob_disbeast_1")
-spawn("eob_rust", 9, 6, 0, "eob_rust_2")
-spawn("eob_disbeast", 20, 7, 0, "eob_disbeast_2")
-spawn("eob_rust", 29, 26, 0, "eob_rust_3")
-spawn("eob_rust", 24, 14, 0, "eob_rust_4")
-spawn("eob_rust", 29, 4, 0, "eob_rust_5")
-spawn("eob_rust", 24, 26, 0, "eob_rust_6")
-spawn("eob_rust", 29, 2, 0, "eob_rust_7")
-spawn("eob_disbeast", 5, 9, 0, "eob_disbeast_3")
-spawn("eob_rust", 19, 11, 0, "eob_rust_8")
-spawn("eob_rust", 19, 10, 0, "eob_rust_9")
-spawn("eob_disbeast", 3, 3, 0, "eob_disbeast_4")
-spawn("eob_rust", 12, 4, 0, "eob_rust_10")
-spawn("eob_disbeast", 4, 3, 0, "eob_disbeast_5")
-spawn("eob_rust", 10, 1, 0, "eob_rust_11")
-spawn("eob_rust", 16, 18, 0, "eob_rust_12")
-spawn("eob_rust", 25, 14, 0, "eob_rust_13")
-spawn("eob_rust", 10, 2, 0, "eob_rust_14")
-spawn("eob_rust", 9, 2, 0, "eob_rust_15")
-spawn("eob_rust", 9, 1, 0, "eob_rust_16")
-spawn("eob_rust", 12, 6, 0, "eob_rust_17")
+spawn("eob_drow_wall_illusion", 29,30,3, "eob_drow_wall_illusion_9_29_30_W")
+spawn("eob_drow_wall_illusion", 27,30,1, "eob_drow_wall_illusion_9_27_30_E")
+spawn("eob_spear_u", 14,23,0, "eob_spear_u_3")
+spawn("eob_arrow_u", 25,14,3, "eob_arrow_u_21")
+spawn("eob_holy_symbol_u", 11,11,1, "eob_holy_symbol_u_1")
+spawn("eob_dart_plus4_u", 10,9,0, "eob_dart_plus4_u_1")
+spawn("eob_mage_scroll_stone_skin", 30,8,2, "eob_mage_scroll_stone_skin_1")
+spawn("eob_arrow_u", 25,14,2, "eob_arrow_u_22")
+spawn("eob_long_sword_severious_u", 11,11,1, "eob_long_sword_severious_u_1")
+spawn("eob_dart_plus4_u", 11,13,0, "eob_dart_plus4_u_2")
+spawn("eob_dart_plus4_u", 8,9,0, "eob_dart_plus4_u_3")
+spawn("eob_key_drow_u", 9,15,3, "eob_key_drow_u_6")
+spawn("eob_plate_mail_u", 11,11,1, "eob_plate_mail_u_2")
+spawn("eob_shield_u", 11,11,1, "eob_shield_u_6")
+spawn("eob_cleric_scroll_raise_dead", 8,28,1, "eob_cleric_scroll_raise_dead_2")
+spawn("eob_potion_poison", 15,6,0, "eob_potion_poison_2")
+spawn("eob_bones_human_beohram_u", 11,11,1, "eob_bones_human_beohram_u_1")
+spawn("eob_wand_fireball_10_u", 20,26,2, "eob_wand_fireball_10_u_1")
+spawn("eob_cleric_scroll_dispel_magic", 2,16,1, "eob_cleric_scroll_dispel_magic_2")
+spawn("eob_mage_scroll_invisibility", 29,18,3, "eob_mage_scroll_invisibility_2")
+spawn("eob_dart_plus4_u", 11,9,0, "eob_dart_plus4_u_4")
+spawn("eob_potion_extra_healing", 3,22,3, "eob_potion_extra_healing_5")
+spawn("eob_cleric_scroll_raise_dead", 12,21,3, "eob_cleric_scroll_raise_dead_3")
+spawn("eob_orb_of_power_u", 24,18,2, "eob_orb_of_power_u_1")
+spawn("eob_cleric_scroll_detect_magic", 12,3,0, "eob_cleric_scroll_detect_magic_2")
+spawn("eob_shield_drow_u", 24,20,0, "eob_shield_drow_u_1")
+spawn("eob_leather_boots_u", 28,21,2, "eob_leather_boots_u_4")
+spawn("eob_dart_plus4_u", 8,13,0, "eob_dart_plus4_u_5")
+spawn("eob_dart_plus4_u", 9,9,0, "eob_dart_plus4_u_6")
+spawn("eob_cleric_scroll_cure_serious_wnds", 2,16,2, "eob_cleric_scroll_cure_serious_wnds_2")
+spawn("eob_chain_mail_u", 30,29,1, "eob_chain_mail_u_2")
+spawn("eob_cleric_scroll_protect_evil10", 1,20,3, "eob_cleric_scroll_protect_evil10_2")
+spawn("eob_orb_of_power_u", 24,18,0, "eob_orb_of_power_u_2")
+spawn("eob_dart_plus4_u", 10,13,0, "eob_dart_plus4_u_7")
+spawn("eob_arrow_u", 25,14,1, "eob_arrow_u_23")
+spawn("eob_dart_plus4_u", 9,13,0, "eob_dart_plus4_u_8")
+spawn("eob_orb_of_power_u", 24,18,1, "eob_orb_of_power_u_3")
+spawn("eob_mage_scroll_armor", 14,20,0, "eob_mage_scroll_armor_1")
+spawn("eob_cleric_scroll_flame_blade", 13,19,0, "eob_cleric_scroll_flame_blade_3")
+spawn("eob_dart_plus4_u", 7,13,0, "eob_dart_plus4_u_9")
+spawn("eob_dwarven_helmet_u", 11,11,1, "eob_dwarven_helmet_u_2")
+spawn("eob_dart_plus4_u", 7,9,0, "eob_dart_plus4_u_10")
+spawn("eob_key_drow_u", 30,2,1, "eob_key_drow_u_7")
+spawn("eob_rust", 15,4,0, "eob_rust_1")
+spawn("eob_disbeast", 13,28,0, "eob_disbeast_1")
+spawn("eob_rust", 9,6,0, "eob_rust_2")
+spawn("eob_disbeast", 20,7,0, "eob_disbeast_2")
+spawn("eob_rust", 29,26,0, "eob_rust_3")
+spawn("eob_rust", 24,14,0, "eob_rust_4")
+spawn("eob_rust", 29,4,0, "eob_rust_5")
+spawn("eob_rust", 24,26,0, "eob_rust_6")
+spawn("eob_rust", 29,2,0, "eob_rust_7")
+spawn("eob_disbeast", 5,9,0, "eob_disbeast_3")
+spawn("eob_rust", 19,11,0, "eob_rust_8")
+spawn("eob_rust", 19,10,0, "eob_rust_9")
+spawn("eob_disbeast", 3,3,0, "eob_disbeast_4")
+spawn("eob_rust", 12,4,0, "eob_rust_10")
+spawn("eob_disbeast", 4,3,0, "eob_disbeast_5")
+spawn("eob_rust", 10,1,0, "eob_rust_11")
+spawn("eob_rust", 16,18,0, "eob_rust_12")
+spawn("eob_rust", 25,14,0, "eob_rust_13")
+spawn("eob_rust", 10,2,0, "eob_rust_14")
+spawn("eob_rust", 9,2,0, "eob_rust_15")
+spawn("eob_rust", 9,1,0, "eob_rust_16")
+spawn("eob_rust", 12,6,0, "eob_rust_17")
 
 --- level 10 ---
 
@@ -4395,158 +5062,190 @@ mapDesc([[
 ##....................###...####
 ################################
 ]])
-spawn("eob_hive_wall_rift", 17, 9, 1, "eob_hive_wall_rift_10_17_9_E")
-spawn("eob_hive_wall_rift", 9, 11, 0, "eob_hive_wall_rift_10_9_11_N")
-spawn("eob_hive_wall_text", 13, 11, 0, "eob_hive_wall_text_10_13_11_N")
-spawn("eob_hive_wall_text", 15, 11, 0, "eob_hive_wall_text_10_15_11_N")
-spawn("eob_hive_alcove", 13, 11, 3, "eob_hive_alcove_10_13_11_W")
-	:addItem(spawn("eob_potion_giant_strength")) -- Potion of Giant Strength 
-spawn("eob_hive_pit", 14, 11, 1, "eob_hive_pit_10_14_11")
-spawn("eob_hive_alcove", 15, 11, 1, "eob_hive_alcove_10_15_11_E")
-	:addItem(spawn("eob_ring2_feather_fall_u")) -- Ring 
-spawn("eob_hive_stairs_up", 1, 12, 2, "eob_hive_stairs_up_10_1_12")
-spawn("eob_hive_wall_rift", 11, 13, 0, "eob_hive_wall_rift_10_11_13_N")
-spawn("eob_hive_wall_rift", 22, 14, 0, "eob_hive_wall_rift_10_22_14_N")
-spawn("eob_hive_wall_rift", 3, 15, 0, "eob_hive_wall_rift_10_3_15_N")
-spawn("eob_hive_lever", 13, 14, 3, "eob_hive_lever_10_13_14_W")
+spawn("eob_hive_wall_rift", 17,9,1, "eob_hive_wall_rift_10_17_9_E")
+spawn("eob_hive_wall_rift", 9,11,0, "eob_hive_wall_rift_10_9_11_N")
+spawn("eob_hive_wall_text", 13,11,0, "eob_hive_wall_text_10_13_11_N")
+	:setWallText("")
+spawn("eob_hive_wall_text", 15,11,0, "eob_hive_wall_text_10_15_11_N")
+	:setWallText("")
+spawn("eob_hive_alcove", 13,11,3, "eob_hive_alcove_10_13_11_W")
+	:addItem(spawn("eob_potion_giant_strength"))
+spawn("eob_hive_pit", 14,11,1, "eob_hive_pit_10_14_11")
+spawn("eob_hive_alcove", 15,11,1, "eob_hive_alcove_10_15_11_E")
+	:addItem(spawn("eob_ring2_feather_fall_u"))
+spawn("eob_hive_stairs_up", 1,12,2, "eob_hive_stairs_up_10_1_12")
+spawn("eob_hive_wall_rift", 11,13,0, "eob_hive_wall_rift_10_11_13_N")
+spawn("eob_hive_wall_rift", 22,14,0, "eob_hive_wall_rift_10_22_14_N")
+spawn("eob_hive_wall_rift", 3,15,0, "eob_hive_wall_rift_10_3_15_N")
+spawn("eob_hive_lever", 13,14,3, "eob_hive_lever_10_13_14_W")
 	:setLeverState("activated")
-spawn("eob_hive_lever", 15, 14, 1, "eob_hive_lever_10_15_14_E")
+spawn("eob_hive_lever", 15,14,1, "eob_hive_lever_10_15_14_E")
 	:setLeverState("activated")
-spawn("eob_hive_wall_rift", 24, 14, 1, "eob_hive_wall_rift_10_24_14_E")
-spawn("eob_hive_ceiling_shaft", 2, 15, 1, "eob_hive_ceiling_shaft_10_2_15")
-spawn("eob_blocker", 11, 15, 1, "eob_blocker_10_11_15")
-spawn("eob_hive_ceiling_shaft", 3, 16, 2, "eob_hive_ceiling_shaft_10_3_16")
-spawn("eob_hive_wall_rift", 8, 16, 1, "eob_hive_wall_rift_10_8_16_E")
-spawn("eob_hive_door", 16, 16, 1, "eob_hive_door_10_16_16")
+spawn("eob_hive_wall_rift", 24,14,1, "eob_hive_wall_rift_10_24_14_E")
+spawn("eob_hive_ceiling_shaft", 2,15,1, "eob_hive_ceiling_shaft_10_2_15")
+spawn("eob_blocker", 11,15,1, "eob_blocker_10_11_15")
+spawn("eob_hive_ceiling_shaft", 3,16,2, "eob_hive_ceiling_shaft_10_3_16")
+spawn("eob_hive_wall_rift", 8,16,1, "eob_hive_wall_rift_10_8_16_E")
+spawn("eob_hive_door", 16,16,1, "eob_hive_door_10_16_16")
 	:addPullChain()
-spawn("eob_hive_door", 20, 16, 3, "eob_hive_door_10_20_16")
+spawn("eob_hive_door", 20,16,3, "eob_hive_door_10_20_16")
 	:addPullChain()
-spawn("eob_hive_wall_text", 19, 16, 2, "eob_hive_wall_text_10_19_16_S")
-spawn("eob_hive_switch", 20, 18, 0, "eob_hive_switch_10_20_18_N")
-spawn("eob_hive_switch", 22, 18, 0, "eob_hive_switch_10_22_18_N")
-spawn("eob_hive_door", 2, 18, 0, "eob_hive_door_10_2_18")
+spawn("eob_hive_wall_text", 19,16,2, "eob_hive_wall_text_10_19_16_S")
+	:setWallText("")
+spawn("eob_hive_switch", 20,18,0, "eob_hive_switch_10_20_18_N")
+spawn("eob_hive_switch", 22,18,0, "eob_hive_switch_10_22_18_N")
+spawn("eob_hive_door", 2,18,0, "eob_hive_door_10_2_18")
 	:addPullChain()
-spawn("eob_hive_lever", 14, 17, 2, "eob_hive_lever_10_14_17_S")
+spawn("eob_hive_lever", 14,17,2, "eob_hive_lever_10_14_17_S")
 	:setLeverState("activated")
-spawn("eob_hive_wall_text", 19, 19, 0, "eob_hive_wall_text_10_19_19_N")
-spawn("eob_hive_door", 20, 18, 2, "eob_hive_door_10_20_18")
+spawn("eob_hive_wall_text", 19,19,0, "eob_hive_wall_text_10_19_19_N")
+	:setWallText("")
+spawn("eob_hive_door", 20,18,2, "eob_hive_door_10_20_18")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 21, 19, 0, "eob_hive_wall_rift_10_21_19_N")
-spawn("eob_hive_door", 22, 18, 2, "eob_hive_door_10_22_18")
+spawn("eob_hive_wall_rift", 21,19,0, "eob_hive_wall_rift_10_21_19_N")
+spawn("eob_hive_door", 22,18,2, "eob_hive_door_10_22_18")
 	:addPullChain()
-spawn("eob_hive_wall_text", 23, 19, 0, "eob_hive_wall_text_10_23_19_N")
-spawn("eob_hive_secret_button_tiny", 27, 18, 3, "eob_hive_secret_button_tiny_10_27_18_W")
-spawn("eob_hive_wall_text", 7, 20, 0, "eob_hive_wall_text_10_7_20_N")
-spawn("eob_hive_door", 8, 19, 2, "eob_hive_door_10_8_19")
+spawn("eob_hive_wall_text", 23,19,0, "eob_hive_wall_text_10_23_19_N")
+	:setWallText("")
+spawn("eob_hive_secret_button_tiny", 27,18,3, "eob_hive_secret_button_tiny_10_27_18_W")
+spawn("eob_hive_wall_text", 7,20,0, "eob_hive_wall_text_10_7_20_N")
+	:setWallText("")
+spawn("eob_hive_door", 8,19,2, "eob_hive_door_10_8_19")
 	:addPullChain()
-spawn("eob_hive_door", 15, 20, 1, "eob_hive_door_10_15_20")
+spawn("eob_hive_door", 15,20,1, "eob_hive_door_10_15_20")
 	:addPullChain()
-spawn("eob_hive_door", 18, 20, 1, "eob_hive_door_10_18_20")
+spawn("eob_hive_door", 18,20,1, "eob_hive_door_10_18_20")
 	:addPullChain()
-spawn("eob_hive_door", 2, 21, 0, "eob_hive_door_10_2_21")
+spawn("eob_hive_door", 2,21,0, "eob_hive_door_10_2_21")
 	:addPullChain()
-spawn("eob_hive_wall_text", 7, 20, 2, "eob_hive_wall_text_10_7_20_S")
-spawn("eob_hive_door", 8, 21, 0, "eob_hive_door_10_8_21")
+spawn("eob_hive_wall_text", 7,20,2, "eob_hive_wall_text_10_7_20_S")
+	:setWallText("")
+spawn("eob_hive_door", 8,21,0, "eob_hive_door_10_8_21")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 23, 21, 1, "eob_hive_wall_rift_10_23_21_E")
-spawn("eob_hive_wall_rift", 29, 21, 1, "eob_hive_wall_rift_10_29_21_E")
-spawn("eob_hive_pressure_plate", 1, 22, 3, "eob_hive_pressure_plate_10_1_22")
+spawn("eob_hive_wall_rift", 23,21,1, "eob_hive_wall_rift_10_23_21_E")
+spawn("eob_hive_wall_rift", 29,21,1, "eob_hive_wall_rift_10_29_21_E")
+spawn("eob_hive_pressure_plate", 1,22,3, "eob_hive_pressure_plate_10_1_22")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_wall_rift", 5, 23, 0, "eob_hive_wall_rift_10_5_23_N")
-spawn("eob_hive_wall_rift", 16, 21, 2, "eob_hive_wall_rift_10_16_21_S")
-spawn("eob_hive_lock", 20, 21, 2, "eob_hive_lock_10_20_21_S")
-spawn("eob_hive_door", 21, 22, 0, "eob_hive_door_10_21_22")
-spawn("eob_hive_wall_rift", 22, 21, 2, "eob_hive_wall_rift_10_22_21_S")
-spawn("eob_hive_pressure_plate", 1, 23, 2, "eob_hive_pressure_plate_10_1_23")
+spawn("eob_hive_wall_rift", 5,23,0, "eob_hive_wall_rift_10_5_23_N")
+spawn("eob_hive_wall_rift", 16,21,2, "eob_hive_wall_rift_10_16_21_S")
+spawn("eob_hive_lock", 20,21,2, "eob_hive_lock_10_20_21_S")
+spawn("eob_hive_door", 21,22,0, "eob_hive_door_10_21_22")
+spawn("eob_hive_wall_rift", 22,21,2, "eob_hive_wall_rift_10_22_21_S")
+spawn("eob_hive_pressure_plate", 1,23,2, "eob_hive_pressure_plate_10_1_23")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_pressure_plate", 1, 24, 2, "eob_hive_pressure_plate_10_1_24")
+spawn("eob_hive_pressure_plate", 1,24,2, "eob_hive_pressure_plate_10_1_24")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_wall_text", 21, 24, 1, "eob_hive_wall_text_10_21_24_E")
-spawn("eob_blocker", 26, 24, 1, "eob_blocker_10_26_24")
-spawn("eob_hive_wall_text", 2, 25, 3, "eob_hive_wall_text_10_2_25_W")
-spawn("eob_hive_wall_rift", 9, 24, 2, "eob_hive_wall_rift_10_9_24_S")
-spawn("eob_hive_door", 19, 25, 2, "eob_hive_door_10_19_25")
+spawn("eob_hive_wall_text", 21,24,1, "eob_hive_wall_text_10_21_24_E")
+	:setWallText("")
+spawn("eob_blocker", 26,24,1, "eob_blocker_10_26_24")
+spawn("eob_hive_wall_text", 2,25,3, "eob_hive_wall_text_10_2_25_W")
+	:setWallText("")
+spawn("eob_hive_wall_rift", 9,24,2, "eob_hive_wall_rift_10_9_24_S")
+spawn("eob_hive_door", 19,25,2, "eob_hive_door_10_19_25")
 	:addPullChain()
-spawn("eob_hive_door", 21, 25, 2, "eob_hive_door_10_21_25")
+spawn("eob_hive_door", 21,25,2, "eob_hive_door_10_21_25")
 	:addPullChain()
-spawn("eob_hive_door", 23, 25, 2, "eob_hive_door_10_23_25")
+spawn("eob_hive_door", 23,25,2, "eob_hive_door_10_23_25")
 	:addPullChain()
-spawn("eob_hive_alcove", 26, 25, 1, "eob_hive_alcove_10_26_25_E")
-	:addItem(spawn("eob_potion_poison")) -- Potion of Poison 
-spawn("eob_hive_stairs_up", 6, 26, 1, "eob_hive_stairs_up_10_6_26")
-spawn("eob_hive_wall_rift", 19, 26, 3, "eob_hive_wall_rift_10_19_26_W")
-spawn("eob_blocker", 26, 26, 2, "eob_blocker_10_26_26")
-spawn("eob_hive_wall_rift", 14, 27, 3, "eob_hive_wall_rift_10_14_27_W")
-spawn("eob_hive_portal_scepter", 19, 27, 3, "eob_hive_portal_scepter_10_19_27_W")
-spawn("eob_hive_portal_ring", 23, 27, 1, "eob_hive_portal_ring_10_23_27_E")
-spawn("eob_hive_alcove", 26, 27, 1, "eob_hive_alcove_10_26_27_E")
-	:addItem(spawn("eob_wand_cone_of_cold_10_u")) -- Wand 
-spawn("eob_hive_stairs_up", 6, 28, 1, "eob_hive_stairs_up_10_6_28")
-spawn("eob_hive_alcove", 19, 28, 3, "eob_hive_alcove_10_19_28_W")
-	:addItem(spawn("eob_cleric_scroll_flame_blade")) -- Scroll of Flame Blade 
-	:addItem(spawn("eob_cleric_scroll_remove_paralysis")) -- Scroll of Remove Paralysis 
-spawn("eob_hive_prison_manacles", 17, 28, 1, "eob_hive_prison_manacles_10_17_28_E")
-spawn("eob_hive_alcove", 23, 28, 1, "eob_hive_alcove_10_23_28_E")
-spawn("eob_blocker", 26, 28, 2, "eob_blocker_10_26_28")
-spawn("eob_hive_wall_rift", 2, 29, 3, "eob_hive_wall_rift_10_2_29_W")
-spawn("eob_hive_lever", 7, 30, 0, "eob_hive_lever_10_7_30_N")
-spawn("eob_hive_lever", 9, 30, 0, "eob_hive_lever_10_9_30_N")
-spawn("eob_hive_lever", 11, 30, 0, "eob_hive_lever_10_11_30_N")
-spawn("eob_hive_lever", 13, 30, 0, "eob_hive_lever_10_13_30_N")
-spawn("eob_hive_lever", 15, 30, 0, "eob_hive_lever_10_15_30_N")
-spawn("eob_hive_lever", 17, 30, 0, "eob_hive_lever_10_17_30_N")
-spawn("eob_hive_wall_rift", 19, 28, 2, "eob_hive_wall_rift_10_19_28_S")
-spawn("eob_hive_lever", 19, 30, 0, "eob_hive_lever_10_19_30_N")
-spawn("eob_hive_wall_rift", 23, 28, 2, "eob_hive_wall_rift_10_23_28_S")
-spawn("eob_hive_alcove", 26, 29, 1, "eob_hive_alcove_10_26_29_E")
-	:addItem(spawn("eob_cleric_scroll_flame_blade")) -- Scroll of Flame Blade 
-	:addItem(spawn("eob_cleric_scroll_cure_critical_wnds")) -- Scroll of Cure Critical Wounds 
-spawn("eob_hive_pressure_plate", 5, 30, 1, "eob_hive_pressure_plate_10_5_30")
+spawn("eob_hive_alcove", 26,25,1, "eob_hive_alcove_10_26_25_E")
+	:addItem(spawn("eob_potion_poison"))
+spawn("eob_hive_stairs_up", 6,26,1, "eob_hive_stairs_up_10_6_26")
+spawn("eob_hive_wall_rift", 19,26,3, "eob_hive_wall_rift_10_19_26_W")
+spawn("eob_blocker", 26,26,2, "eob_blocker_10_26_26")
+spawn("eob_hive_wall_rift", 14,27,3, "eob_hive_wall_rift_10_14_27_W")
+spawn("eob_hive_portal_scepter", 19,27,3, "eob_hive_portal_scepter_10_19_27_W")
+spawn("eob_hive_portal_ring", 23,27,1, "eob_hive_portal_ring_10_23_27_E")
+spawn("eob_hive_alcove", 26,27,1, "eob_hive_alcove_10_26_27_E")
+	:addItem(spawn("eob_wand_cone_of_cold_10_u"))
+spawn("eob_hive_stairs_up", 6,28,1, "eob_hive_stairs_up_10_6_28")
+spawn("eob_hive_alcove", 19,28,3, "eob_hive_alcove_10_19_28_W")
+	:addItem(spawn("eob_cleric_scroll_flame_blade"))
+	:addItem(spawn("eob_cleric_scroll_remove_paralysis"))
+spawn("eob_hive_prison_manacles", 17,28,1, "eob_hive_prison_manacles_10_17_28_E")
+spawn("eob_hive_alcove", 23,28,1, "eob_hive_alcove_10_23_28_E")
+spawn("eob_blocker", 26,28,2, "eob_blocker_10_26_28")
+spawn("eob_hive_wall_rift", 2,29,3, "eob_hive_wall_rift_10_2_29_W")
+spawn("eob_hive_lever", 7,30,0, "eob_hive_lever_10_7_30_N")
+spawn("eob_hive_lever", 9,30,0, "eob_hive_lever_10_9_30_N")
+spawn("eob_hive_lever", 11,30,0, "eob_hive_lever_10_11_30_N")
+spawn("eob_hive_lever", 13,30,0, "eob_hive_lever_10_13_30_N")
+spawn("eob_hive_lever", 15,30,0, "eob_hive_lever_10_15_30_N")
+spawn("eob_hive_lever", 17,30,0, "eob_hive_lever_10_17_30_N")
+spawn("eob_hive_wall_rift", 19,28,2, "eob_hive_wall_rift_10_19_28_S")
+spawn("eob_hive_lever", 19,30,0, "eob_hive_lever_10_19_30_N")
+spawn("eob_hive_wall_rift", 23,28,2, "eob_hive_wall_rift_10_23_28_S")
+spawn("eob_hive_alcove", 26,29,1, "eob_hive_alcove_10_26_29_E")
+	:addItem(spawn("eob_cleric_scroll_flame_blade"))
+	:addItem(spawn("eob_cleric_scroll_cure_critical_wnds"))
+spawn("eob_hive_pressure_plate", 5,30,1, "eob_hive_pressure_plate_10_5_30")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_teleporter", 6, 30, 1, "eob_teleporter_10_6_30")
-spawn("eob_teleporter", 8, 30, 1, "eob_teleporter_10_8_30")
-spawn("eob_teleporter", 10, 30, 1, "eob_teleporter_10_10_30")
-spawn("eob_teleporter", 12, 30, 1, "eob_teleporter_10_12_30")
-spawn("eob_teleporter", 14, 30, 1, "eob_teleporter_10_14_30")
-spawn("eob_teleporter", 16, 30, 1, "eob_teleporter_10_16_30")
-spawn("eob_teleporter", 18, 30, 1, "eob_teleporter_10_18_30")
-spawn("eob_hive_secret_button_small", 25, 30, 3, "eob_hive_secret_button_small_10_25_30_W")
-spawn("eob_blocker", 26, 30, 2, "eob_blocker_10_26_30")
-spawn("eob_hive_wall_rift", 7, 30, 2, "eob_hive_wall_rift_10_7_30_S")
-spawn("eob_hive_wall_rift", 11, 30, 2, "eob_hive_wall_rift_10_11_30_S")
-spawn("eob_hive_wall_rift", 15, 30, 2, "eob_hive_wall_rift_10_15_30_S")
-spawn("eob_hive_wall_text", 20, 30, 2, "eob_hive_wall_text_10_20_30_S")
-spawn("eob_hive_wall_text", 21, 30, 2, "eob_hive_wall_text_10_21_30_S")
-spawn("eob_cleric_scroll_neutral_poison", 19, 13, 0, "eob_cleric_scroll_neutral_poison_2")
-spawn("eob_mage_scroll_cone_of_cold", 25, 22, 3, "eob_mage_scroll_cone_of_cold_1")
-spawn("eob_arrow_u", 15, 24, 1, "eob_arrow_u_24")
-spawn("eob_arrow_u", 4, 11, 3, "eob_arrow_u_25")
-spawn("eob_bones_elf_tyrra_u", 3, 12, 1, "eob_bones_elf_tyrra_u_1")
-spawn("eob_plate_mail_u", 2, 28, 0, "eob_plate_mail_u_3")
-spawn("eob_wand_u", 14, 27, 0, "eob_wand_u_1")
-spawn("eob_key_skull_u", 3, 12, 0, "eob_key_skull_u_1")
-spawn("eob_mantis1_1", 27, 24, 0, "eob_mantis1_1_1")
-spawn("eob_mantis1_2", 16, 21, 0, "eob_mantis1_2_1")
-spawn("eob_mantis1_1", 5, 24, 0, "eob_mantis1_1_2")
-spawn("eob_mantis1_2", 27, 26, 0, "eob_mantis1_2_2")
-spawn("eob_mantis1_2", 27, 30, 0, "eob_mantis1_2_3")
-spawn("eob_mantis1_1", 6, 15, 0, "eob_mantis1_1_3")
-spawn("eob_mantis1_1", 27, 28, 0, "eob_mantis1_1_4")
-spawn("eob_mantis1_2", 12, 23, 0, "eob_mantis1_2_4")
-spawn("eob_mantis1_2", 2, 16, 0, "eob_mantis1_2_5")
-spawn("eob_mantis1_2", 8, 24, 0, "eob_mantis1_2_6")
-spawn("eob_mantis1_1", 10, 14, 0, "eob_mantis1_1_5")
-spawn("eob_mantis1_1", 16, 19, 0, "eob_mantis1_1_6")
-spawn("eob_mantis1_1", 8, 27, 0, "eob_mantis1_1_7")
-spawn("eob_mantis1_2", 8, 16, 0, "eob_mantis1_2_7")
+spawn("eob_teleporter", 6,30,1, "eob_teleporter_10_6_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 8,30,1, "eob_teleporter_10_8_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 10,30,1, "eob_teleporter_10_10_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 12,30,1, "eob_teleporter_10_12_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 14,30,1, "eob_teleporter_10_14_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 16,30,1, "eob_teleporter_10_16_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_teleporter", 18,30,1, "eob_teleporter_10_18_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+spawn("eob_hive_secret_button_small", 25,30,3, "eob_hive_secret_button_small_10_25_30_W")
+spawn("eob_blocker", 26,30,2, "eob_blocker_10_26_30")
+spawn("eob_hive_wall_rift", 7,30,2, "eob_hive_wall_rift_10_7_30_S")
+spawn("eob_hive_wall_rift", 11,30,2, "eob_hive_wall_rift_10_11_30_S")
+spawn("eob_hive_wall_rift", 15,30,2, "eob_hive_wall_rift_10_15_30_S")
+spawn("eob_hive_wall_text", 20,30,2, "eob_hive_wall_text_10_20_30_S")
+	:setWallText("")
+spawn("eob_hive_wall_text", 21,30,2, "eob_hive_wall_text_10_21_30_S")
+	:setWallText("")
+spawn("eob_cleric_scroll_neutral_poison", 19,13,0, "eob_cleric_scroll_neutral_poison_2")
+spawn("eob_mage_scroll_cone_of_cold", 25,22,3, "eob_mage_scroll_cone_of_cold_1")
+spawn("eob_arrow_u", 15,24,1, "eob_arrow_u_24")
+spawn("eob_arrow_u", 4,11,3, "eob_arrow_u_25")
+spawn("eob_bones_elf_tyrra_u", 3,12,1, "eob_bones_elf_tyrra_u_1")
+spawn("eob_plate_mail_u", 2,28,0, "eob_plate_mail_u_3")
+spawn("eob_wand_u", 14,27,0, "eob_wand_u_1")
+spawn("eob_key_skull_u", 3,12,0, "eob_key_skull_u_1")
+spawn("eob_mantis1_1", 27,24,0, "eob_mantis1_1_1")
+spawn("eob_mantis1_2", 16,21,0, "eob_mantis1_2_1")
+spawn("eob_mantis1_1", 5,24,0, "eob_mantis1_1_2")
+spawn("eob_mantis1_2", 27,26,0, "eob_mantis1_2_2")
+spawn("eob_mantis1_2", 27,30,0, "eob_mantis1_2_3")
+spawn("eob_mantis1_1", 6,15,0, "eob_mantis1_1_3")
+spawn("eob_mantis1_1", 27,28,0, "eob_mantis1_1_4")
+spawn("eob_mantis1_2", 12,23,0, "eob_mantis1_2_4")
+spawn("eob_mantis1_2", 2,16,0, "eob_mantis1_2_5")
+spawn("eob_mantis1_2", 8,24,0, "eob_mantis1_2_6")
+spawn("eob_mantis1_1", 10,14,0, "eob_mantis1_1_5")
+spawn("eob_mantis1_1", 16,19,0, "eob_mantis1_1_6")
+spawn("eob_mantis1_1", 8,27,0, "eob_mantis1_1_7")
+spawn("eob_mantis1_2", 8,16,0, "eob_mantis1_2_7")
 
 --- level 11 ---
 
@@ -4587,155 +5286,160 @@ mapDesc([[
 #.......#...#...###........#...#
 ################################
 ]])
-spawn("eob_hive_wall_rift", 21, 1, 0, "eob_hive_wall_rift_11_21_1_N")
-spawn("eob_hive_door", 3, 2, 3, "eob_hive_door_11_3_2")
+spawn("eob_hive_wall_rift", 21,1,0, "eob_hive_wall_rift_11_21_1_N")
+spawn("eob_hive_door", 3,2,3, "eob_hive_door_11_3_2")
 	:addPullChain()
-spawn("eob_hive_door", 10, 2, 2, "eob_hive_door_11_10_2")
+spawn("eob_hive_door", 10,2,2, "eob_hive_door_11_10_2")
 	:addPullChain()
-spawn("eob_hive_door", 21, 3, 2, "eob_hive_door_11_21_3")
+spawn("eob_hive_door", 21,3,2, "eob_hive_door_11_21_3")
 	:addPullChain()
-spawn("eob_hive_door", 23, 3, 2, "eob_hive_door_11_23_3")
+spawn("eob_hive_door", 23,3,2, "eob_hive_door_11_23_3")
 	:addPullChain()
-spawn("eob_hive_door", 14, 4, 0, "eob_hive_door_11_14_4")
+spawn("eob_hive_door", 14,4,0, "eob_hive_door_11_14_4")
 	:addPullChain()
-spawn("eob_blocker", 27, 4, 2, "eob_blocker_11_27_4")
-spawn("eob_hive_door", 4, 5, 3, "eob_hive_door_11_4_5")
+spawn("eob_blocker", 27,4,2, "eob_blocker_11_27_4")
+spawn("eob_hive_door", 4,5,3, "eob_hive_door_11_4_5")
 	:addPullChain()
-spawn("eob_hive_button", 14, 6, 0, "eob_hive_button_11_14_6_N")
-spawn("eob_hive_door", 23, 5, 0, "eob_hive_door_11_23_5")
+spawn("eob_hive_button", 14,6,0, "eob_hive_button_11_14_6_N")
+spawn("eob_hive_door", 23,5,0, "eob_hive_door_11_23_5")
 	:addPullChain()
-spawn("eob_hive_wall_text", 14, 8, 0, "eob_hive_wall_text_11_14_8_N")
-spawn("eob_hive_wall_rift", 30, 7, 3, "eob_hive_wall_rift_11_30_7_W")
-spawn("eob_hive_door", 21, 8, 0, "eob_hive_door_11_21_8")
+spawn("eob_hive_wall_text", 14,8,0, "eob_hive_wall_text_11_14_8_N")
+	:setWallText("")
+spawn("eob_hive_wall_rift", 30,7,3, "eob_hive_wall_rift_11_30_7_W")
+spawn("eob_hive_door", 21,8,0, "eob_hive_door_11_21_8")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 3, 9, 1, "eob_hive_wall_rift_11_3_9_E")
-spawn("eob_hive_lever", 24, 9, 1, "eob_hive_lever_11_24_9_E")
+spawn("eob_hive_wall_rift", 3,9,1, "eob_hive_wall_rift_11_3_9_E")
+spawn("eob_hive_lever", 24,9,1, "eob_hive_lever_11_24_9_E")
 	:setLeverState("activated")
-spawn("eob_hive_ceiling_shaft", 14, 10, 2, "eob_hive_ceiling_shaft_11_14_10")
-spawn("eob_hive_lever", 24, 10, 1, "eob_hive_lever_11_24_10_E")
-spawn("eob_hive_door", 7, 11, 3, "eob_hive_door_11_7_11")
+spawn("eob_hive_ceiling_shaft", 14,10,2, "eob_hive_ceiling_shaft_11_14_10")
+spawn("eob_hive_lever", 24,10,1, "eob_hive_lever_11_24_10_E")
+spawn("eob_hive_door", 7,11,3, "eob_hive_door_11_7_11")
 	:addPullChain()
-spawn("eob_hive_wall_star", 11, 11, 3, "eob_hive_wall_star_11_11_11_W")
-spawn("eob_hive_wall_text", 13, 11, 3, "eob_hive_wall_text_11_13_11_W")
-spawn("eob_hive_portal_cross", 15, 11, 3, "eob_hive_portal_cross_11_15_11_W")
-spawn("eob_hive_wall_rift", 13, 11, 1, "eob_hive_wall_rift_11_13_11_E")
-spawn("eob_hive_button", 15, 11, 1, "eob_hive_button_11_15_11_E")
-spawn("eob_hive_wall_star", 19, 11, 1, "eob_hive_wall_star_11_19_11_E")
-spawn("eob_hive_door", 21, 11, 1, "eob_hive_door_11_21_11")
+spawn("eob_hive_wall_star", 11,11,3, "eob_hive_wall_star_11_11_11_W")
+spawn("eob_hive_wall_text", 13,11,3, "eob_hive_wall_text_11_13_11_W")
+	:setWallText("")
+spawn("eob_hive_portal_cross", 15,11,3, "eob_hive_portal_cross_11_15_11_W")
+spawn("eob_hive_wall_rift", 13,11,1, "eob_hive_wall_rift_11_13_11_E")
+spawn("eob_hive_button", 15,11,1, "eob_hive_button_11_15_11_E")
+spawn("eob_hive_wall_star", 19,11,1, "eob_hive_wall_star_11_19_11_E")
+spawn("eob_hive_door", 21,11,1, "eob_hive_door_11_21_11")
 	:addPullChain()
-spawn("eob_hive_lever", 24, 11, 1, "eob_hive_lever_11_24_11_E")
-spawn("eob_hive_lever", 24, 12, 1, "eob_hive_lever_11_24_12_E")
-spawn("eob_hive_door", 4, 13, 3, "eob_hive_door_11_4_13")
+spawn("eob_hive_lever", 24,11,1, "eob_hive_lever_11_24_11_E")
+spawn("eob_hive_lever", 24,12,1, "eob_hive_lever_11_24_12_E")
+spawn("eob_hive_door", 4,13,3, "eob_hive_door_11_4_13")
 	:addPullChain()
-spawn("eob_hive_wall_star", 14, 12, 2, "eob_hive_wall_star_11_14_12_S")
-spawn("eob_hive_lever", 24, 13, 1, "eob_hive_lever_11_24_13_E")
+spawn("eob_hive_wall_star", 14,12,2, "eob_hive_wall_star_11_14_12_S")
+spawn("eob_hive_lever", 24,13,1, "eob_hive_lever_11_24_13_E")
 	:setLeverState("activated")
-spawn("eob_hive_door", 30, 13, 2, "eob_hive_door_11_30_13")
+spawn("eob_hive_door", 30,13,2, "eob_hive_door_11_30_13")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 1, 14, 3, "eob_hive_wall_rift_11_1_14_W")
-spawn("eob_hive_lever", 24, 14, 1, "eob_hive_lever_11_24_14_E")
+spawn("eob_hive_wall_rift", 1,14,3, "eob_hive_wall_rift_11_1_14_W")
+spawn("eob_hive_lever", 24,14,1, "eob_hive_lever_11_24_14_E")
 	:setLeverState("activated")
-spawn("eob_hive_button", 14, 14, 2, "eob_hive_button_11_14_14_S")
-spawn("eob_hive_lever", 24, 15, 1, "eob_hive_lever_11_24_15_E")
+spawn("eob_hive_button", 14,14,2, "eob_hive_button_11_14_14_S")
+spawn("eob_hive_lever", 24,15,1, "eob_hive_lever_11_24_15_E")
 	:setLeverState("activated")
-spawn("eob_hive_secret_button_small", 28, 15, 3, "eob_hive_secret_button_small_11_28_15_W")
-spawn("eob_hive_wall_rift", 1, 16, 3, "eob_hive_wall_rift_11_1_16_W")
-spawn("eob_hive_lever", 24, 16, 1, "eob_hive_lever_11_24_16_E")
-spawn("eob_hive_wall_text", 30, 15, 2, "eob_hive_wall_text_11_30_15_S")
-spawn("eob_hive_wall_text", 14, 16, 2, "eob_hive_wall_text_11_14_16_S")
-spawn("eob_hive_alcove", 24, 16, 2, "eob_hive_alcove_11_24_16_S")
-	:addItem(spawn("eob_dwarven_potion_healing")) -- Dwarven Healing Potion 
-spawn("eob_hive_door", 8, 18, 1, "eob_hive_door_11_8_18")
-spawn("eob_hive_door", 14, 18, 2, "eob_hive_door_11_14_18")
+spawn("eob_hive_secret_button_small", 28,15,3, "eob_hive_secret_button_small_11_28_15_W")
+spawn("eob_hive_wall_rift", 1,16,3, "eob_hive_wall_rift_11_1_16_W")
+spawn("eob_hive_lever", 24,16,1, "eob_hive_lever_11_24_16_E")
+spawn("eob_hive_wall_text", 30,15,2, "eob_hive_wall_text_11_30_15_S")
+	:setWallText("")
+spawn("eob_hive_wall_text", 14,16,2, "eob_hive_wall_text_11_14_16_S")
+	:setWallText("")
+spawn("eob_hive_alcove", 24,16,2, "eob_hive_alcove_11_24_16_S")
+	:addItem(spawn("eob_dwarven_potion_healing"))
+spawn("eob_hive_door", 8,18,1, "eob_hive_door_11_8_18")
+spawn("eob_hive_door", 14,18,2, "eob_hive_door_11_14_18")
 	:addPullChain()
-spawn("eob_hive_lock", 9, 18, 2, "eob_hive_lock_11_9_18_S")
-spawn("eob_hive_door", 6, 20, 1, "eob_hive_door_11_6_20")
+spawn("eob_hive_lock", 9,18,2, "eob_hive_lock_11_9_18_S")
+spawn("eob_hive_door", 6,20,1, "eob_hive_door_11_6_20")
 	:addPullChain()
-spawn("eob_hive_door", 30, 20, 2, "eob_hive_door_11_30_20")
+spawn("eob_hive_door", 30,20,2, "eob_hive_door_11_30_20")
 	:addPullChain()
-spawn("eob_hive_door", 17, 21, 1, "eob_hive_door_11_17_21")
+spawn("eob_hive_door", 17,21,1, "eob_hive_door_11_17_21")
 	:addPullChain()
-spawn("eob_hive_wall_text", 18, 21, 1, "eob_hive_wall_text_11_18_21_E")
-spawn("eob_hive_secret_button_tiny", 22, 21, 3, "eob_hive_secret_button_tiny_11_22_21_W")
-spawn("eob_hive_wall_rift", 24, 21, 3, "eob_hive_wall_rift_11_24_21_W")
-spawn("eob_hive_door", 25, 21, 3, "eob_hive_door_11_25_21")
+spawn("eob_hive_wall_text", 18,21,1, "eob_hive_wall_text_11_18_21_E")
+	:setWallText("")
+spawn("eob_hive_secret_button_tiny", 22,21,3, "eob_hive_secret_button_tiny_11_22_21_W")
+spawn("eob_hive_wall_rift", 24,21,3, "eob_hive_wall_rift_11_24_21_W")
+spawn("eob_hive_door", 25,21,3, "eob_hive_door_11_25_21")
 	:addPullChain()
-spawn("eob_hive_door", 8, 22, 1, "eob_hive_door_11_8_22")
+spawn("eob_hive_door", 8,22,1, "eob_hive_door_11_8_22")
 	:addPullChain()
-spawn("eob_hive_door", 11, 22, 3, "eob_hive_door_11_11_22")
+spawn("eob_hive_door", 11,22,3, "eob_hive_door_11_11_22")
 	:addPullChain()
-spawn("eob_hive_door", 30, 22, 0, "eob_hive_door_11_30_22")
+spawn("eob_hive_door", 30,22,0, "eob_hive_door_11_30_22")
 	:addPullChain()
-spawn("eob_hive_secret_button_tiny", 4, 22, 2, "eob_hive_secret_button_tiny_11_4_22_S")
-spawn("eob_hive_wall_rift", 6, 24, 0, "eob_hive_wall_rift_11_6_24_N")
-spawn("eob_hive_wall_rift", 10, 24, 1, "eob_hive_wall_rift_11_10_24_E")
-spawn("eob_hive_door", 18, 24, 3, "eob_hive_door_11_18_24")
+spawn("eob_hive_secret_button_tiny", 4,22,2, "eob_hive_secret_button_tiny_11_4_22_S")
+spawn("eob_hive_wall_rift", 6,24,0, "eob_hive_wall_rift_11_6_24_N")
+spawn("eob_hive_wall_rift", 10,24,1, "eob_hive_wall_rift_11_10_24_E")
+spawn("eob_hive_door", 18,24,3, "eob_hive_door_11_18_24")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 29, 24, 3, "eob_hive_wall_rift_11_29_24_W")
-spawn("eob_hive_door", 27, 25, 0, "eob_hive_door_11_27_25")
+spawn("eob_hive_wall_rift", 29,24,3, "eob_hive_wall_rift_11_29_24_W")
+spawn("eob_hive_door", 27,25,0, "eob_hive_door_11_27_25")
 	:addPullChain()
-spawn("eob_hive_lock", 3, 25, 2, "eob_hive_lock_11_3_25_S")
-spawn("eob_hive_door", 4, 26, 0, "eob_hive_door_11_4_26")
-spawn("eob_hive_door", 13, 26, 1, "eob_hive_door_11_13_26")
+spawn("eob_hive_lock", 3,25,2, "eob_hive_lock_11_3_25_S")
+spawn("eob_hive_door", 4,26,0, "eob_hive_door_11_4_26")
+spawn("eob_hive_door", 13,26,1, "eob_hive_door_11_13_26")
 	:addPullChain()
-spawn("eob_hive_door", 22, 26, 0, "eob_hive_door_11_22_26")
+spawn("eob_hive_door", 22,26,0, "eob_hive_door_11_22_26")
 	:addPullChain()
-spawn("eob_hive_secret_button_tiny", 30, 25, 2, "eob_hive_secret_button_tiny_11_30_25_S")
-spawn("eob_hive_wall_rift", 6, 27, 3, "eob_hive_wall_rift_11_6_27_W")
-spawn("eob_hive_secret_button_tiny", 9, 27, 3, "eob_hive_secret_button_tiny_11_9_27_W")
-spawn("eob_hive_portal_orb", 4, 27, 2, "eob_hive_portal_orb_11_4_27_S")
-spawn("eob_hive_door", 14, 28, 2, "eob_hive_door_11_14_28")
+spawn("eob_hive_secret_button_tiny", 30,25,2, "eob_hive_secret_button_tiny_11_30_25_S")
+spawn("eob_hive_wall_rift", 6,27,3, "eob_hive_wall_rift_11_6_27_W")
+spawn("eob_hive_secret_button_tiny", 9,27,3, "eob_hive_secret_button_tiny_11_9_27_W")
+spawn("eob_hive_portal_orb", 4,27,2, "eob_hive_portal_orb_11_4_27_S")
+spawn("eob_hive_door", 14,28,2, "eob_hive_door_11_14_28")
 	:addPullChain()
-spawn("eob_hive_door", 18, 28, 3, "eob_hive_door_11_18_28")
+spawn("eob_hive_door", 18,28,3, "eob_hive_door_11_18_28")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 7, 29, 1, "eob_hive_wall_rift_11_7_29_E")
-spawn("eob_hive_door", 22, 29, 0, "eob_hive_door_11_22_29")
+spawn("eob_hive_wall_rift", 7,29,1, "eob_hive_wall_rift_11_7_29_E")
+spawn("eob_hive_door", 22,29,0, "eob_hive_door_11_22_29")
 	:addPullChain()
-spawn("eob_hive_wall_rift", 13, 30, 3, "eob_hive_wall_rift_11_13_30_W")
-spawn("eob_spell_book_u", 16, 27, 0, "eob_spell_book_u_1")
-spawn("eob_ring_protection2_u", 16, 27, 0, "eob_ring_protection2_u_2")
-spawn("eob_key_drow_u", 16, 24, 0, "eob_key_drow_u_8")
-spawn("eob_stone_holy_symbol_u", 17, 27, 0, "eob_stone_holy_symbol_u_1")
-spawn("eob_cleric_scroll_raise_dead", 5, 6, 2, "eob_cleric_scroll_raise_dead_4")
-spawn("eob_cleric_scroll_raise_dead", 25, 1, 1, "eob_cleric_scroll_raise_dead_5")
-spawn("eob_banded_armor_plus3_u", 1, 1, 0, "eob_banded_armor_plus3_u_1")
-spawn("eob_stone_orb_u", 26, 15, 2, "eob_stone_orb_u_1")
-spawn("eob_dagger_flicka_u", 16, 27, 0, "eob_dagger_flicka_u_1")
-spawn("eob_cleric_scroll_cure_serious_wnds", 23, 16, 3, "eob_cleric_scroll_cure_serious_wnds_3")
-spawn("eob_key_drow_u", 26, 15, 2, "eob_key_drow_u_9")
-spawn("eob_rock_mossy_u", 9, 11, 0, "eob_rock_mossy_u_1")
-spawn("eob_medallion_luck_stone_u", 5, 6, 3, "eob_medallion_luck_stone_u_2")
-spawn("eob_bones_human_kirath_u", 16, 27, 0, "eob_bones_human_kirath_u_1")
-spawn("eob_orb_of_power__from_level11_u", 28, 30, 3, "eob_orb_of_power__from_level11_u_1")
-spawn("eob_robe_protection5_u", 16, 27, 0, "eob_robe_protection5_u_1")
-spawn("eob_wand_lightning_bolt_10_u", 3, 8, 1, "eob_wand_lightning_bolt_10_u_1")
-spawn("eob_mage_scroll_hold_monster", 1, 17, 0, "eob_mage_scroll_hold_monster_1")
-spawn("eob_long_sword_slasher", 1, 1, 0, "eob_long_sword_slasher_1")
-spawn("eob_rock_mossy_u", 25, 1, 1, "eob_rock_mossy_u_2")
-spawn("eob_ring2_u", 12, 4, 2, "eob_ring2_u_4")
-spawn("eob_bracers_defense2_u", 16, 27, 0, "eob_bracers_defense2_u_1")
-spawn("eob_mflayer1_1", 15, 30, 0, "eob_mflayer1_1_1")
-spawn("eob_mflayer1_1", 4, 27, 0, "eob_mflayer1_1_2")
-spawn("eob_mflayer1_1", 27, 23, 0, "eob_mflayer1_1_3")
-spawn("eob_xorn", 23, 2, 0, "eob_xorn_1")
-spawn("eob_xorn", 30, 4, 0, "eob_xorn_2")
-spawn("eob_xorn", 30, 10, 0, "eob_xorn_3")
-spawn("eob_xorn", 1, 24, 0, "eob_xorn_4")
-spawn("eob_xorn", 30, 8, 0, "eob_xorn_5")
-spawn("eob_mflayer1_1", 9, 26, 0, "eob_mflayer1_1_4")
-spawn("eob_mflayer1_1", 29, 25, 0, "eob_mflayer1_1_5")
-spawn("eob_mflayer1_1", 17, 28, 0, "eob_mflayer1_1_6")
-spawn("eob_xorn", 27, 7, 0, "eob_xorn_6")
-spawn("eob_mflayer1_1", 17, 25, 0, "eob_mflayer1_1_7")
-spawn("eob_xorn", 25, 2, 0, "eob_xorn_7")
-spawn("eob_xorn", 22, 24, 0, "eob_xorn_8")
-spawn("eob_mflayer1_1", 29, 19, 0, "eob_mflayer1_1_8")
-spawn("eob_mflayer1_1", 26, 18, 0, "eob_mflayer1_1_9")
-spawn("eob_xorn", 27, 1, 0, "eob_xorn_9")
-spawn("eob_xorn", 25, 8, 0, "eob_xorn_10")
-spawn("eob_xorn", 7, 30, 0, "eob_xorn_11")
-spawn("eob_xorn", 24, 1, 0, "eob_xorn_12")
-spawn("eob_xorn", 26, 12, 0, "eob_xorn_13")
+spawn("eob_hive_wall_rift", 13,30,3, "eob_hive_wall_rift_11_13_30_W")
+spawn("eob_spell_book_u", 16,27,0, "eob_spell_book_u_1")
+spawn("eob_ring_protection2_u", 16,27,0, "eob_ring_protection2_u_2")
+spawn("eob_key_drow_u", 16,24,0, "eob_key_drow_u_8")
+spawn("eob_stone_holy_symbol_u", 17,27,0, "eob_stone_holy_symbol_u_1")
+spawn("eob_cleric_scroll_raise_dead", 5,6,2, "eob_cleric_scroll_raise_dead_4")
+spawn("eob_cleric_scroll_raise_dead", 25,1,1, "eob_cleric_scroll_raise_dead_5")
+spawn("eob_banded_armor_plus3_u", 1,1,0, "eob_banded_armor_plus3_u_1")
+spawn("eob_stone_orb_u", 26,15,2, "eob_stone_orb_u_1")
+spawn("eob_dagger_flicka_u", 16,27,0, "eob_dagger_flicka_u_1")
+spawn("eob_cleric_scroll_cure_serious_wnds", 23,16,3, "eob_cleric_scroll_cure_serious_wnds_3")
+spawn("eob_key_drow_u", 26,15,2, "eob_key_drow_u_9")
+spawn("eob_rock_mossy_u", 9,11,0, "eob_rock_mossy_u_1")
+spawn("eob_medallion_luck_stone_u", 5,6,3, "eob_medallion_luck_stone_u_2")
+spawn("eob_bones_human_kirath_u", 16,27,0, "eob_bones_human_kirath_u_1")
+spawn("eob_orb_of_power__from_level11_u", 28,30,3, "eob_orb_of_power__from_level11_u_1")
+spawn("eob_robe_protection5_u", 16,27,0, "eob_robe_protection5_u_1")
+spawn("eob_wand_lightning_bolt_10_u", 3,8,1, "eob_wand_lightning_bolt_10_u_1")
+spawn("eob_mage_scroll_hold_monster", 1,17,0, "eob_mage_scroll_hold_monster_1")
+spawn("eob_long_sword_slasher", 1,1,0, "eob_long_sword_slasher_1")
+spawn("eob_rock_mossy_u", 25,1,1, "eob_rock_mossy_u_2")
+spawn("eob_ring2_u", 12,4,2, "eob_ring2_u_4")
+spawn("eob_bracers_defense2_u", 16,27,0, "eob_bracers_defense2_u_1")
+spawn("eob_mflayer1_1", 15,30,0, "eob_mflayer1_1_1")
+spawn("eob_mflayer1_1", 4,27,0, "eob_mflayer1_1_2")
+spawn("eob_mflayer1_1", 27,23,0, "eob_mflayer1_1_3")
+spawn("eob_xorn", 23,2,0, "eob_xorn_1")
+spawn("eob_xorn", 30,4,0, "eob_xorn_2")
+spawn("eob_xorn", 30,10,0, "eob_xorn_3")
+spawn("eob_xorn", 1,24,0, "eob_xorn_4")
+spawn("eob_xorn", 30,8,0, "eob_xorn_5")
+spawn("eob_mflayer1_1", 9,26,0, "eob_mflayer1_1_4")
+spawn("eob_mflayer1_1", 29,25,0, "eob_mflayer1_1_5")
+spawn("eob_mflayer1_1", 17,28,0, "eob_mflayer1_1_6")
+spawn("eob_xorn", 27,7,0, "eob_xorn_6")
+spawn("eob_mflayer1_1", 17,25,0, "eob_mflayer1_1_7")
+spawn("eob_xorn", 25,2,0, "eob_xorn_7")
+spawn("eob_xorn", 22,24,0, "eob_xorn_8")
+spawn("eob_mflayer1_1", 29,19,0, "eob_mflayer1_1_8")
+spawn("eob_mflayer1_1", 26,18,0, "eob_mflayer1_1_9")
+spawn("eob_xorn", 27,1,0, "eob_xorn_9")
+spawn("eob_xorn", 25,8,0, "eob_xorn_10")
+spawn("eob_xorn", 7,30,0, "eob_xorn_11")
+spawn("eob_xorn", 24,1,0, "eob_xorn_12")
+spawn("eob_xorn", 26,12,0, "eob_xorn_13")
 
 --- level 12 ---
 
@@ -4776,188 +5480,194 @@ mapDesc([[
 #..............................#
 ################################
 ]])
-spawn("eob_sanctum_button", 6, 1, 0, "eob_sanctum_button_12_6_1_N")
-spawn("eob_sanctum_pedestal", 3, 1, 3, "eob_sanctum_pedestal_12_3_1")
-spawn("eob_sanctum_pedestal", 4, 1, 1, "eob_sanctum_pedestal_12_4_1")
-spawn("eob_sanctum_pedestal", 5, 1, 1, "eob_sanctum_pedestal_12_5_1")
-spawn("eob_sanctum_door", 26, 1, 1, "eob_sanctum_door_12_26_1")
+spawn("eob_sanctum_button", 6,1,0, "eob_sanctum_button_12_6_1_N")
+spawn("eob_sanctum_pedestal", 3,1,3, "eob_sanctum_pedestal_12_3_1")
+spawn("eob_sanctum_pedestal", 4,1,1, "eob_sanctum_pedestal_12_4_1")
+spawn("eob_sanctum_pedestal", 5,1,1, "eob_sanctum_pedestal_12_5_1")
+spawn("eob_sanctum_door", 26,1,1, "eob_sanctum_door_12_26_1")
 	:addPullChain()
-spawn("eob_sanctum_door", 7, 2, 1, "eob_sanctum_door_12_7_2")
+spawn("eob_sanctum_door", 7,2,1, "eob_sanctum_door_12_7_2")
 	:addPullChain()
-spawn("eob_sanctum_door", 11, 2, 1, "eob_sanctum_door_12_11_2")
-spawn("eob_sanctum_pedestal", 13, 2, 2, "eob_sanctum_pedestal_12_13_2")
-spawn("eob_sanctum_button", 18, 1, 2, "eob_sanctum_button_12_18_1_S")
-spawn("eob_sanctum_door", 19, 2, 0, "eob_sanctum_door_12_19_2")
-spawn("eob_sanctum_door", 23, 2, 0, "eob_sanctum_door_12_23_2")
-spawn("eob_sanctum_skull_lock", 24, 1, 2, "eob_sanctum_skull_lock_12_24_1_S")
-spawn("eob_sanctum_alcove", 28, 1, 2, "eob_sanctum_alcove_12_28_1_S")
-	:addItem(spawn("eob_rations_iron_u")) -- Iron Rations 
-spawn("eob_sanctum_alcove", 30, 2, 3, "eob_sanctum_alcove_12_30_2_W")
-	:addItem(spawn("eob_rations_iron_u")) -- Iron Rations 
-spawn("eob_sanctum_door", 1, 3, 0, "eob_sanctum_door_12_1_3")
+spawn("eob_sanctum_door", 11,2,1, "eob_sanctum_door_12_11_2")
+spawn("eob_sanctum_pedestal", 13,2,2, "eob_sanctum_pedestal_12_13_2")
+spawn("eob_sanctum_button", 18,1,2, "eob_sanctum_button_12_18_1_S")
+spawn("eob_sanctum_door", 19,2,0, "eob_sanctum_door_12_19_2")
+spawn("eob_sanctum_door", 23,2,0, "eob_sanctum_door_12_23_2")
+spawn("eob_sanctum_skull_lock", 24,1,2, "eob_sanctum_skull_lock_12_24_1_S")
+spawn("eob_sanctum_alcove", 28,1,2, "eob_sanctum_alcove_12_28_1_S")
+	:addItem(spawn("eob_rations_iron_u"))
+spawn("eob_sanctum_alcove", 30,2,3, "eob_sanctum_alcove_12_30_2_W")
+	:addItem(spawn("eob_rations_iron_u"))
+spawn("eob_sanctum_door", 1,3,0, "eob_sanctum_door_12_1_3")
 	:addPullChain()
-spawn("eob_sanctum_text", 3, 2, 2, "eob_sanctum_text_12_3_2_S")
-spawn("eob_sanctum_text", 4, 2, 2, "eob_sanctum_text_12_4_2_S")
-spawn("eob_sanctum_text", 5, 2, 2, "eob_sanctum_text_12_5_2_S")
-spawn("eob_sanctum_door", 9, 3, 0, "eob_sanctum_door_12_9_3")
+spawn("eob_sanctum_text", 3,2,2, "eob_sanctum_text_12_3_2_S")
+	:setWallText("")
+spawn("eob_sanctum_text", 4,2,2, "eob_sanctum_text_12_4_2_S")
+	:setWallText("")
+spawn("eob_sanctum_text", 5,2,2, "eob_sanctum_text_12_5_2_S")
+	:setWallText("")
+spawn("eob_sanctum_door", 9,3,0, "eob_sanctum_door_12_9_3")
 	:addPullChain()
-spawn("eob_sanctum_skull_lock", 22, 4, 0, "eob_sanctum_skull_lock_12_22_4_N")
-spawn("eob_sanctum_door", 23, 3, 2, "eob_sanctum_door_12_23_3")
-spawn("eob_sanctum_alcove", 27, 3, 1, "eob_sanctum_alcove_12_27_3_E")
-	:addItem(spawn("eob_rations_iron_u")) -- Iron Rations 
-spawn("eob_sanctum_alcove", 29, 4, 0, "eob_sanctum_alcove_12_29_4_N")
-	:addItem(spawn("eob_rations_iron_u")) -- Iron Rations 
-spawn("eob_sanctum_pedestal", 8, 4, 3, "eob_sanctum_pedestal_12_8_4")
-spawn("eob_sanctum_pedestal_eye", 9, 4, 2, "eob_sanctum_pedestal_eye_12_9_4")
-spawn("eob_sanctum_pedestal", 10, 4, 1, "eob_sanctum_pedestal_12_10_4")
-spawn("eob_sanctum_secret_button_tiny", 14, 3, 2, "eob_sanctum_secret_button_tiny_12_14_3_S")
-spawn("eob_sanctum_door", 15, 4, 0, "eob_sanctum_door_12_15_4")
-spawn("eob_sanctum_door", 26, 4, 1, "eob_sanctum_door_12_26_4")
+spawn("eob_sanctum_skull_lock", 22,4,0, "eob_sanctum_skull_lock_12_22_4_N")
+spawn("eob_sanctum_door", 23,3,2, "eob_sanctum_door_12_23_3")
+spawn("eob_sanctum_alcove", 27,3,1, "eob_sanctum_alcove_12_27_3_E")
+	:addItem(spawn("eob_rations_iron_u"))
+spawn("eob_sanctum_alcove", 29,4,0, "eob_sanctum_alcove_12_29_4_N")
+	:addItem(spawn("eob_rations_iron_u"))
+spawn("eob_sanctum_pedestal", 8,4,3, "eob_sanctum_pedestal_12_8_4")
+spawn("eob_sanctum_pedestal_eye", 9,4,2, "eob_sanctum_pedestal_eye_12_9_4")
+spawn("eob_sanctum_pedestal", 10,4,1, "eob_sanctum_pedestal_12_10_4")
+spawn("eob_sanctum_secret_button_tiny", 14,3,2, "eob_sanctum_secret_button_tiny_12_14_3_S")
+spawn("eob_sanctum_door", 15,4,0, "eob_sanctum_door_12_15_4")
+spawn("eob_sanctum_door", 26,4,1, "eob_sanctum_door_12_26_4")
 	:addPullChain()
-spawn("eob_sanctum_secret_button_tiny", 17, 5, 3, "eob_sanctum_secret_button_tiny_12_17_5_W")
-spawn("eob_sanctum_fireball_firing_pad", 29, 6, 0, "eob_sanctum_fireball_firing_pad_12_29_6_N")
-spawn("eob_sanctum_door", 21, 6, 2, "eob_sanctum_door_12_21_6")
+spawn("eob_sanctum_secret_button_tiny", 17,5,3, "eob_sanctum_secret_button_tiny_12_17_5_W")
+spawn("eob_sanctum_fireball_firing_pad", 29,6,0, "eob_sanctum_fireball_firing_pad_12_29_6_N")
+spawn("eob_sanctum_door", 21,6,2, "eob_sanctum_door_12_21_6")
 	:addPullChain()
-spawn("eob_sanctum_wall_lamp", 1, 7, 3, "eob_sanctum_wall_lamp_12_1_7_W")
-spawn("eob_sanctum_text", 9, 7, 3, "eob_sanctum_text_12_9_7_W")
-spawn("eob_sanctum_pressure_plate", 21, 7, 2, "eob_sanctum_pressure_plate_12_21_7")
+spawn("eob_sanctum_wall_lamp", 1,7,3, "eob_sanctum_wall_lamp_12_1_7_W")
+spawn("eob_sanctum_text", 9,7,3, "eob_sanctum_text_12_9_7_W")
+	:setWallText("")
+spawn("eob_sanctum_pressure_plate", 21,7,2, "eob_sanctum_pressure_plate_12_21_7")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_pressure_plate", 22, 7, 1, "eob_sanctum_pressure_plate_12_22_7")
+spawn("eob_sanctum_pressure_plate", 22,7,1, "eob_sanctum_pressure_plate_12_22_7")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_door", 23, 7, 3, "eob_sanctum_door_12_23_7")
+spawn("eob_sanctum_door", 23,7,3, "eob_sanctum_door_12_23_7")
 	:addPullChain()
-spawn("eob_blocker", 24, 7, 2, "eob_blocker_12_24_7")
-spawn("eob_sanctum_door", 27, 7, 1, "eob_sanctum_door_12_27_7")
-spawn("eob_sanctum_pressure_plate", 6, 8, 1, "eob_sanctum_pressure_plate_12_6_8")
+spawn("eob_blocker", 24,7,2, "eob_blocker_12_24_7")
+spawn("eob_sanctum_door", 27,7,1, "eob_sanctum_door_12_27_7")
+spawn("eob_sanctum_pressure_plate", 6,8,1, "eob_sanctum_pressure_plate_12_6_8")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_fireball_firing_pad", 7, 8, 1, "eob_sanctum_fireball_firing_pad_12_7_8_E")
-spawn("eob_sanctum_door", 20, 8, 1, "eob_sanctum_door_12_20_8")
+spawn("eob_sanctum_fireball_firing_pad", 7,8,1, "eob_sanctum_fireball_firing_pad_12_7_8_E")
+spawn("eob_sanctum_door", 20,8,1, "eob_sanctum_door_12_20_8")
 	:addPullChain()
-spawn("eob_sanctum_pressure_plate", 21, 8, 2, "eob_sanctum_pressure_plate_12_21_8")
+spawn("eob_sanctum_pressure_plate", 21,8,2, "eob_sanctum_pressure_plate_12_21_8")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_pressure_plate", 22, 8, 2, "eob_sanctum_pressure_plate_12_22_8")
+spawn("eob_sanctum_pressure_plate", 22,8,2, "eob_sanctum_pressure_plate_12_22_8")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_door", 1, 9, 0, "eob_sanctum_door_12_1_9")
+spawn("eob_sanctum_door", 1,9,0, "eob_sanctum_door_12_1_9")
 	:addPullChain()
-spawn("eob_sanctum_secret_button_small", 6, 8, 2, "eob_sanctum_secret_button_small_12_6_8_S")
-spawn("eob_sanctum_wall_lamp_smoke", 13, 10, 0, "eob_sanctum_wall_lamp_smoke_12_13_10_N")
-spawn("eob_sanctum_wall_lamp", 15, 10, 0, "eob_sanctum_wall_lamp_12_15_10_N")
-spawn("eob_sanctum_door", 17, 9, 0, "eob_sanctum_door_12_17_9")
+spawn("eob_sanctum_secret_button_small", 6,8,2, "eob_sanctum_secret_button_small_12_6_8_S")
+spawn("eob_sanctum_wall_lamp_smoke", 13,10,0, "eob_sanctum_wall_lamp_smoke_12_13_10_N")
+spawn("eob_sanctum_wall_lamp", 15,10,0, "eob_sanctum_wall_lamp_12_15_10_N")
+spawn("eob_sanctum_door", 17,9,0, "eob_sanctum_door_12_17_9")
 	:addPullChain()
-spawn("eob_sanctum_door", 22, 9, 0, "eob_sanctum_door_12_22_9")
+spawn("eob_sanctum_door", 22,9,0, "eob_sanctum_door_12_22_9")
 	:addPullChain()
-spawn("eob_sanctum_pedestal_eye", 28, 9, 3, "eob_sanctum_pedestal_eye_12_28_9_E")
-spawn("eob_sanctum_pedestal_eye", 30, 9, 1, "eob_sanctum_pedestal_eye_12_30_9_W")
-spawn("eob_sanctum_secret_button_tiny", 7, 10, 1, "eob_sanctum_secret_button_tiny_12_7_10_E")
-spawn("eob_sanctum_fireball_firing_pad", 13, 10, 3, "eob_sanctum_fireball_firing_pad_12_13_10_W")
-spawn("eob_sanctum_wall_lamp", 15, 10, 1, "eob_sanctum_wall_lamp_12_15_10_E")
-spawn("eob_sanctum_fireball_firing_pad", 26, 10, 3, "eob_sanctum_fireball_firing_pad_12_26_10_W")
-spawn("eob_sanctum_button", 27, 10, 1, "eob_sanctum_button_12_27_10_E")
-spawn("eob_sanctum_wall_lamp", 1, 11, 3, "eob_sanctum_wall_lamp_12_1_11_W")
-spawn("eob_sanctum_pressure_plate", 3, 11, 2, "eob_sanctum_pressure_plate_12_3_11")
+spawn("eob_sanctum_pedestal_eye", 28,9,3, "eob_sanctum_pedestal_eye_12_28_9_E")
+spawn("eob_sanctum_pedestal_eye", 30,9,1, "eob_sanctum_pedestal_eye_12_30_9_W")
+spawn("eob_sanctum_secret_button_tiny", 7,10,1, "eob_sanctum_secret_button_tiny_12_7_10_E")
+spawn("eob_sanctum_fireball_firing_pad", 13,10,3, "eob_sanctum_fireball_firing_pad_12_13_10_W")
+spawn("eob_sanctum_wall_lamp", 15,10,1, "eob_sanctum_wall_lamp_12_15_10_E")
+spawn("eob_sanctum_fireball_firing_pad", 26,10,3, "eob_sanctum_fireball_firing_pad_12_26_10_W")
+spawn("eob_sanctum_button", 27,10,1, "eob_sanctum_button_12_27_10_E")
+spawn("eob_sanctum_wall_lamp", 1,11,3, "eob_sanctum_wall_lamp_12_1_11_W")
+spawn("eob_sanctum_pressure_plate", 3,11,2, "eob_sanctum_pressure_plate_12_3_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_door", 4, 11, 1, "eob_sanctum_door_12_4_11")
+spawn("eob_sanctum_door", 4,11,1, "eob_sanctum_door_12_4_11")
 	:addPullChain()
-spawn("eob_sanctum_text", 7, 11, 3, "eob_sanctum_text_12_7_11_W")
-spawn("eob_sanctum_door", 8, 11, 1, "eob_sanctum_door_12_8_11")
+spawn("eob_sanctum_text", 7,11,3, "eob_sanctum_text_12_7_11_W")
+	:setWallText("")
+spawn("eob_sanctum_door", 8,11,1, "eob_sanctum_door_12_8_11")
 	:addPullChain()
-spawn("eob_sanctum_text", 11, 11, 3, "eob_sanctum_text_12_11_11_W")
-spawn("eob_sanctum_wall_lamp", 13, 11, 3, "eob_sanctum_wall_lamp_12_13_11_W")
-spawn("eob_sanctum_portal_orb", 15, 11, 3, "eob_sanctum_portal_orb_12_15_11_W")
-spawn("eob_sanctum_pressure_plate", 19, 11, 2, "eob_sanctum_pressure_plate_12_19_11")
+spawn("eob_sanctum_text", 11,11,3, "eob_sanctum_text_12_11_11_W")
+	:setWallText("")
+spawn("eob_sanctum_wall_lamp", 13,11,3, "eob_sanctum_wall_lamp_12_13_11_W")
+spawn("eob_sanctum_portal_orb", 15,11,3, "eob_sanctum_portal_orb_12_15_11_W")
+spawn("eob_sanctum_pressure_plate", 19,11,2, "eob_sanctum_pressure_plate_12_19_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_door", 20, 11, 3, "eob_sanctum_door_12_20_11")
-spawn("eob_sanctum_button", 20, 11, 1, "eob_sanctum_button_12_20_11_E")
-spawn("eob_sanctum_pressure_plate", 24, 11, 2, "eob_sanctum_pressure_plate_12_24_11")
+spawn("eob_sanctum_door", 20,11,3, "eob_sanctum_door_12_20_11")
+spawn("eob_sanctum_button", 20,11,1, "eob_sanctum_button_12_20_11_E")
+spawn("eob_sanctum_pressure_plate", 24,11,2, "eob_sanctum_pressure_plate_12_24_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_door", 25, 11, 1, "eob_sanctum_door_12_25_11")
+spawn("eob_sanctum_door", 25,11,1, "eob_sanctum_door_12_25_11")
 	:addPullChain()
-spawn("eob_sanctum_pressure_plate", 26, 11, 2, "eob_sanctum_pressure_plate_12_26_11")
+spawn("eob_sanctum_pressure_plate", 26,11,2, "eob_sanctum_pressure_plate_12_26_11")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_sanctum_button", 27, 11, 1, "eob_sanctum_button_12_27_11_E")
-spawn("eob_sanctum_wall_lamp", 15, 12, 1, "eob_sanctum_wall_lamp_12_15_12_E")
-spawn("eob_sanctum_fireball_firing_pad", 26, 12, 3, "eob_sanctum_fireball_firing_pad_12_26_12_W")
-spawn("eob_sanctum_button", 27, 12, 1, "eob_sanctum_button_12_27_12_E")
-spawn("eob_sanctum_door", 1, 13, 0, "eob_sanctum_door_12_1_13")
+spawn("eob_sanctum_button", 27,11,1, "eob_sanctum_button_12_27_11_E")
+spawn("eob_sanctum_wall_lamp", 15,12,1, "eob_sanctum_wall_lamp_12_15_12_E")
+spawn("eob_sanctum_fireball_firing_pad", 26,12,3, "eob_sanctum_fireball_firing_pad_12_26_12_W")
+spawn("eob_sanctum_button", 27,12,1, "eob_sanctum_button_12_27_12_E")
+spawn("eob_sanctum_door", 1,13,0, "eob_sanctum_door_12_1_13")
 	:addPullChain()
-spawn("eob_sanctum_wall_lamp", 14, 12, 2, "eob_sanctum_wall_lamp_12_14_12_S")
-spawn("eob_sanctum_door", 17, 13, 0, "eob_sanctum_door_12_17_13")
+spawn("eob_sanctum_wall_lamp", 14,12,2, "eob_sanctum_wall_lamp_12_14_12_S")
+spawn("eob_sanctum_door", 17,13,0, "eob_sanctum_door_12_17_13")
 	:addPullChain()
-spawn("eob_sanctum_door", 22, 13, 0, "eob_sanctum_door_12_22_13")
+spawn("eob_sanctum_door", 22,13,0, "eob_sanctum_door_12_22_13")
 	:addPullChain()
-spawn("eob_sanctum_button", 4, 14, 1, "eob_sanctum_button_12_4_14_E")
-spawn("eob_sanctum_door", 9, 14, 1, "eob_sanctum_door_12_9_14")
-spawn("eob_sanctum_button", 20, 14, 1, "eob_sanctum_button_12_20_14_E")
-spawn("eob_sanctum_button", 25, 14, 1, "eob_sanctum_button_12_25_14_E")
-spawn("eob_sanctum_door", 2, 15, 3, "eob_sanctum_door_12_2_15")
+spawn("eob_sanctum_button", 4,14,1, "eob_sanctum_button_12_4_14_E")
+spawn("eob_sanctum_door", 9,14,1, "eob_sanctum_door_12_9_14")
+spawn("eob_sanctum_button", 20,14,1, "eob_sanctum_button_12_20_14_E")
+spawn("eob_sanctum_button", 25,14,1, "eob_sanctum_button_12_25_14_E")
+spawn("eob_sanctum_door", 2,15,3, "eob_sanctum_door_12_2_15")
 	:addPullChain()
-spawn("eob_sanctum_button", 4, 15, 1, "eob_sanctum_button_12_4_15_E")
-spawn("eob_sanctum_pedestal", 7, 15, 2, "eob_sanctum_pedestal_12_7_15")
-spawn("eob_sanctum_skull_lock", 8, 15, 1, "eob_sanctum_skull_lock_12_8_15_E")
-spawn("eob_sanctum_door", 18, 15, 3, "eob_sanctum_door_12_18_15")
+spawn("eob_sanctum_button", 4,15,1, "eob_sanctum_button_12_4_15_E")
+spawn("eob_sanctum_pedestal", 7,15,2, "eob_sanctum_pedestal_12_7_15")
+spawn("eob_sanctum_skull_lock", 8,15,1, "eob_sanctum_skull_lock_12_8_15_E")
+spawn("eob_sanctum_door", 18,15,3, "eob_sanctum_door_12_18_15")
 	:addPullChain()
-spawn("eob_sanctum_button", 20, 15, 1, "eob_sanctum_button_12_20_15_E")
-spawn("eob_sanctum_door", 23, 15, 3, "eob_sanctum_door_12_23_15")
+spawn("eob_sanctum_button", 20,15,1, "eob_sanctum_button_12_20_15_E")
+spawn("eob_sanctum_door", 23,15,3, "eob_sanctum_door_12_23_15")
 	:addPullChain()
-spawn("eob_sanctum_button", 25, 15, 1, "eob_sanctum_button_12_25_15_E")
-spawn("eob_sanctum_button", 4, 16, 1, "eob_sanctum_button_12_4_16_E")
-spawn("eob_sanctum_pedestal", 7, 16, 2, "eob_sanctum_pedestal_12_7_16")
-spawn("eob_sanctum_button", 20, 16, 1, "eob_sanctum_button_12_20_16_E")
-spawn("eob_sanctum_button", 25, 16, 1, "eob_sanctum_button_12_25_16_E")
-spawn("eob_sanctum_pedestal_eye", 27, 16, 2, "eob_sanctum_pedestal_eye_12_27_16")
-spawn("eob_sanctum_pedestal_eye", 29, 16, 2, "eob_sanctum_pedestal_eye_12_29_16")
-spawn("eob_sanctum_pedestal", 7, 17, 2, "eob_sanctum_pedestal_12_7_17")
-spawn("eob_sanctum_pedestal_eye", 27, 17, 3, "eob_sanctum_pedestal_eye_12_27_17_E")
-spawn("eob_sanctum_spike_trap", 28, 17, 2, "eob_sanctum_spike_trap_12_28_17")
-spawn("eob_sanctum_pedestal_eye", 29, 17, 1, "eob_sanctum_pedestal_eye_12_29_17_W")
-spawn("eob_blocker", 1, 18, 2, "eob_blocker_12_1_18")
-spawn("eob_sanctum_alcove", 28, 17, 2, "eob_sanctum_alcove_12_28_17_S")
-	:addItem(spawn("eob_stone_scepter_u")) -- Stone Ring 
-	:addItem(spawn("eob_stone_holy_symbol_u")) -- Stone Holy Symbol 
-	:addItem(spawn("eob_stone_orb_u")) -- Stone Orb 
-	:addItem(spawn("eob_stone_scepter_u")) -- Stone Scepter 
-	:addItem(spawn("eob_stone_medallion_u")) -- Stone Medallion 
-	:addItem(spawn("eob_stone_necklace_u")) -- Stone Necklace 
-	:addItem(spawn("eob_stone_dagger_u")) -- Stone dagger 
-spawn("eob_sanctum_door", 20, 19, 0, "eob_sanctum_door_12_20_19")
+spawn("eob_sanctum_button", 25,15,1, "eob_sanctum_button_12_25_15_E")
+spawn("eob_sanctum_button", 4,16,1, "eob_sanctum_button_12_4_16_E")
+spawn("eob_sanctum_pedestal", 7,16,2, "eob_sanctum_pedestal_12_7_16")
+spawn("eob_sanctum_button", 20,16,1, "eob_sanctum_button_12_20_16_E")
+spawn("eob_sanctum_button", 25,16,1, "eob_sanctum_button_12_25_16_E")
+spawn("eob_sanctum_pedestal_eye", 27,16,2, "eob_sanctum_pedestal_eye_12_27_16")
+spawn("eob_sanctum_pedestal_eye", 29,16,2, "eob_sanctum_pedestal_eye_12_29_16")
+spawn("eob_sanctum_pedestal", 7,17,2, "eob_sanctum_pedestal_12_7_17")
+spawn("eob_sanctum_pedestal_eye", 27,17,3, "eob_sanctum_pedestal_eye_12_27_17_E")
+spawn("eob_sanctum_spike_trap", 28,17,2, "eob_sanctum_spike_trap_12_28_17")
+spawn("eob_sanctum_pedestal_eye", 29,17,1, "eob_sanctum_pedestal_eye_12_29_17_W")
+spawn("eob_blocker", 1,18,2, "eob_blocker_12_1_18")
+spawn("eob_sanctum_alcove", 28,17,2, "eob_sanctum_alcove_12_28_17_S")
+	:addItem(spawn("eob_stone_scepter_u"))
+	:addItem(spawn("eob_stone_holy_symbol_u"))
+	:addItem(spawn("eob_stone_orb_u"))
+	:addItem(spawn("eob_stone_scepter_u"))
+	:addItem(spawn("eob_stone_medallion_u"))
+	:addItem(spawn("eob_stone_necklace_u"))
+	:addItem(spawn("eob_stone_dagger_u"))
+spawn("eob_sanctum_door", 20,19,0, "eob_sanctum_door_12_20_19")
 	:addPullChain()
-spawn("eob_sanctum_door", 28, 19, 1, "eob_sanctum_door_12_28_19")
+spawn("eob_sanctum_door", 28,19,1, "eob_sanctum_door_12_28_19")
 	:addPullChain()
-spawn("eob_sanctum_pedestal_eye", 9, 21, 2, "eob_sanctum_pedestal_eye_12_9_21")
-spawn("eob_sanctum_pedestal_eye", 11, 21, 2, "eob_sanctum_pedestal_eye_12_11_21")
-spawn("eob_blocker", 10, 22, 2, "eob_blocker_12_10_22")
-spawn("eob_sanctum_alcove", 9, 22, 2, "eob_sanctum_alcove_12_9_22_S")
-	:addItem(spawn("eob_potion_invisibility")) -- Potion of Invisibility 
-	:addItem(spawn("eob_potion_vitality")) -- Potion of Vitality 
-spawn("eob_sanctum_alcove", 11, 22, 2, "eob_sanctum_alcove_12_11_22_S")
-	:addItem(spawn("eob_potion_invisibility")) -- Potion of Invisibility 
-	:addItem(spawn("eob_potion_vitality")) -- Potion of Vitality 
-spawn("eob_wand_magic_missile_20_u", 23, 2, 3, "eob_wand_magic_missile_20_u_1")
-spawn("eob_potion_invisibility", 17, 3, 0, "eob_potion_invisibility_1")
-spawn("eob_potion_invisibility", 17, 3, 2, "eob_potion_invisibility_2")
-spawn("eob_golem", 3, 10, 0, "eob_golem_1")
-spawn("eob_golem1_1", 3, 12, 0, "eob_golem1_1_1")
-spawn("eob_golem", 19, 3, 0, "eob_golem_2")
-spawn("eob_golem", 10, 25, 0, "eob_golem_3")
-spawn("eob_golem", 10, 24, 0, "eob_golem_4")
-spawn("eob_golem", 10, 23, 0, "eob_golem_5")
-spawn("eob_golem", 1, 10, 0, "eob_golem_6")
-spawn("eob_golem", 1, 12, 0, "eob_golem_7")
+spawn("eob_sanctum_pedestal_eye", 9,21,2, "eob_sanctum_pedestal_eye_12_9_21")
+spawn("eob_sanctum_pedestal_eye", 11,21,2, "eob_sanctum_pedestal_eye_12_11_21")
+spawn("eob_blocker", 10,22,2, "eob_blocker_12_10_22")
+spawn("eob_sanctum_alcove", 9,22,2, "eob_sanctum_alcove_12_9_22_S")
+	:addItem(spawn("eob_potion_invisibility"))
+	:addItem(spawn("eob_potion_vitality"))
+spawn("eob_sanctum_alcove", 11,22,2, "eob_sanctum_alcove_12_11_22_S")
+	:addItem(spawn("eob_potion_invisibility"))
+	:addItem(spawn("eob_potion_vitality"))
+spawn("eob_wand_magic_missile_20_u", 23,2,3, "eob_wand_magic_missile_20_u_1")
+spawn("eob_potion_invisibility", 17,3,0, "eob_potion_invisibility_1")
+spawn("eob_potion_invisibility", 17,3,2, "eob_potion_invisibility_2")
+spawn("eob_golem", 3,10,0, "eob_golem_1")
+spawn("eob_golem1_1", 3,12,0, "eob_golem1_1_1")
+spawn("eob_golem", 19,3,0, "eob_golem_2")
+spawn("eob_golem", 10,25,0, "eob_golem_3")
+spawn("eob_golem", 10,24,0, "eob_golem_4")
+spawn("eob_golem", 10,23,0, "eob_golem_5")
+spawn("eob_golem", 1,10,0, "eob_golem_6")
+spawn("eob_golem", 1,12,0, "eob_golem_7")

@@ -9,11 +9,12 @@ import "mod_assets/scripts/items_EobConverter.lua"
 import "mod_assets/scripts/objects_EobConverter.lua"
 
 -- import custom assets
+
+import "mod_assets/framework/framework.lua"
+fw_loadModule('fw_magic')
+fw_loadModule('add_spells')
 import "mod_assets/scripts/monsters.lua"
 import "mod_assets/scripts/items.lua"
-import "mod_assets/scripts/framework.lua"
-import "mod_assets/scripts/framework/spells.lua"
-import "mod_assets/scripts/framework/items.lua"
 import "mod_assets/scripts/objects.lua"
 import "mod_assets/scripts/wall_sets.lua"
 import "mod_assets/scripts/recipes.lua"
