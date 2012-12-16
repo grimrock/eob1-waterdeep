@@ -404,6 +404,7 @@ defineObject{
 -- Imported things from external sources
 -- Please keep their original names for easy merging of possible new version
 -- author: montagneyaya
+-- from version 1.3
 -- link: http://grimrock.nexusmods.com/mods/120/
 
 defineObject{
@@ -418,13 +419,21 @@ defineObject{
 	editorIcon = 56,
 }
 
+defineObject{
+	name = "giant_spider_web_broken",
+	class = "Decoration",
+	model = "mod_assets/models/env/giant_spider_web_broken.fbx",
+	placement = "floor",
+	replacesFloor = false,
+	editorIcon = 128,
+}
+
 cloneObject {
 	name = "eob_ruins_net",
 	baseObject = "giant_spider_web",
 }
 
--- todo: I don't know how to set this to already broken state
 cloneObject {
 	name = "eob_ruins_net_torn",
-	baseObject = "giant_spider_web",
+	baseObject = "giant_spider_web_broken",
 }

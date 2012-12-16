@@ -1,5 +1,6 @@
 
 v0.02.13 (unreleased yet)
+- (Thomson) Imported 1.3 version of spider webs. Added torn spider webs for level 4 (spider webs textures are now much smaller)
 - (JKos) Fixed illusion walls and moved script entity illusion_walls to dungeon for easier debugging.
 - (JKos) added script entity "t" for testing purposes. Located on lower right corner of the 1st level. (see comments from the script)
 - (Thomson) added teleporters to levels 4-12 (useful for testing)
