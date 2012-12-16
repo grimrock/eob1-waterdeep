@@ -2231,6 +2231,100 @@ function L3()\
 \9-- to(somewhere)\9\
 end\
 ")
+spawn("script_entity", 21,1,1, "illusion_walls")
+	:setSource("\
+stayOpenAfterPartyPass = true\
+\
+--true = monsters can go through illusionary walls\
+monstersCanPass = false \
+\
+function isIllusionWall(entity)\
+\9return grimq.isDoor(entity) and string.find(entity.name,'illusion_wall')\
+end\
+\
+function activate()\
+\9\
+\9fw.addHooks('party','illusion_walls',{\
+\9\9\9onMove = function(self,dir)\
+\9\9\9\9for e in help.entitiesAtDir(self,dir) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9\9for e in help.entitiesAtSameTile(self) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == dir) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\9\9\9\
+\9\9\9end,\
+\9\9\9onAttack = function(champion,weapon)\
+\9\9\9\9fw.hooks.party.illusion_walls.onMove(party,party.facing)\
+\9\9\9end\
+\9\9}\
+\9)\
+\9if not monstersCanPass then\
+\9\9return\
+\9end\
+\
+\9fw.addHooks('monsters','illusion_walls',{\
+\9\9onMove = function(self,dir)\
+\9\9\9\9-- performace optimization\
+\9\9\9\9if self.level ~= party.level then\
+\9\9\9\9\9return\
+\9\9\9\9end\
+\9\9\9\9-- for monsters we have to get entities at 2 tiles ahead also, because if the door is facing towards the monster\
+\9\9\9\9-- it can't move to that tile\
+\9\9\9\9for e in help.entitiesAtDir(self,self.facing,2) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9\9for e in help.entitiesAtAhead(self) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e)) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\9\9\
+\9\9\9\9for e in help.entitiesAtSameTile(self) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e)) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\9\9\9\
+\9\9\9end\
+\9\9}\
+\9)\
+\9\
+\
+end --activate\
+\
+function doTheMagic(wall,opener)\
+\9if fw.executeEntityHooks('doors','onPass',wall,opener) == false then\
+\9\9data.unset(wall,'found')\
+\9\9wall:setDoorState('closed')\
+\9\9return\
+\9end\
+\9if data.get(wall,'found') then return end\
+\9wall:setDoorState('open')\
+\9if not findEntity(wall.id..'_fake') then\
+\9\9spawn(wall.name..\"_fake\", wall.level, wall.x, wall.y, wall.facing, wall.id..'_fake')\
+\9end\9\
+\9if stayOpenAfterPartyPass and opener.name == 'party' then\
+\9\9data.set(wall,'found',true)\
+\9\9return\
+\9else\
+\9\9local iw_timer = timers:create()\
+\9\9iw_timer:setTimerInterval(2)\
+\9\9iw_timer:setTickLimit(1,true)\
+\9\9iw_timer.wallId = wall.id\
+\9\9iw_timer:addCallback(\
+\9\9\9function(self)\
+\9\9\9\9local iwall = findEntity(self.wallId)\
+\9\9\9\9iwall:setDoorState('closed')\
+\9\9\9end\
+\9\9)\
+\9\9\
+\9\9iw_timer:activate()\
+\9end\
+end")
 
 --- level 2 ---
 

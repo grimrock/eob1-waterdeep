@@ -7,6 +7,7 @@ settings = {levels = 0}
 function create(self,id,plevel)
  plevel = plevel or party.level
  local timerEntity = spawn('timer',plevel,0,0,1,id)
+ id = timerEntity.id
  self.objects[id] = wrap(timerEntity)
  timerEntity:addConnector('activate','timers','callCallbacks')
  return self.objects[id]

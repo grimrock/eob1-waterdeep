@@ -144,6 +144,24 @@ defineObject{
 	placement = "wall",
 	editorIcon = 92,
 }
+-- Added by JKos ++
+defineObject{
+	-- this object is used in party hooks --
+	name = "eob_ruins_illusion_wall_rune_fake",
+	class = "Decoration",
+	model = "assets/models/env/temple_secret_door.fbx",
+	placement = "wall",
+	editorIcon = 92,
+}
+defineObject{
+	-- this object is used in party hooks --
+	name = "eob_ruins_illusion_wall_fake",
+	class = "Decoration",
+	model = "assets/models/env/temple_secret_door.fbx",
+	placement = "wall",
+	editorIcon = 92,
+}
+-- Added by JKos --
 
 -- ======================== --
 -- ======  Pillars   ====== --
