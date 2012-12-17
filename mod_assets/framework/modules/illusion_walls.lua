@@ -1,16 +1,15 @@
 fw_addModule('illusion_walls',[[
-activeWalls = {}
 
 stayOpenAfterPartyPass = true
 
+--true = monsters can go through illusionary walls
+monstersCanPass = false 
+
 function isIllusionWall(entity)
-	return string.sub(entity.name,-13) == 'illusion_wall'
+	return grimq.isDoor(entity) and string.find(entity.name,'illusion_wall')
 end
 
 function activate()
-	spawn("timer", 1, 0, 0, 0, "illusion_walls_timer")
-	illusion_walls_timer:addConnector('activate','illusion_walls','closeWalls')
-	illusion_walls_timer:setTimerInterval(2)
 	
 	fw.addHooks('party','illusion_walls',{
 			onMove = function(self,dir)
@@ -30,8 +29,16 @@ function activate()
 			end
 		}
 	)
+	if not monstersCanPass then
+		return
+	end
+
 	fw.addHooks('monsters','illusion_walls',{
 		onMove = function(self,dir)
+				-- performace optimization
+				if self.level ~= party.level then
+					return
+				end
 				-- for monsters we have to get entities at 2 tiles ahead also, because if the door is facing towards the monster
 				-- it can't move to that tile
 				for e in help.entitiesAtDir(self,self.facing,2) do
@@ -52,6 +59,8 @@ function activate()
 			end
 		}
 	)
+	
+
 end --activate
 
 function doTheMagic(wall,opener)
@@ -68,19 +77,20 @@ function doTheMagic(wall,opener)
 	if stayOpenAfterPartyPass and opener.name == 'party' then
 		data.set(wall,'found',true)
 		return
+	else
+		local iw_timer = timers:create()
+		iw_timer:setTimerInterval(2)
+		iw_timer:setTickLimit(1,true)
+		iw_timer.wallId = wall.id
+		iw_timer:addCallback(
+			function(self)
+				local iwall = findEntity(self.wallId)
+				iwall:setDoorState('closed')
+			end
+		)
+		
+		iw_timer:activate()
 	end
-	illusion_walls_timer:activate()
-	illusion_walls.activeWalls[wall.id] = true
-
-end
-
-function closeWalls()
-	illusion_walls_timer:deactivate()
-	for wall_id,_ in pairs(illusion_walls.activeWalls) do
-		findEntity(wall_id):setDoorState('closed')
-		illusion_walls.activeWalls[wall_id] = nil
-	end
-
 end
 ]]
 )

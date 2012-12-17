@@ -944,9 +944,8 @@ end
 -- Respawns an item (original id can be used)
 -- If level == nil the item will be respawned to object space
 function respawnItem(item,level,x,y,facing,id)
-	if not id then
-		id = item.id
-	end
+	id = id or item.id
+	
     -- if id is numeric then create a new unique id for item
     -- for some reason numeric id's are not allowed as a spawn-function argument
    if (id and string.find(id, "^%d+$")) then

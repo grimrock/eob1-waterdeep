@@ -241,6 +241,9 @@ function modifyChampion(def)
 	local champ = party:getChampion(def.id)
 	if def.items then
 		for slot,item in pairs(def.items) do
+			if (type(slot) == "string") then
+				slot = grimq.inventory[slot]
+			end
 			
 			champ:removeItem(slot)
 			

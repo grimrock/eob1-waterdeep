@@ -77,7 +77,7 @@ fw_loadModule('data')
 fw_loadModule('help')
 
 
-
+local showWarnings = false
 cloneObject{
 	name = "LoGFramework",
 	baseObject = "dungeon_door_metal",
@@ -91,7 +91,9 @@ cloneObject{
 				script = findEntity(moduleName)
 				script:setSource(source)
 			else
-				print('script entity "'..moduleName..'" found from dungeon, the module from lua file was not loaded')
+				if showWarnings then
+					print('script entity "'..moduleName..'" found from dungeon, the module from lua file was not loaded')
+				end
 			end
 		end
 		spawn('timer',party.level,0,0,0,'logfw_inittimer')

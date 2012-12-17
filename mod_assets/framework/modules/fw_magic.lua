@@ -13,7 +13,7 @@ mages = {}
 
 testMode = false
 
-function testMode(enabled)
+function setTestMode(enabled)
 	testMode = enabled
 end
 

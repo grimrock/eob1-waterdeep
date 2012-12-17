@@ -37,7 +37,7 @@ mapDesc([[
 #####...########################
 ################################
 ################################
-################################
+#############################.##
 ]])
 spawn("script_entity", 10,0,2, "texts")
 	:setSource("-- Text and variables library\
@@ -2150,9 +2150,8 @@ spawn("eob_sewers_wall_text_long", 3,26,1, "eob_sewers_wall_text_long_24")
 	:setWallText("Teleport to Level 12")
 spawn("script_entity", 30,31,3, "t")
 	:setSource("-- this script is for testing purposes only, you can call these functions from console. \
--- Eg. type t.to(floor_dirt_13) to console and the party is moved to the location of floor_dirt_1\
+-- Eg. type t.to(floor_dirt_13) to console and the party is moved to the location of floor_dirt_13\
 -- or t.t(22,16,1) moves the party to location level x=22,y=16,level=1. Level is optional (default is party.level)\
--- t.L2() levels up all champions and set stats and moves certain items from dungeon to inventory. see function L2.\
 \
 -- move party to x,y,[level]\
 -- if the first argument is an entity then teleport to it's location\
@@ -2160,76 +2159,59 @@ function to(x,y,level)\
 \9local to_level = level or party.level\
 \9local to_x = x\
 \9local to_y = y\
+\9local to_facing = party.facing\
+\9if x == nil then \
+\9\9print('Invalid entity name')\
+\9\9return\
+\9end\
 \9\
 \9if (type(x) == 'table' and x.x) then\
 \9\9to_x = x.x\
 \9\9to_y = x.y\
 \9\9to_level = x.level\
+\9\9to_facing = x.facing\
 \9end\
 \9\
 \9local portal = spawn('teleporter',party.level,party.x,party.y,party.facing)\
 \9portal:setTriggeredByMonster(false)\
 \9portal:setTriggeredByItem(false)\
-\9portal:setTeleportTarget(to_x,to_y,1,to_level)\
+\9portal:setTeleportTarget(to_x,to_y,to_facing,to_level)\
 \9portal:setInvisible(true)\
 \9local t = timers:create('test_timer')\
 \9t:setTickLimit(1,true)\
-\9t:setTimerInterval(1)\
+\9t:setTimerInterval(0.2)\
 \9t.teleporter_id = portal.id\
 \9t:addCallback(function(self) findEntity(self.teleporter_id):destroy() end)\
 \9t:activate()\
 end\
 \
--- skills:air_magic,armors,assassination,athletics,axes,daggers,dodge,earth_magic,fire_magic,ice_magic,maces,\
---       missile_weapons,spellcraft,staves,swords,throwing_weapons, unarmed_combat.\
--- stats:health, energy, strength, dexterity, vitality, willpower, protection, evasion, resist_fire, resist_cold, \
---       resist_poison, resist_shock.\
--- inventory slots: 1 (head), 2 (torso), 3 (legs), 4 (feet), 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), \
---                  9 (gaunlets), 10 (bracers), 11-31 (backpack slots).\
-\
--- (This is just an example) all values are incremental, so if you call t.L2() multiple times champions will level up and skills are raised on every call\
-function L2()\
-\9help.modifyChampion{\
-\9\9id = 1,\
-\9\9levelUp = 1,\
-\9\9statsUp = {strength=1},\
-\9\9skillsUp= {swords=4},\
-\9\9items = {[7]=eob_shield_1,[16]=note_1} -- move items from dungeon to inventory\
-\9}\
-\9help.modifyChampion{\
-\9\9id = 2,\
-\9\9levelUp = 1,\
-\9\9skillsUp= {axes=4},\
-\9\9items = {[15]=eob_remains_of_tod_uphill_1,}\
-\9}\9\
-\9help.modifyChampion{\
-\9\9id = 3,\
-\9\9levelUp = 1,\
-\9\9skillsUp = {dodge=2,missile_weapons=2},\
-\9\9items = {[15]=eob_lock_picks_1,[7]='rock*30'} -- spawn 30 rocks\
-\9}\9\9\
-\9help.modifyChampion{\
-\9\9id = 4,\
-\9\9levelUp = 1,\
-\9\9skillsUp = {spellcraft=4},\
-\9\9items = {[15]=eob_scroll_detect_magic}\
-\9}\9\
-\9to(floor_dirt_15)\9\
+-- teleports party to testpoint location and executes testpoint.activate function if defined\
+-- eg. t.run(testpoint_1)\
+function run(testpoint)\
+\9if type(testpoint) ~= 'table' or testpoint.name ~= 'testpoint'  then \
+\9\9print('Invalid testpoint')\
+\9\9return\
+\9end\
+\9to(testpoint)\
+\9if testpoint.activate then\
+\9\9testpoint.activate()\
+\9end\
 end\
 \
--- \
-function L3()\
-\9L2() -- call L2 so you don't have to call it manually\
-\9help.modifyChampion{\
-\9\9id = 1,\
-\9\9levelUp = 1,\
-\9\9statsUp = {strength=1},\
-\9\9skillsUp= {swords=4},\
-\9\9items = {[17]=eob_silver_key_1}\
-\9}\
-\9-- etc...\
-\9-- to(somewhere)\9\
+-- lists all entities whose name matches to entityName (even partially)\
+-- eg. t.list('scroll',3) list all entities whose name contains a string 'scroll'\
+function list(entityName,plevel)\
+\9grimq.fromAllEntitiesInWorld():where(\
+\9\9function(e) \
+\9\9\9if string.find(e.name, entityName) and (not plevel or e.level == plevel) then\
+\9\9\9\9print('X:'..e.x..', Y:'..e.y..', L:'..e.level..', N:'..e.name..') '..e.id)\
+\9\9\9end \
+\9\9end\
+\9)\
 end\
+\
+\
+\
 ")
 spawn("script_entity", 21,1,1, "illusion_walls")
 	:setSource("\
@@ -2324,6 +2306,48 @@ function doTheMagic(wall,opener)\
 \9\9\
 \9\9iw_timer:activate()\
 \9end\
+end")
+spawn("testpoint", 29,31,3, "testpoint_1")
+	:setSource("-- (This script is here just for a syntax reference, and of course it can be used as a template for your testpoints) \
+-- If you want to make a new testpoint just put a new testpoint entity to dungeon and copy paste \
+-- the activate function in it.\9\9\
+-- You can call t.run(testpoint_1) the party will be spawned to testpoint_1's location and the activate-function is called\
+-- to run your testpoint just call t.run(your_testpoint_id)\
+\
+-- Skills and stats and inventory slots for a reference\
+-- skills:air_magic,armors,assassination,athletics,axes,daggers,dodge,earth_magic,fire_magic,ice_magic,maces,\
+--       missile_weapons,spellcraft,staves,swords,throwing_weapons, unarmed_combat.\
+-- stats:health, energy, strength, dexterity, vitality, willpower, protection, evasion, resist_fire, resist_cold, \
+--       resist_poison, resist_shock.\
+-- inventory slots: 1 (head), 2 (torso), 3 (legs), 4 (feet), 5 (cloak), 6 (neck), 7 (handl), 8 (handr), \
+--                  9 (gaunlets), 10 (bracers), 11-31 (backpack slots).\
+\
+function activate()\
+\9help.modifyChampion{\
+\9\9id = 1, -- champion ordinal\
+\9\9levelUp = 1, -- raise level by 1 \
+\9\9statsUp = {strength=1}, -- raise strength by 1\
+\9\9skillsUp= {swords=4}, -- raise swords skill by 1\
+\9\9items = {handr=eob_shield_1,[16]=note_1} -- move eob_shield_1 and note_1 from dungeon to inventory\
+\9}\
+\9help.modifyChampion{\
+\9\9id = 2,\
+\9\9levelUp = 1,\
+\9\9skillsUp= {axes=4},\
+\9\9items = {[15]=eob_remains_of_tod_uphill_1}\
+\9}\9\
+\9help.modifyChampion{\
+\9\9id = 3,\
+\9\9levelUp = 1,\
+\9\9skillsUp = {dodge=2,missile_weapons=2},\
+\9\9items = {[15]=eob_lock_picks_1,handl='rock*30'} -- spawn 30 rocks\
+\9}\9\9\
+\9help.modifyChampion{\
+\9\9id = 4,\
+\9\9levelUp = 1,\
+\9\9skillsUp = {spellcraft=4},\
+\9\9items = {[15]=eob_scroll_detect_magic}\
+\9}\9\
 end")
 
 --- level 2 ---
@@ -4923,6 +4947,7 @@ spawn("eob_key_drow_u", 20,20,3, "eob_key_drow_u_5")
 spawn("eob_cleric_scroll_protect_evil", 5,15,0, "eob_cleric_scroll_protect_evil_1")
 spawn("eob_mage_scroll_ice_storm", 14,28,3, "eob_mage_scroll_ice_storm_1")
 spawn("eob_cleric_scroll_hold_person", 12,9,2, "eob_cleric_scroll_hold_person_2")
+	:setScrollText("")
 spawn("eob_cleric_scroll_raise_dead", 21,15,0, "eob_cleric_scroll_raise_dead_1")
 spawn("eob_mage_scroll_invisibility 10'", 9,14,2, "eob_mage_scroll_invisibility 10'_2")
 spawn("eob_leather_boots_u", 7,15,1, "eob_leather_boots_u_3")

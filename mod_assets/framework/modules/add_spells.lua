@@ -8,7 +8,6 @@ See defineSpells-function for included spells
 ]]
 fw_loadModule('fw_magic')
 fw_addModule('add_spells',[[
-
 settings = {}
 
 function activate()
