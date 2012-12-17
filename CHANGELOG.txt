@@ -1,5 +1,10 @@
 
 v0.02.13 (unreleased yet)
+- (JKos) Improved t-script entity and added a new entity object 'testpoint', which is a cloned script entity with starting location icon.
+	- You can place testpoint to dungeon and write the test scripts in them
+	- Testpoints can be executed by calling t.run(testpoint_id), which teleports the party to testpoint's location and executes the activate function of testpoint
+	- Added t.list(entityName, [level]), which list all entities whose name matches to the entityName even paritially. Level is optional. 
+	- All t.functions can be used in game too if the console is activated, I tested it and they don't break savegames or anything.
 - (Thomson) Imported 1.3 version of spider webs. Added torn spider webs for level 4 (spider webs textures are now much smaller)
 - (JKos) Fixed illusion walls and moved script entity illusion_walls to dungeon for easier debugging.
 - (JKos) added script entity "t" for testing purposes. Located on lower right corner of the 1st level. (see comments from the script)
