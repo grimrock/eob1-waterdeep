@@ -48,9 +48,16 @@ end
 DONE
 ]]
 
+local showWarnings = true
+
 local modules = {}	
 local loadOrder = {}
 local moduleInitFunction = {}
+
+--  Set to false if you dont wan't to see warnings about module scripts copy pasted to dungeon
+function setShowWarnings(show)
+	showWarnings = show
+end
 
 function fw_addModule(name,script)
 	modules[name] = script
@@ -77,7 +84,7 @@ fw_loadModule('data')
 fw_loadModule('help')
 
 
-local showWarnings = false
+
 cloneObject{
 	name = "LoGFramework",
 	baseObject = "dungeon_door_metal",

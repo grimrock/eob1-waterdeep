@@ -1193,7 +1193,7 @@ _banner()
 -- added by JKos
 function activate()
 	USE_JKOS_FRAMEWORK = true
-	MAXLEVEL = timers.settings.levels
+	MAXLEVEL = getMaxLevels()
 	grimq._activateAutos()
 end
 ]])

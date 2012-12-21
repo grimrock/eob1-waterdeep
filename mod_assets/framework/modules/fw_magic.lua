@@ -471,7 +471,7 @@ function addSpellsToMonsters(monsterNamespace,spellName,amount,targets,range,pro
 end
 ]])
 
-defineObject{
+fw_defineObject{
 	name = "spell_projectile",
 	class = "Item",
 	uiName = "Spell projectile",
@@ -532,7 +532,7 @@ function createSpell(spellDef,createScroll)
 		return
 	end
 	
-	defineObject{
+	fw_defineObject{
 	   name = 'spell_book_'..spellDef.name,
 	   uiName = spellDef.uiName,
 		class = "Item",
@@ -564,7 +564,7 @@ function createSpell(spellDef,createScroll)
 	}
 	
 	-- automatically create a scroll for every spell
-	defineObject{
+	fw_defineObject{
 		name = "scroll_"..spellDef.name,
 		class = "Item",
 		uiName = "Scroll of "..spellDef.uiName,
@@ -579,7 +579,7 @@ function createSpell(spellDef,createScroll)
 end
 
 function createSpellBook()
-	defineObject{
+	fw_defineObject{
 		name = "spell_book_mage",
 		class = "Item",
 		uiName = "Spell book",
@@ -593,7 +593,7 @@ function createSpellBook()
 	}
 	local magics = {'Fire','Air','Ice','Earth','Spellcraft'}
 	for i=1,#magics do
-		defineObject{
+		fw_defineObject{
 			name = "spell_book_level_"..i,
 			class = "Item",
 			uiName = magics[i],

@@ -1,7 +1,6 @@
 fw_addModule('timers',[[
 objects = {}
 debug = false
-settings = {levels = 0}
 
 -- spawn a new timer
 function create(self,id,plevel)
@@ -19,7 +18,7 @@ end
 
 
 function setLevels(self,levels)
-	self.settings.levels = levels
+	print('set levels is deprecated, remove the function call.')
 end
 
 -- create a wrapper object to timer passed as argument
@@ -76,7 +75,7 @@ function _deactivate(self)
 		findEntity(self.id):deactivate()
 		
 		if (self.isConstant) then
-			for l=1, timers.settings.levels do
+			for l=1, getMaxLevels() do
 				timers.objects[self.id..'_'..l]:deactivate()
 			end
 		end		
@@ -107,10 +106,6 @@ function _setTimerInterval(self,interval)
 end
 
 function _setConstant(self)
-		if timers.settings.levels == 0 then
-			print('You must set the amount of dungeon levels. For example: timers:setlevels(5)')
-			return
-		end
 		self.isConstant = true
 		timers.copyTimerToAllLevels(self)
 end
@@ -119,7 +114,7 @@ function _destroy(self)
 		findEntity(self.id):destroy()
 		timers.objects[self.id] = nil
 		if (self.isConstant) then
-			for l=1,timers.settings.levels do
+			for l=1,getMaxLevels() do
 				timers.objects[self.id..'_'..l]:destroy()
 			end
 		end
@@ -160,7 +155,7 @@ end
 
 function copyTimerToAllLevels(self)
 
-		for l=1,timers.settings.levels do
+		for l=1, getMaxLevels() do
 		
 			local t = timers:create(self.id..'_'..l,l)
 			
