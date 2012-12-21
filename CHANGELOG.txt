@@ -1,5 +1,7 @@
 
 v0.02.13 (unreleased yet)
+- (Thomson) Initial early version of events added. Example is on (15,13), level 4
+- (DJ) Added iron sewer doors
 - (JKos) Improved t-script entity and added a new entity object 'testpoint', which is a cloned script entity with starting location icon.
 	- You can place testpoint to dungeon and write the test scripts in them
 	- Testpoints can be executed by calling t.run(testpoint_id), which teleports the party to testpoint's location and executes the activate function of testpoint
