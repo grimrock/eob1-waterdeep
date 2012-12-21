@@ -2084,11 +2084,11 @@ now. Be a nice player and don't use any of those.\
 \
                         Your friendly developers")
 spawn("eob_sewers_door_metal_force", 9,15,3, "eob_sewers_door_metal_force_5")
-spawn("teleporter", 2,18,2, "teleporter_12")
+spawn("teleporter", 2,18,0, "teleporter_12")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-	:setTeleportTarget(16,20,2,4)
+	:setTeleportTarget(16,14,0,4)
 spawn("teleporter", 2,19,3, "teleporter_14")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -2347,6 +2347,50 @@ function activate()\
 \9\9skillsUp = {spellcraft=4},\
 \9\9items = {[15]=eob_scroll_detect_magic}\
 \9}\9\
+end")
+spawn("script_entity", 12,8,0, "encounters")
+	:setSource("function update(ctx, partx)\
+\
+\9local items=\"\"\
+    for i in entitiesAt(party.level, party.x, party.y) do\
+\9\9if i.class == \"ScriptEntity\" then\
+\9\9\9processEncounter(ctx, i)\
+\9\9end\
+    end\
+end\
+\
+function processEncounter(ctx, eventScript)\
+\9if not sanityCheck(eventScript) then\
+\9\9return\
+\9end\
+\9\
+\9eventScript.event(ctx)\
+\
+end\
+\
+function sanityCheck(e)\
+\9if e.name ~= \"event\" then\
+\9\9return false\
+\9end\
+\
+    if e.description == nil then\
+\9\9return false\
+\9end\
+\9\
+\9if e.active == nil or e.active == false then\
+\9\9return false\
+\9end\
+\9\
+\9return true\
+\
+end\
+\
+function printButton(ctx, x, y, text)\
+      -- draw button1 with text\
+      ctx.color(128, 128, 128)\
+      ctx.drawRect(x, y, 145, 20)\
+      ctx.color(255, 255, 255)\
+      ctx.drawText(text, x + 10, y + 15)\
 end")
 
 --- level 2 ---
@@ -3872,6 +3916,57 @@ spawn("eob_spider", 27,2,0, "eob_spider_12")
 spawn("eob_spider", 27,1,0, "eob_spider_13")
 spawn("eob_spider", 21,15,0, "eob_spider_14")
 spawn("eob_spider", 18,25,0, "eob_spider_15")
+spawn("testpoint", 16,14,0, "testpoint_2")
+	:setSource("function activate()\
+\
+end")
+spawn("event", 15,13,0, "event_2")
+	:setSource("description = \"An injured dwarf lies on the ground before you,\\n\" ..\
+\"nearly unconscious from his wounds.\"\
+\
+-- tend his wounds\
+-- talk\
+-- leave\
+\
+active = true\
+\
+\
+function event(g)\
+    -- draw transparent background\
+\9  local width = 200\
+      g.color(30,30,30,150)\
+      g.drawRect(30, 50, width + 370, 300)\
+\
+      -- draw the portrait\
+      g.color(255,255,255,255)\
+\9  g.drawImage(\"mod_assets/images/lv4-taghor.dds\", 40, 60)\
+\
+      -- draw some text\
+      g.color(255, 255, 255)\
+      g.drawText(description, 230, 80)\
+\
+\9  encounters.printButton(g, 230, 120, \"Tend his wounds\")\
+\
+\9  encounters.printButton(g, 230, 150, \"Talk\")\
+\
+\9  encounters.printButton(g, 230, 180, \"Leave\")\
+\
+      -- button logic\
+      if g.button(\"button1\", 230, 120, 145, 20) then\
+         hudPrint(\"I'm healthy again! Thanks. I'd like to join your team,but one lazy\")\
+\9\9 hudPrint(\"programmer didn't code it yet. Please try again in a week or so.\")\
+\9\9 active = false\
+      end\
+\
+      if g.button(\"button1\", 230, 150, 145, 20) then\
+         hudPrint(\"I'm too hurt to talk right now.\")\
+      end\
+\
+      if g.button(\"button1\", 230, 180, 145, 20) then\
+         hudPrint(\"How could you leave a suffering dwarf and not help?\")\
+      end\
+\
+end")
 
 --- level 5 ---
 

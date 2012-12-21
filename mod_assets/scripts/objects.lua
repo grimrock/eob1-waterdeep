@@ -17,7 +17,7 @@ cloneObject{
 cloneObject{
 	name = "eob_sewers_door_metal",
 	baseObject = "dungeon_door_metal",
-	model = "mod_assets/models/env/door_metal.fbx",
+	model = "mod_assets/models/env/eob_sewers_door.fbx",
 	doorFrameModel = "mod_assets/models/env/sewers_door_frame.fbx",
 }
 cloneObject{
