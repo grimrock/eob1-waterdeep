@@ -177,6 +177,21 @@ defineMaterial{
 	depthBias = 0,
 }
 
+-- Sewers Door Metal --
+defineMaterial{
+	name = "sewers_door",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_door_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_door_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_door_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 70,
+	depthBias = 0,
+}
+
 -- Sewers Door Frame (Arch) --
 defineMaterial{
 	name = "sewers_door_frame",
