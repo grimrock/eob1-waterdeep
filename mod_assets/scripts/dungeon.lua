@@ -2071,7 +2071,6 @@ spawn("eob_sewers_wall_text_long", 8,15,0, "eob_sewers_wall_text_long_13")
 This is feature to testing AD&D Spells")
 spawn("eob_wall_button", 8,15,0, "eob_wall_button_13")
 	:addConnector("toggle", "script_entity_11", "levelUp")
-spawn("starting_location", 10,15,0, "starting_location_1")
 spawn("note", 9,14,3, "note_1")
 	:setScrollText("Hi!\
 We, developers of this mod, frequently test various\
@@ -2350,7 +2349,9 @@ function activate()\
 \9}\9\
 end")
 spawn("script_entity", 12,8,0, "encounters")
-	:setSource("function update(ctx, partx)\
+	:setSource("-- encounters\
+\
+function update(ctx, partx)\
 \
 \9local items=\"\"\
     for i in entitiesAt(party.level, party.x, party.y) do\
@@ -2364,8 +2365,56 @@ function processEncounter(ctx, eventScript)\
 \9if not sanityCheck(eventScript) then\
 \9\9return\
 \9end\
+\
+\9local state = eventScript.state\
+\9if state == nil then\
+\9\9state = 1\
+\9end\
+\
+\9-- Check if image is defined for this event\
+\9local image_x = eventScript.x\
+\9local image_y = eventScript.y\
+\9if not image_x then\
+\9    image_x = 20\
+\9end\
+\9if not image_y then\
+\9\9image_y = 20\
+\9end\
+\9if eventScript.image then\
+\9   ctx.drawImage(eventScript.image, image_x, image_y)\
+\9end\
 \9\
-\9eventScript.event(ctx)\
+\9\
+\9-- Ok, now write a text\
+\9local text_x = eventScript.text_x\
+\9local text_y = eventScript.text_y\
+\9if not text_x then\
+\9\9text_x = 200\
+\9end\
+\9if not text_y then\
+\9\9text_y = 50\
+\9end\
+\9\
+\9stateData = eventScript.states[state]\
+\9ctx.color(255, 255, 255)\
+\9ctx.drawText(stateData[2], text_x, text_y)\
+\9\9\
+\9local tbl = eventScript.actions\
+\9\9\
+\9local buttons_x = eventScript.buttons_x\
+\9local buttons_y = eventScript.buttons_y\
+\9local buttons_width = eventScript.buttons_width\
+\9\9\
+\9printChoices(ctx, state, tbl, buttons_x, buttons_y, buttons_width)\
+end\
+\
+function printChoices(ctx, current_state, states, x, y, width)\
+\9for key1,value in pairs(states) do\
+\9\9if value[1] == current_state then\
+\9\9\9showButton(ctx, x, y, width, value[2], value[3])\
+\9\9\9y = y + 30\
+\9\9end\
+\9end\
 \
 end\
 \
@@ -2373,12 +2422,15 @@ function sanityCheck(e)\
 \9if e.name ~= \"event\" then\
 \9\9return false\
 \9end\
-\
-    if e.description == nil then\
+    if e.states == nil then\
 \9\9return false\
 \9end\
 \9\
-\9if e.active == nil or e.active == false then\
+\9if e.actions == nill then\
+\9\9return false\
+\9end\
+\9\
+\9if (e.enabled ~= true) then\
 \9\9return false\
 \9end\
 \9\
@@ -2386,13 +2438,19 @@ function sanityCheck(e)\
 \
 end\
 \
-function printButton(ctx, x, y, text)\
-      -- draw button1 with text\
-      ctx.color(128, 128, 128)\
-      ctx.drawRect(x, y, 145, 20)\
-      ctx.color(255, 255, 255)\
-      ctx.drawText(text, x + 10, y + 15)\
+function showButton(ctx, x, y, width, text, callback)\
+    -- draw button1 with text\
+    ctx.color(128, 128, 128)\
+    ctx.drawRect(x, y, width, 20)\
+    ctx.color(255, 255, 255)\
+    ctx.drawText(text, x + 10, y + 15)\
+\9local name=\"button\"..x..y\
+\9local height = 30\
+    if ctx.button(\"button1\", x, y, width, height) then\
+\9\9callback(ctx)\
+\9end\
 end")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -3922,52 +3980,69 @@ spawn("testpoint", 16,14,0, "testpoint_2")
 \
 end")
 spawn("event", 15,13,0, "event_2")
-	:setSource("description = \"An injured dwarf lies on the ground before you,\\n\" ..\
-\"nearly unconscious from his wounds.\"\
+	:setSource("-- is this event enabled?\
+enabled = true\
 \
--- tend his wounds\
--- talk\
--- leave\
+-- name of the imeage to show\
+image = \"mod_assets/images/lv4-taghor.dds\"\
 \
-active = true\
+-- image position\
+image_x = 40\
+image_y = 60\
+\
+-- text description position\
+text_x = 220\
+text_y = 60\
+\
+-- buttons position\
+buttons_x = 220\
+buttons_y = 160\
+buttons_width = 200\
+\
+-- initial state\
+state = 1\
+\
+-- functions called after specific buttons being pressed\
+function onHeal()\
+    hudPrint(\"Healing!\")\
+    state = 2\
+end\
+\
+function onTalk()\
+    hudPrint(\"Dwarf is in too much pain to talk.\")\
+end\
+\
+function onLeave()\
+    enabled = false\
+end\
+\
+function onHealed()\
+    hudPrint(\"Healed already!\")\
+end\
+\
+-- defines states. Each entry must have exactly two columns:\
+-- first is state number, the second is description shown.\
+states = {\
+  { 1, \"An injured dwarf lies on the ground before you,\\n\" ..\
+       \"nearly unconscious from his wounds.\" },\
+  { 2, \"The healed dwarf is happy.\" }\
+}\
+\
+-- defines possible actions in each state. Each entry has\
+-- 3 values. First is state number. Second is action name\
+-- (will be printed on a button). The third is a function\
+-- that will be called when action is taken (i.e. button\
+-- is pressed).\
+actions = {\
+  { 1, \"tend his wounds\", onHeal },\
+  { 1, \"talk\", onTalk },\
+  { 1, \"leave\", onLeave},\
+  { 2, \"healed\", onHealed}\
+}\
 \
 \
-function event(g)\
-    -- draw transparent background\
-\9  local width = 200\
-      g.color(30,30,30,150)\
-      g.drawRect(30, 50, width + 370, 300)\
 \
-      -- draw the portrait\
-      g.color(255,255,255,255)\
-\9  g.drawImage(\"mod_assets/images/lv4-taghor.dds\", 40, 60)\
-\
-      -- draw some text\
-      g.color(255, 255, 255)\
-      g.drawText(description, 230, 80)\
-\
-\9  encounters.printButton(g, 230, 120, \"Tend his wounds\")\
-\
-\9  encounters.printButton(g, 230, 150, \"Talk\")\
-\
-\9  encounters.printButton(g, 230, 180, \"Leave\")\
-\
-      -- button logic\
-      if g.button(\"button1\", 230, 120, 145, 20) then\
-         hudPrint(\"I'm healthy again! Thanks. I'd like to join your team,but one lazy\")\
-\9\9 hudPrint(\"programmer didn't code it yet. Please try again in a week or so.\")\
-\9\9 active = false\
-      end\
-\
-      if g.button(\"button1\", 230, 150, 145, 20) then\
-         hudPrint(\"I'm too hurt to talk right now.\")\
-      end\
-\
-      if g.button(\"button1\", 230, 180, 145, 20) then\
-         hudPrint(\"How could you leave a suffering dwarf and not help?\")\
-      end\
-\
-end")
+")
 
 --- level 5 ---
 
