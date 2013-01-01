@@ -2451,6 +2451,225 @@ function showButton(ctx, x, y, width, text, callback)\
 \9end\
 end")
 spawn("starting_location", 10,15,0, "starting_location_1")
+spawn("script_entity", 30,1,1, "gw_events")
+	:setSource("-- processes events that are located in the same\
+-- location as party\
+function processEvents(ctx)\
+\
+\9local items=\"\"\
+    for i in entitiesAt(party.level, party.x, party.y) do\
+\9\9if i.class == \"ScriptEntity\" then\
+\9\9\9processEncounter(ctx, i)\
+\9\9end\
+    end\
+end\
+\
+function processEncounter(ctx, eventScript)\
+\9if not sanityCheck(eventScript) then\
+\9\9return\
+\9end\
+\
+\9local state = eventScript.state\
+\9if state == nil then\
+\9\9state = 1\
+\9end\
+\
+\9-- Check if image is defined for this event\
+\9local image_x = eventScript.x\
+\9local image_y = eventScript.y\
+\9if not image_x then\
+\9    image_x = 20\
+\9end\
+\9if not image_y then\
+\9\9image_y = 20\
+\9end\
+\9if eventScript.image then\
+\9   ctx.drawImage(eventScript.image, image_x, image_y)\
+\9end\
+\9\
+\9\
+\9-- Ok, now write a text\
+\9local text_x = eventScript.text_x\
+\9local text_y = eventScript.text_y\
+\9if not text_x then\
+\9\9text_x = 200\
+\9end\
+\9if not text_y then\
+\9\9text_y = 50\
+\9end\
+\9\
+\9stateData = eventScript.states[state]\
+\9ctx.color(255, 255, 255)\
+\9ctx.drawText(stateData[2], text_x, text_y)\
+\9\9\
+\9local tbl = eventScript.actions\
+\9\9\
+\9local buttons_x = eventScript.buttons_x\
+\9local buttons_y = eventScript.buttons_y\
+\9local buttons_width = eventScript.buttons_width\
+\9\9\
+\9printChoices(ctx, state, tbl, buttons_x, buttons_y, buttons_width)\
+end\
+\
+function printChoices(ctx, current_state, states, x, y, width)\
+\9for key1,value in pairs(states) do\
+\9\9if value[1] == current_state then\
+\9\9\9showButton(ctx, x, y, width, value[2], value[3])\
+\9\9\9y = y + 30\
+\9\9end\
+\9end\
+\
+end\
+\
+function sanityCheck(e)\
+\9if e.name ~= \"gw_event\" then\
+\9\9return false\
+\9end\
+    if e.states == nil then\
+\9\9return false\
+\9end\
+\9\
+\9if e.actions == nill then\
+\9\9return false\
+\9end\
+\9\
+\9if (e.enabled ~= true) then\
+\9\9return false\
+\9end\
+\9\
+\9return true\
+\
+end\
+\
+function showButton(ctx, x, y, width, text, callback)\
+    -- draw button1 with text\
+    ctx.color(128, 128, 128)\
+    ctx.drawRect(x, y, width, 20)\
+    ctx.color(255, 255, 255)\
+    ctx.drawText(text, x + 10, y + 15)\
+\9local name=\"button\"..x..y\
+\9local height = 30\
+    if ctx.button(\"button1\", x, y, width, height) then\
+\9\9callback(ctx)\
+\9end\
+end")
+spawn("script_entity", 29,1,0, "gw")
+	:setSource("keyHooks = {}\
+elements = {\
+\9gui = {},\
+\9stats = {},\
+\9skills = {},\
+\9inventory = {}\
+}\
+\
+\
+function addElement(element,hookName)\
+\9hookName = hookName or 'gui'\
+   \9table.insert(elements[hookName],element)\
+end\
+\
+function removeElement(id,hookName)\
+\9hookName = hookName or 'gui'\
+\9for i,elem in ipairs(elements[hookName]) do\
+\9\9if elem.id == id then\
+\9\9\9table.remove(elements[hookName],i)\
+\9\9\9return\
+\9\9end\
+\9end\
+end\
+\
+function drawElements(g,hookName,champion)\
+\9hookName = hookName or 'gui'\
+\9for id,element in pairs(elements[hookName]) do\
+\9\9element:draw(g,champion)\
+\9end\
+end\
+\
+function draw(g)\
+\9processKeyHooks(g)\
+\9drawElements(g,'gui')\
+\9gw_events.processEvents(g)\
+end\
+\
+\
+function drawInventory(g,champ)\
+\9drawElements(g,'inventory',champ)\
+end\
+\
+function drawStats(g,champ)\
+\9drawElements(g,'stats',champ)\
+end\
+\
+function drawSkills(g,champ)\
+\9drawElements(g,'skills',champ)\
+end\
+\
+function setKeyHook(key,ptoggle,pcallback)\
+\9keyHooks[key] = {callback=pcallback,toggle=ptoggle,active=false}\
+end\
+\
+function processKeyHooks(g)\
+\9for key,hookDef in pairs(keyHooks) do\
+\9\9if hookDef.toggle then\
+\9\9\9-- toggle key state and add small threshold so the state doesn't change immediately\
+\9\9\9if not keyToggleThresholdTimer and g.keyDown(key) then\
+\9\9\9\9hookDef.active = not hookDef.active\
+\9\9\9\9local t = spawn('timer',party.level,0,0,1,'keyToggleThresholdTimer')\
+\9\9\9\9t:setTimerInterval(0.3)\
+\9\9\9\9t:addConnector('activate','gw','destroyKeyToggleThresholdTimer')\
+\9\9\9\9t:activate()\
+\9\9\9end\
+\9\9\9if hookDef.active then\
+\9\9\9\9hookDef.callback(g)\
+\9\9\9end\9\
+\9\9elseif g.keyDown(key) then\
+\9\9\9hookDef.callback(g)\
+\9\9end\
+\9end\
+end\
+\
+function destroyKeyToggleThresholdTimer()\
+\9keyToggleThresholdTimer:destroy()\
+end\
+\
+\
+\
+\
+")
+spawn("script_entity", 31,1,2, "compass")
+	:setSource("-- This example draws a compass as a GUI element. Depending on which\
+-- activation mode is chosen, it can be visible all time, toggled\
+-- with 'c' key or shown only when 'c' is pressed.\
+\
+-- draws actual compass\
+-- this function is called when compass is visible all time\
+function drawCompass(self, g)\
+\9local x = 10\
+\9local y = g.height - 200\
+\9\
+\9local dir = string.sub(\"NESW\", party.facing + 1, party.facing + 1)\
+\9g.drawImage(\"mod_assets/textures/grimwidgets/compass_full_\"..dir..\".tga\", x, y)\
+end\
+\
+-- this is a simple wrapper function that is called as key press\
+-- hook. It calls drawCompass function.\
+function callback(g)\
+\9drawCompass(self, g)\
+end\
+\
+local e = {}\
+e.id = 'compass'\
+e.draw = drawCompass\
+e.callback = callback\
+\
+-- uncomment this to enabled/disable compass by pressing C\
+gw.setKeyHook('c', true, e.callback)\
+\
+-- Uncomment this to show compass by pressing C\
+-- gw.setKeyHook('c', false, e.callback)\
+\
+-- Uncomment this to have compass permanently visible\
+-- gw.addElement(e,'gui')")
 
 --- level 2 ---
 
@@ -3979,7 +4198,7 @@ spawn("testpoint", 16,14,0, "testpoint_2")
 	:setSource("function activate()\
 \
 end")
-spawn("event", 15,13,0, "event_2")
+spawn("event", 15,14,0, "event_2")
 	:setSource("-- is this event enabled?\
 enabled = true\
 \
@@ -4042,6 +4261,70 @@ actions = {\
 \
 \
 \
+")
+spawn("gw_event", 15,13,2, "gw_event_2")
+	:setSource("-- is this event enabled?\
+enabled = true\
+\
+-- name of the imeage to show\
+image = \"mod_assets/images/lv4-taghor.dds\"\
+\
+-- todo: the following x,y coords are temporary.\
+--       They should be calculated automatically.\
+\
+-- image position\
+image_x = 40\
+image_y = 60\
+\
+-- text description position\
+text_x = 220\
+text_y = 60\
+\
+-- buttons position\
+buttons_x = 220\
+buttons_y = 160\
+buttons_width = 200\
+\
+-- initial state\
+state = 1\
+\
+-- functions called after specific buttons being pressed\
+function onHeal()\
+    hudPrint(\"Healing!\")\
+    state = 2\
+end\
+\
+function onTalk()\
+    hudPrint(\"Dwarf is in too much pain to talk.\")\
+end\
+\
+function onLeave()\
+    enabled = false\
+end\
+\
+function onHealed()\
+    hudPrint(\"He is healed already!\")\
+end\
+\
+-- defines states. Each entry must have exactly two columns:\
+-- first is state number, the second is description shown.\
+states = {\
+  { 1, \"An injured dwarf lies on the ground before you,\\n\" ..\
+       \"nearly unconscious from his wounds.\" },\
+  { 2, \"The healed dwarf is happy.\" }\
+}\
+\
+-- defines possible actions in each state. Each entry has\
+-- 3 values. First is state number. Second is action name\
+-- (will be printed on a button). The third is a function\
+-- that will be called when action is taken (i.e. button\
+-- is pressed).\
+actions = {\
+  { 1, \"tend his wounds\", onHeal },\
+  { 1, \"talk\", onTalk },\
+  { 1, \"leave\", onLeave},\
+  { 2, \"healed\", onHealed}\
+}\
 ")
 
 --- level 5 ---
