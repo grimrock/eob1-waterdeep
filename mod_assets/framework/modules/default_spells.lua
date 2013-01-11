@@ -1,3 +1,4 @@
+fw_loadModule('fw_magic')
 fw_addModule('default_spells',[[
 function activate()
 fw_magic.defineSpell{

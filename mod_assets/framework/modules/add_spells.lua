@@ -20,16 +20,17 @@ function activate()
 		end
 	end
 
-
-	
 	fw.setHook('items_spell_book.fw_magic.onLearnSpell',add_spells.onLearnSpell)
 end
 
-function defineSpells()
 
+
+function defineSpells()
 
 	fw_magic.defineSpell{
 		name='magic_missile',
+		uiname='Magic missile',
+		runes='A',
 		level=1,
 		book_page=1,
 		skill='spellcraft',
@@ -41,13 +42,8 @@ function defineSpells()
 		speed=12,
 		damageType = 'physical',
 		calculateDamage=function(caster)
-			local damage = 5
-			local modifier = 2
-			if caster.getOrdinal then
-				modifier = math.ceil(caster:getLevel()/2)
-				damage = math.random(modifier*2,damage * modifier)	
-			end	
-			return damage
+			local modifier = math.ceil(caster:getLevel()/2)
+			return math.random(modifier*2,5 * modifier)
 		end
 	}
 	
@@ -64,9 +60,7 @@ function defineSpells()
 		damageType = 'fire',
 		calculateDamage=function(caster)
 			local damage = 6
-			if caster.getOrdinal then
-				damage = math.random(caster:getLevel()*2,damage * caster:getLevel())
-			end
+			damage = math.random(caster:getLevel()*2,damage * caster:getLevel())
 			return damage
 		end
 	}	
@@ -85,10 +79,7 @@ function defineSpells()
 		calculateDamage=function(caster)
 			local modifier = 1			
 			local damage = 3	
-			if caster.getOrdinal then
-				originator = 2 ^ (caster:getOrdinal()+1) 
-				if caster:getLevel() > 9 then modifier = 2 end
-			end
+			if caster:getLevel() > 9 then modifier = 2 end
 			damage = math.random(damage * modifier,damage * 10 * modifier)
 			return damage
 		end
@@ -122,9 +113,7 @@ function defineSpells()
 		damageType = 'shock',
 		calculateDamage=function(caster)
 			local damage = 6
-			if caster.getOrdinal then
-				damage = math.random(caster:getLevel(),caster:getLevel()*damage)	
-			end	
+			damage = math.random(caster:getLevel(),caster:getLevel()*damage)	
 			return damage
 		end		
 	}		
@@ -142,9 +131,7 @@ function defineSpells()
 		damageType = 'cold',
 		calculateDamage=function(caster)
 			local damage = 5
-			if caster.getOrdinal then
-				damage = math.random(caster:getLevel()*2,caster:getLevel()*damage)	
-			end	
+			damage = math.random(caster:getLevel()*2,caster:getLevel()*damage)	
 			return damage
 		end,		
 		onCast = function(caster)
@@ -172,11 +159,12 @@ function defineSpells()
 			return math.random(3,30)
 		end,		
 		onCast = function(caster)
-			local range = 4 
+
 			local entity = caster
+			range = caster:getLevel()
+			
 			if caster.getOrdinal then
-				entity = party
-				range = caster:getLevel()
+				entity = party				
 			end
 			if range < 4 then range = 4 end
 			
@@ -274,12 +262,11 @@ melfs_acid_arrow_onHit = function(projectile,target,damage,damageType)
 					local target = fw.getById(target_id) 
 					local caster = fw.getById(caster_id) 
 					local originator = 0 
-					local modifier = 1
+					local modifier = math.ceil(caster:getLevel()/2)
 					local damage = math.random(2,6)	
 					
 					if caster.getOrdinal then
 						originator = 2 ^ (caster:getOrdinal()+1) 
-						modifier = math.ceil(caster:getLevel()/2)
 					end
 							
 					damageTile(target.level,target.x,target.y,(target.facing + 2)%4,originator+1, 'physical',damage)
@@ -287,11 +274,7 @@ melfs_acid_arrow_onHit = function(projectile,target,damage,damageType)
 					fx:setParticleSystem('hit_slime')
 					fx:translate(0,1,0)		
 			end
-			local casterLevel = 4
-			if caster.getLevel then
-				casterLevel = caster:getLevel()
-			end
-			local attacks = math.ceil(casterLevel/3)	
+			local attacks = math.ceil(caster:getLevel()/3)	
 			fw.repeatFunction(attacks,1,{fw.getId(caster),fw.getId(target)},callback,true)			
 			return false
 end
@@ -404,11 +387,9 @@ settings.hold_monster.immune= {
 
 function hold_monster(caster, x, y, direction, skill)
 
-	skill = 1
+	skill = caster:getLevel()
 	if caster.getOrdinal then
-		skill = caster:getLevel()
 		caster = party
-		
 	end	
 	
 	local target = help.nextEntityAheadOf(caster,3,{'monster','party'})

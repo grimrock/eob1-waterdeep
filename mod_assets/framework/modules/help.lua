@@ -3,6 +3,35 @@
 ]]
 fw_addModule('help',[[
 
+function freezeWorld()
+   if fw.hooksExists('monsters','fw_freezeWorld') then
+		return false
+   end
+   fw.addHooks('monsters','fw_freezeWorld',{
+         onMove = function() return false end,
+         onTurn = function() return false end,      
+         onAttack = function() return false end,
+         onRangedAttack = function() return false end,
+      },
+	  1
+   )
+   
+   fw.addHooks('party','fw_freezeWorld',{
+         onMove = function() return false end,
+         onTurn = function() return false end,      
+         onAttack = function() return false end,
+         onCastSpell = function() return false end,
+      },
+	  1
+   )
+end
+
+function unfreezeWorld()
+   fw.removeHooks('monsters','fw_freezeWorld')
+   fw.removeHooks('party','fw_freezeWorld')
+end
+
+
 -- splits string by delimeter
 -- Example: help.split('split.me.ok','.')
 function split(p,d)
@@ -83,7 +112,7 @@ function nextEntityAheadOf(fromEntity, distance,entityType,stopToBarrier)
 				return ent
 			end			
 		end
-		if stopToBarrier and help.isWall(coords.x,  coords.y) then return false end	
+		if stopToBarrier and isWall(coords.level,coords.x,  coords.y) then return false end	
 	end
 	return false
 end
@@ -217,20 +246,7 @@ function iEntitiesByName (names,level)
 	end
 	return iter
 end
--- checks if tile x,y is a wall
--- thanks to Edsploration
 
-function isWall(x,y)
-   spawn("spawner", party.level, x, y, 0, "probe_spawner"):setSpawnedEntity("probe"):activate()
-   probe_spawner:destroy()
-   for e in entitiesAt(party.level, x, y) do
-      if e.name == "probe" then
-         e:destroy()
-		 return false
-      end
-	end	
-	return e == nil
-end
 
 
 --slots: 
@@ -317,9 +333,4 @@ function getEntityType(entity)
 	if type(entity.addPullChain) == "function" then return "door" end
 end			
 ]])
-
-cloneObject{
-	name = "probe",
-	baseObject = "snail",
-}
 

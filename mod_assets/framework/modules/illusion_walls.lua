@@ -2,37 +2,8 @@ fw_addModule('illusion_walls',[[
 
 stayOpenAfterPartyPass = true
 
---true = monsters can go through illusionary walls
-monstersCanPass = false 
-
-function isIllusionWall(entity)
-	return grimq.isDoor(entity) and string.find(entity.name,'illusion_wall')
-end
-
-function activate()
-	
-	fw.addHooks('party','illusion_walls',{
-			onMove = function(self,dir)
-				for e in help.entitiesAtDir(self,dir) do
-					if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then
-						illusion_walls.doTheMagic(e,self)
-					end
-				end
-				for e in help.entitiesAtSameTile(self) do
-					if (illusion_walls.isIllusionWall(e) and e.facing == dir) then
-						illusion_walls.doTheMagic(e,self)
-					end
-				end			
-			end,
-			onAttack = function(champion,weapon)
-				fw.hooks.party.illusion_walls.onMove(party,party.facing)
-			end
-		}
-	)
-	if not monstersCanPass then
-		return
-	end
-
+-- monsters can go through illusionary walls, default is disabled
+function enableMonstersCanPass()
 	fw.addHooks('monsters','illusion_walls',{
 		onMove = function(self,dir)
 				-- performace optimization
@@ -58,12 +29,41 @@ function activate()
 				end			
 			end
 		}
-	)
+	)	
+end
+function setStayOpenAfterPartyPass(bool)
+	stayOpenAfterPartyPass = bool
+end
+
+function isIllusionWall(entity)
+	return grimq.isDoor(entity) and string.find(entity.name,'illusion_wall')
+end
+
+function activate()
 	
+	fw.addHooks('party','illusion_walls',{
+			onMove = function(self,dir)
+				for e in help.entitiesAtDir(self,dir) do
+					if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then
+						illusion_walls.doTheMagic(e,self)
+					end
+				end
+				for e in help.entitiesAtSameTile(self) do
+					if (illusion_walls.isIllusionWall(e) and e.facing == dir) then
+						illusion_walls.doTheMagic(e,self)
+					end
+				end			
+			end,
+			onAttack = function(champion,weapon)
+				fw.hooks.party.illusion_walls.onMove(party,party.facing)
+			end
+		}
+	)
 
 end --activate
 
 function doTheMagic(wall,opener)
+	-- call custom onPass-hook
 	if fw.executeEntityHooks('doors','onPass',wall,opener) == false then
 		data.unset(wall,'found')
 		wall:setDoorState('closed')
@@ -84,11 +84,9 @@ function doTheMagic(wall,opener)
 		iw_timer.wallId = wall.id
 		iw_timer:addCallback(
 			function(self)
-				local iwall = findEntity(self.wallId)
-				iwall:setDoorState('closed')
+				findEntity(self.wallId):setDoorState('closed')
 			end
 		)
-		
 		iw_timer:activate()
 	end
 end

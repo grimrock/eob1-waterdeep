@@ -99,6 +99,13 @@ function setHook(hookIdString,func,ordinal)
 	fw.hooks[hookNamespace][hooksId][hookFuncName] = func
 end
 
+function hooksExists(hookNamespace,hooksId)
+	if (fw.hooks[hookNamespace] and fw.hooks[hookNamespace][hooksId]) then
+		return true
+	end
+	return false
+end
+
 
 function removeHook(hookIdString)
 	hookIdString = hookIdString or currentHook
@@ -450,6 +457,7 @@ function fw_getHooks(entityClass,itemSubtype)
 				return retVal
 			end,
 			onEquipItem = function(champion, slot)
+				-- check that the fw script is loaded (in editor this is called before the fw is loaded because the everburning torch is spawned to the inventory instantly)
 				if not fw or fw.executeEntityHooks == nil then return end 
 				local item = champion:getItem(slot)
 				local retVal = fw.executeEntityHooks("items","onEquipItem",item,champion,slot)

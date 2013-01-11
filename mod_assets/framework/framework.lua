@@ -55,7 +55,7 @@ local loadOrder = {}
 local moduleInitFunction = {}
 
 --  Set to false if you dont wan't to see warnings about module scripts copy pasted to dungeon
-function setShowWarnings(show)
+function fw_setShowWarnings(show)
 	showWarnings = show
 end
 

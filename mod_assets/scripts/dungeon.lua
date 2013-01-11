@@ -2169,20 +2169,19 @@ function to(x,y,level)\
 \9\9to_level = x.level\
 \9\9to_facing = x.facing\
 \9end\
-\9\
 \9party:setPosition(to_x, to_y, to_facing,to_level)\
 end\
 \
 -- teleports party to testpoint location and executes testpoint.activate function if defined\
 -- eg. t.run(testpoint_1)\
-function run(testpoint)\
-\9if type(testpoint) ~= 'table' or testpoint.name ~= 'testpoint'  then \
+function run(tp)\
+\9if type(tp) ~= 'table' or tp.name ~= 'testpoint'  then \
 \9\9print('Invalid testpoint')\
 \9\9return\
 \9end\
-\9to(testpoint)\
-\9if testpoint.activate then\
-\9\9testpoint.activate()\
+\9to(tp)\
+\9if tp.activate then\
+\9\9tp.activate()\
 \9end\
 end\
 \
@@ -2440,191 +2439,6 @@ function showButton(ctx, x, y, width, text, callback)\
 \9end\
 end")
 spawn("starting_location", 10,15,0, "starting_location_1")
-spawn("script_entity", 30,1,1, "gw_events")
-	:setSource("-- processes events that are located in the same\
--- location as party\
-function processEvents(ctx)\
-\
-\9local items=\"\"\
-    for i in entitiesAt(party.level, party.x, party.y) do\
-\9\9if i.class == \"ScriptEntity\" then\
-\9\9\9processEncounter(ctx, i)\
-\9\9end\
-    end\
-end\
-\
-function processEncounter(ctx, eventScript)\
-\9if not sanityCheck(eventScript) then\
-\9\9return\
-\9end\
-\
-\9local state = eventScript.state\
-\9if state == nil then\
-\9\9state = 1\
-\9end\
-\
-\9-- Check if image is defined for this event\
-\9local image_x = eventScript.x\
-\9local image_y = eventScript.y\
-\9if not image_x then\
-\9    image_x = 20\
-\9end\
-\9if not image_y then\
-\9\9image_y = 20\
-\9end\
-\9if eventScript.image then\
-\9   ctx.drawImage(eventScript.image, image_x, image_y)\
-\9end\
-\9\
-\9\
-\9-- Ok, now write a text\
-\9local text_x = eventScript.text_x\
-\9local text_y = eventScript.text_y\
-\9if not text_x then\
-\9\9text_x = 200\
-\9end\
-\9if not text_y then\
-\9\9text_y = 50\
-\9end\
-\9\
-\9stateData = eventScript.states[state]\
-\9ctx.color(255, 255, 255)\
-\9ctx.drawText(stateData[2], text_x, text_y)\
-\9\9\
-\9local tbl = eventScript.actions\
-\9\9\
-\9local buttons_x = eventScript.buttons_x\
-\9local buttons_y = eventScript.buttons_y\
-\9local buttons_width = eventScript.buttons_width\
-\9\9\
-\9printChoices(ctx, state, tbl, buttons_x, buttons_y, buttons_width)\
-end\
-\
-function printChoices(ctx, current_state, states, x, y, width)\
-\9for key1,value in pairs(states) do\
-\9\9if value[1] == current_state then\
-\9\9\9showButton(ctx, x, y, width, value[2], value[3])\
-\9\9\9y = y + 30\
-\9\9end\
-\9end\
-\
-end\
-\
-function sanityCheck(e)\
-\9if e.name ~= \"gw_event\" then\
-\9\9return false\
-\9end\
-    if e.states == nil then\
-\9\9return false\
-\9end\
-\9\
-\9if e.actions == nill then\
-\9\9return false\
-\9end\
-\9\
-\9if (e.enabled ~= true) then\
-\9\9return false\
-\9end\
-\9\
-\9return true\
-\
-end\
-\
-function showButton(ctx, x, y, width, text, callback)\
-    -- draw button1 with text\
-    ctx.color(128, 128, 128)\
-    ctx.drawRect(x, y, width, 20)\
-    ctx.color(255, 255, 255)\
-    ctx.drawText(text, x + 10, y + 15)\
-\9local name=\"button\"..x..y\
-\9local height = 30\
-    if ctx.button(\"button1\", x, y, width, height) then\
-\9\9callback(ctx)\
-\9end\
-end")
-spawn("script_entity", 29,1,0, "gw")
-	:setSource("keyHooks = {}\
-elements = {\
-\9gui = {},\
-\9stats = {},\
-\9skills = {},\
-\9inventory = {}\
-}\
-\
-\
-function addElement(element,hookName)\
-\9hookName = hookName or 'gui'\
-   \9table.insert(elements[hookName],element)\
-end\
-\
-function removeElement(id,hookName)\
-\9hookName = hookName or 'gui'\
-\9for i,elem in ipairs(elements[hookName]) do\
-\9\9if elem.id == id then\
-\9\9\9table.remove(elements[hookName],i)\
-\9\9\9return\
-\9\9end\
-\9end\
-end\
-\
-function drawElements(g,hookName,champion)\
-\9hookName = hookName or 'gui'\
-\9for id,element in pairs(elements[hookName]) do\
-\9\9element:draw(g,champion)\
-\9end\
-end\
-\
-function draw(g)\
-\9processKeyHooks(g)\
-\9drawElements(g,'gui')\
-\9gw_events.processEvents(g)\
-end\
-\
-\
-function drawInventory(g,champ)\
-\9drawElements(g,'inventory',champ)\
-end\
-\
-function drawStats(g,champ)\
-\9drawElements(g,'stats',champ)\
-end\
-\
-function drawSkills(g,champ)\
-\9drawElements(g,'skills',champ)\
-end\
-\
-function setKeyHook(key,ptoggle,pcallback)\
-\9keyHooks[key] = {callback=pcallback,toggle=ptoggle,active=false}\
-end\
-\
-function processKeyHooks(g)\
-\9for key,hookDef in pairs(keyHooks) do\
-\9\9if hookDef.toggle then\
-\9\9\9-- toggle key state and add small threshold so the state doesn't change immediately\
-\9\9\9if not keyToggleThresholdTimer and g.keyDown(key) then\
-\9\9\9\9hookDef.active = not hookDef.active\
-\9\9\9\9local t = spawn('timer',party.level,0,0,1,'keyToggleThresholdTimer')\
-\9\9\9\9t:setTimerInterval(0.3)\
-\9\9\9\9t:addConnector('activate','gw','destroyKeyToggleThresholdTimer')\
-\9\9\9\9t:activate()\
-\9\9\9end\
-\9\9\9if hookDef.active then\
-\9\9\9\9hookDef.callback(g)\
-\9\9\9end\9\
-\9\9elseif g.keyDown(key) then\
-\9\9\9hookDef.callback(g)\
-\9\9end\
-\9end\
-end\
-\
-function destroyKeyToggleThresholdTimer()\
-\9keyToggleThresholdTimer:destroy()\
-end\
-\
-\
-\
-\
-")
 spawn("script_entity", 31,1,2, "compass")
 	:setSource("-- This example draws a compass as a GUI element. Depending on which\
 -- activation mode is chosen, it can be visible all time, toggled\
@@ -2646,19 +2460,21 @@ function callback(g)\
 \9drawCompass(self, g)\
 end\
 \
-local e = {}\
-e.id = 'compass'\
-e.draw = drawCompass\
-e.callback = callback\
-\
--- uncomment this to enabled/disable compass by pressing C\
-gw.setKeyHook('c', true, e.callback)\
-\
--- Uncomment this to show compass by pressing C\
--- gw.setKeyHook('c', false, e.callback)\
-\
--- Uncomment this to have compass permanently visible\
--- gw.addElement(e,'gui')")
+function autoexec()\
+\9local e = {}\
+\9e.id = 'compass'\
+\9e.draw = drawCompass\
+\9e.callback = callback\
+\9\
+\9-- uncomment this to enabled/disable compass by pressing C\
+\9gw.setKeyHook('c', true, e.callback)\
+\9\
+\9-- Uncomment this to show compass by pressing C\
+\9-- gw.setKeyHook('c', false, e.callback)\
+\9\
+\9-- Uncomment this to have compass permanently visible\
+\9-- gw.addElement(e,'gui')\
+end")
 
 --- level 2 ---
 

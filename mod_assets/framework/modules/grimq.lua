@@ -1197,3 +1197,6 @@ function activate()
 	grimq._activateAutos()
 end
 ]])
+
+fw_loadModule('grimqobjects')
+

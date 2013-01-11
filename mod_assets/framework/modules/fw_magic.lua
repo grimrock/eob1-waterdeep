@@ -17,6 +17,10 @@ function setTestMode(enabled)
 	testMode = enabled
 end
 
+function getSpells()
+	return spells
+end
+
 function activate()
 	-- scroll hook --
 	
@@ -30,6 +34,9 @@ function activate()
 			return true
 		end
 	})	
+	
+
+	
 end
 
 function enableSpellBook()
@@ -55,7 +62,7 @@ function onLearnSpell(scroll,champion)
 	local spellDef = fw_magic.spells[spellName]
 	if spellDef.skill then
 		if champion:getSkillLevel(spellDef.skill) < spellDef.level then
-			hudPrint("Not skillfull enough to learn this spell")
+			hudPrint("Not skilled enough to learn this spell")
 			return false
 		end
 	elseif champion:getLevel() < spellDef.level then
@@ -401,7 +408,7 @@ function preventPickingUpSpellBook()
 	end
 	local sbtimer = timers:create('spell_book_timer') 
 
-	sbtimer:setTimerInterval(0.3)
+	sbtimer:setTimerInterval(0.2)
 	sbtimer:addConnector('activate','fw_magic','spellBookScanner')
 	sbtimer:setConstant()
 	sbtimer:activate()

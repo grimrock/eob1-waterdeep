@@ -4,11 +4,13 @@
 import "assets/scripts/standard_assets.lua"
 
 import "mod_assets/framework/framework.lua"
+fw_setShowWarnings(false) -- don't show warning about script entites found from dungeon
 fw_loadModule('fw_magic')
 fw_loadModule('add_spells')
 fw_loadModule('illusion_walls')
 fw_loadModule('t')
 fw_loadModule('events')
+
 
 import "mod_assets/grimwidgets/grimwidgets.lua"
 
