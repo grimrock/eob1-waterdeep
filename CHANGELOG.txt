@@ -1,5 +1,6 @@
 
 v0.02.14 (not released yet)
+- (JKos) Grimwidgets and LoG Framework updated. (sorry about previous accidental commit)
 - (Thomson) Grimwidgets framework integrated. Currently only compass is functional.
 
 v0.02.13 (2012-12-31)
