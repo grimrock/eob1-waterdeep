@@ -15,7 +15,7 @@ cloneObject{
    lootDrop = { }
 }
 
-defineObject{
+fw_defineObject{
 	name = "slug",
 	class = "Monster",
 	model = "mod_assets/models/monsters/slug.fbx",
