@@ -2,9 +2,23 @@
 
 dungeonName "Eye of the Beholder: Waterdeep Sewers"
 author "DJ (www.oldgames.sk)"
-description "EOB: Waterdeep Sewers is attempt to recreation (remake) of first Eye of the Beholder as Grimrock Total Connversion mod. Project should be designed so close to original game as possible.\
+description "EOB: Waterdeep Sewers is attempt to recreate (remake) of first Eye of the Beholder as Grimrock Total Connversion mod. Project should be designed so close to original game as possible.\
+\
+forum:    http://is.gd/eob1_forum\
+download: http://is.gd/eob1_sources\
+homepage: http://is.gd/eob1_homepage\
+steam:    http://is.gd/eob1_steam\
+nexusmod: http://is.gd/eob1_nexus\
 \
 !!! MOD is still in experimental phase !!!\
+\
+v0.02.13\
+Levels 4-12 added (generated from EobConverter)\
+Iron sewer doors added\
+New spells: stoneskin, cone of cold, fireball, Lighting bolt, ice storm, haste\
+Spider nets on level 4\
+Slug acting as leech\
+Many other improvements\
 \
 v0.02.12\
 New object - rounded Pit/Ceiling shaft\
@@ -25,7 +39,10 @@ You can find more at Grimrock Modding Forum. Thank you for testing!\
 \
 Credits\
 -----------------------------------------\
-~DJ (http://www.oldgamnes.sk/)\
+~DJ (http://www.oldgames.sk/)\
 ~JKos - LoG Framework, AD&D Spells\
-~Tom - Texture modifications"
+~Tom - Texture modifications\
+~Bifrost,Thomson - converter from original EOB1\
+~Wallasaurus - Leech (slug) monster\
+~motagneyaya - Breakable spider nets (level 4)"
 dungeonFolder "mod_assets/scripts"
