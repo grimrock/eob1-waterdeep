@@ -2171,17 +2171,7 @@ function to(x,y,level)\
 \9\9to_facing = x.facing\
 \9end\
 \9\
-\9local portal = spawn('teleporter',party.level,party.x,party.y,party.facing)\
-\9portal:setTriggeredByMonster(false)\
-\9portal:setTriggeredByItem(false)\
-\9portal:setTeleportTarget(to_x,to_y,to_facing,to_level)\
-\9portal:setInvisible(true)\
-\9local t = timers:create('test_timer')\
-\9t:setTickLimit(1,true)\
-\9t:setTimerInterval(0.2)\
-\9t.teleporter_id = portal.id\
-\9t:addCallback(function(self) findEntity(self.teleporter_id):destroy() end)\
-\9t:activate()\
+\9party:setPosition(to_x, to_y, to_facing,to_level)\
 end\
 \
 -- teleports party to testpoint location and executes testpoint.activate function if defined\
