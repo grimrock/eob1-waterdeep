@@ -870,7 +870,7 @@ function close()\
 \9end\
 end")
 spawn("eob_sewers_cave_in_ceiling", 10,14,0, "eob_sewers_cave_in_ceiling_2")
-spawn("eob_sewers_cave_in_ceiling", 10,13,3, "eob_sewers_cave_in_ceiling_3")
+spawn("eob_sewers_cave_in_ceiling", 10,13,0, "eob_sewers_cave_in_ceiling_3")
 spawn("script_entity", 1,15,2, "party_rotators")
 	:setSource("function activate()\
 \
@@ -2481,6 +2481,7 @@ function autoexec()\
 \9-- Uncomment this to have compass permanently visible\
 \9-- gw.addElement(e,'gui')\
 end")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -2533,8 +2534,8 @@ end\
 \
 -- creates Illusionary Wall at 20,30\
 function IluWall1()\
-\9spawn(\"eob_sewers_illusion_wall\", 2, 20, 30, 1, \"illusion_wall_2_20_30_1\")\
-\9spawn(\"eob_sewers_illusion_wall\", 2, 20, 30, 3, \"illusion_wall_2_20_30_3\")\
+\9spawn(\"eob_sewers_illusion_wall\", 2, 19, 30, 1, \"illusion_wall_2_20_30_1\")\
+\9spawn(\"eob_sewers_illusion_wall\", 2, 20, 30, 1, \"illusion_wall_2_20_30_3\")\
 \9playSound(\"laugh_human_male_echo\")\
 \9hudPrint(texts.getT(\"hollow_laughter\"))\
 \9teleporter_4:setTeleportTarget(party.x, party.y, (party.facing + 1)%4)\
@@ -2604,8 +2605,8 @@ function SpecialQuest2(sender)\
 end\
 \
 \
-spawn(\"eob_sewers_wall_text_rune2\", 2, 17, 27, 3, \"walltext_rune2_01\")\
-walltext_rune2_01:setWallText(texts.getT(\"look_like_travel_marker\"))\
+\
+eob_sewers_walltext_rune_transport_1:setWallText(texts.getT(\"look_like_travel_marker\"))\
 \
 eob_sewers_wall_text_long_1:setWallText(texts.getT(\"not_all_is_as_it_appears\"))\
 eob_sewers_wall_text_long_2:setWallText(texts.getT(\"watch_your_step\"))\
@@ -2837,22 +2838,8 @@ spawn("eob_sewers_alcove", 29,17,1, "eob_sewers_alcove_2")
 	:addItem(spawn("eob_rations"))
 	:addItem(spawn("eob_potion_giant_strength"))
 	:addConnector("any", "script_entity_3", "AlcoveDoors")
-spawn("eob_sewers_illusion_wall_rune", 22,28,1, "eob_sewers_illusion_wall_rune_1")
-spawn("eob_sewers_illusion_wall_rune", 23,29,0, "eob_sewers_illusion_wall_rune_2")
-spawn("eob_sewers_illusion_wall_rune", 24,28,3, "eob_sewers_illusion_wall_rune_3")
-spawn("eob_sewers_illusion_wall_rune", 24,27,1, "eob_sewers_illusion_wall_rune_4")
-spawn("eob_sewers_illusion_wall_rune", 25,26,2, "eob_sewers_illusion_wall_rune_5")
-spawn("eob_sewers_illusion_wall_rune", 26,27,3, "eob_sewers_illusion_wall_rune_6")
-spawn("eob_sewers_illusion_wall_rune", 28,28,1, "eob_sewers_illusion_wall_rune_7")
-spawn("eob_sewers_illusion_wall_rune", 30,28,3, "eob_sewers_illusion_wall_rune_8")
-spawn("eob_sewers_illusion_wall_rune", 30,28,0, "eob_sewers_illusion_wall_rune_9")
-spawn("eob_sewers_illusion_wall_rune", 30,26,2, "eob_sewers_illusion_wall_rune_10")
-spawn("eob_sewers_illusion_wall_rune", 16,27,1, "eob_sewers_illusion_wall_rune_11")
-spawn("eob_sewers_illusion_wall_rune", 15,27,1, "eob_sewers_illusion_wall_rune_12")
-spawn("eob_sewers_illusion_wall_rune", 15,27,2, "eob_sewers_illusion_wall_rune_13")
-spawn("eob_sewers_illusion_wall", 15,28,2, "eob_sewers_illusion_wall_1")
+spawn("eob_sewers_illusion_wall", 15,29,0, "eob_sewers_illusion_wall_1")
 spawn("dungeon_ceiling_root_1", 17,27,2, "dungeon_ceiling_root_1_1")
-spawn("floor_dirt", 18,27,2, "floor_dirt_32")
 spawn("teleporter_rotator90", 19,27,3, "teleporter_rotator90_1")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
@@ -2900,8 +2887,8 @@ spawn("dungeon_ivy_1", 29,13,1, "dungeon_ivy_1_15")
 spawn("dungeon_ivy_2", 28,17,2, "dungeon_ivy_2_10")
 spawn("dungeon_ivy_1", 26,29,1, "dungeon_ivy_1_16")
 spawn("dungeon_ivy_1", 22,26,3, "dungeon_ivy_1_17")
-spawn("eob_sewers_secret_door", 18,20,1, "eob_sewers_secret_door_a1")
-spawn("eob_sewers_secret_door", 17,20,1, "eob_sewers_secret_door_a2")
+spawn("eob_sewers_secret_door", 19,20,3, "eob_sewers_secret_door_a1")
+spawn("eob_sewers_secret_door", 18,20,3, "eob_sewers_secret_door_a2")
 spawn("eob_sewers_secret_door", 16,20,1, "eob_sewers_secret_door_a3")
 spawn("script_entity", 29,19,2, "script_entity_3")
 	:setSource("-- open secret door if alcove is empty\
@@ -3435,7 +3422,23 @@ spawn("eob_sewers_wall_pipe", 25,27,2, "eob_sewers_wall_pipe_17")
 	:setWallText("")
 spawn("eob_sewers_wall_pipe", 25,29,0, "eob_sewers_wall_pipe_18")
 	:setWallText("")
-spawn("starting_location", 18,27,3, "starting_location_1")
+spawn("eob_sewers_illusion_wall", 17,27,3, "eob_sewers_illusion_wall_2")
+spawn("eob_sewers_illusion_wall", 15,27,1, "eob_sewers_illusion_wall_3")
+spawn("eob_sewers_illusion_wall", 15,27,2, "eob_sewers_illusion_wall_4")
+spawn("eob_sewers_walltext_rune_transport", 17,27,3, "eob_sewers_walltext_rune_transport_1")
+	:setWallText("")
+spawn("eob_sewers_illusion_wall", 22,28,1, "eob_sewers_illusion_wall_5")
+spawn("eob_sewers_illusion_wall", 23,29,0, "eob_sewers_illusion_wall_6")
+spawn("eob_sewers_illusion_wall", 24,28,3, "eob_sewers_illusion_wall_7")
+spawn("eob_sewers_illusion_wall", 24,27,1, "eob_sewers_illusion_wall_8")
+spawn("eob_sewers_illusion_wall", 25,26,2, "eob_sewers_illusion_wall_9")
+spawn("eob_sewers_illusion_wall", 26,27,3, "eob_sewers_illusion_wall_10")
+spawn("eob_sewers_illusion_wall", 28,28,1, "eob_sewers_illusion_wall_11")
+spawn("eob_sewers_illusion_wall", 30,28,3, "eob_sewers_illusion_wall_12")
+spawn("eob_sewers_illusion_wall", 30,28,0, "eob_sewers_illusion_wall_13")
+spawn("eob_sewers_illusion_wall", 30,26,2, "eob_sewers_illusion_wall_14")
+spawn("eob_sewers_walltext_rune_transport", 22,28,1, "eob_sewers_walltext_rune_transport_2")
+	:setWallText("")
 
 --- level 3 ---
 

@@ -30,6 +30,35 @@ defineMaterial{
 	depthBias = 0,
 }
 
+-- Sewers WallBrick - rune transport (illusion wall)
+defineMaterial{
+	name = "eob_sewers_wallbrick_rune_transport",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_wallbrick_rune_transport_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_wallbrick_rune_transport_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_wallbrick_rune_transport_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 5,
+	depthBias = 0,
+}
+-- Sewers WallBrick - carving (dagger alcove)
+defineMaterial{
+	name = "eob_sewers_wallbrick_carving",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_wallbrick_carving_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_wallbrick_carving_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_wallbrick_carving_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 5,
+	depthBias = 0,
+}
+
 -- Texture for sewer wall with the slime pipe drainage --
 defineMaterial{
 	name = "eob_sewers_wall_pipe",
@@ -60,20 +89,6 @@ defineMaterial{
 	depthBias = 0,
 }
 
--- Sewers Pillar -- ( retex of temple pillar )
-defineMaterial{
-	name = "eob_sewers_pillar",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_pillar_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_pillar_spec.tga",
-	normalMap = "assets/textures/env/temple_pillar_normal.tga",
-	doubleSided = false,
-	lighting = true,
-	alphaTest = false,
-	blendMode = "Opaque",
-	textureAddressMode = "Wrap",
-	glossiness = 5,
-	depthBias = 0,
-}
 -- Sewers Floor --
 defineMaterial{
 	name = "eob_sewers_floor",

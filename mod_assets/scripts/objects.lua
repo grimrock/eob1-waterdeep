@@ -29,7 +29,7 @@ cloneObject{
 	name = "eob_sewers_door_portcullis",
 	baseObject = "dungeon_door_portcullis",
 	model = "mod_assets/models/env/door_portcullis.fbx",
-	doorFrameModel = "mod_assets/models/env/sewers_door_frame.fbx",
+	doorFrameModel = "mod_assets/models/env/eob_sewers_door_frame.fbx",
 	killPillars = true,
 	sparse = true,
 }
@@ -167,19 +167,13 @@ defineObject{
 -- ======  Pillars   ====== --
 -- ======================== --
 -- ------------------------------------------------------------------- ++
-defineObject{
-	name = "eob_sewers_pillar",
-	class = "Decoration",
-	model = "mod_assets/models/env/eob_sewers_pillar.fbx",
-	placement = "pillar",
-	editorIcon = 108,
-}
+
 
 -- ======================== --
 -- ====  Wall Texts   ===== --
 -- ======================== --
 -- ------------------------------------------------------------------- ++
--- Wall Text - Rune for Entrance
+-- Wall Text - Kobold Rune for Entrance
 cloneObject{
 	name = "eob_sewers_wall_text_rune1",
 	baseObject = "dungeon_wall_text",
@@ -189,7 +183,7 @@ cloneObject{
 cloneObject{
 	name = "eob_sewers_wall_text_rune2",
 	baseObject = "dungeon_wall_text",
-	model = "mod_assets/models/env/sewers_wall_text_rune2.fbx",
+	model = "mod_assets/models/env/eob_sewers_walltext_rune2.fbx",
 }
 -- Wall Text Short - Runes on 1 brick
 cloneObject{
@@ -203,7 +197,13 @@ cloneObject{
 	baseObject = "dungeon_wall_text_long",
 	model = "mod_assets/models/env/sewers_wall_text_carving.fbx",
 }
-
+-- Wall Text - Rune for Transport (Illusionary walls)
+cloneObject{
+	name = "eob_sewers_walltext_rune_transport",
+	baseObject = "dungeon_wall_text",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_rune_transport.fbx",
+	replacesWall = false,
+}
 -- ======================== --
 -- ====  Decorations  ===== --
 -- ======================== --
@@ -236,7 +236,6 @@ cloneObject{
 cloneObject{
 	name = "eob_ladder_down",
 	baseObject = "lever",
-	-- model = "mod_assets/models/env/eob_ladder_down.fbx",
 	model = "mod_assets/models/env/eob_ladder_down.fbx",
 }
 cloneObject{
@@ -265,7 +264,7 @@ defineObject{
 	-- connect to function (event "any") with workaroud (add dagger back to alcove)
 	name = "eob_sewers_alcove_dagger",
 	class = "Alcove",
-	model = "mod_assets/models/env/sewers_wall_text_carving.fbx",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_carving.fbx",
 	anchorPos = vec(0.068, 1.52, 0.015),
 	anchorRotation = vec(90, 0, 0),
 	targetPos = vec(0, 1.5, 0),
