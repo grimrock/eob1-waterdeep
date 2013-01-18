@@ -2481,7 +2481,6 @@ function autoexec()\
 \9-- Uncomment this to have compass permanently visible\
 \9-- gw.addElement(e,'gui')\
 end")
-spawn("starting_location", 12,26,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -2839,15 +2838,15 @@ spawn("eob_sewers_alcove", 29,17,1, "eob_sewers_alcove_2")
 	:addItem(spawn("eob_potion_giant_strength"))
 	:addConnector("any", "script_entity_3", "AlcoveDoors")
 spawn("eob_sewers_illusion_wall_rune", 22,28,1, "eob_sewers_illusion_wall_rune_1")
-spawn("eob_sewers_illusion_wall_rune", 23,28,2, "eob_sewers_illusion_wall_rune_2")
+spawn("eob_sewers_illusion_wall_rune", 23,29,0, "eob_sewers_illusion_wall_rune_2")
 spawn("eob_sewers_illusion_wall_rune", 24,28,3, "eob_sewers_illusion_wall_rune_3")
-spawn("eob_sewers_illusion_wall_rune", 25,27,3, "eob_sewers_illusion_wall_rune_4")
+spawn("eob_sewers_illusion_wall_rune", 24,27,1, "eob_sewers_illusion_wall_rune_4")
 spawn("eob_sewers_illusion_wall_rune", 25,26,2, "eob_sewers_illusion_wall_rune_5")
-spawn("eob_sewers_illusion_wall_rune", 25,27,1, "eob_sewers_illusion_wall_rune_6")
+spawn("eob_sewers_illusion_wall_rune", 26,27,3, "eob_sewers_illusion_wall_rune_6")
 spawn("eob_sewers_illusion_wall_rune", 28,28,1, "eob_sewers_illusion_wall_rune_7")
-spawn("eob_sewers_illusion_wall_rune", 29,28,1, "eob_sewers_illusion_wall_rune_8")
+spawn("eob_sewers_illusion_wall_rune", 30,28,3, "eob_sewers_illusion_wall_rune_8")
 spawn("eob_sewers_illusion_wall_rune", 30,28,0, "eob_sewers_illusion_wall_rune_9")
-spawn("eob_sewers_illusion_wall_rune", 30,27,0, "eob_sewers_illusion_wall_rune_10")
+spawn("eob_sewers_illusion_wall_rune", 30,26,2, "eob_sewers_illusion_wall_rune_10")
 spawn("eob_sewers_illusion_wall_rune", 16,27,1, "eob_sewers_illusion_wall_rune_11")
 spawn("eob_sewers_illusion_wall_rune", 15,27,1, "eob_sewers_illusion_wall_rune_12")
 spawn("eob_sewers_illusion_wall_rune", 15,27,2, "eob_sewers_illusion_wall_rune_13")
@@ -3436,6 +3435,7 @@ spawn("eob_sewers_wall_pipe", 25,27,2, "eob_sewers_wall_pipe_17")
 	:setWallText("")
 spawn("eob_sewers_wall_pipe", 25,29,0, "eob_sewers_wall_pipe_18")
 	:setWallText("")
+spawn("starting_location", 18,27,3, "starting_location_1")
 
 --- level 3 ---
 
