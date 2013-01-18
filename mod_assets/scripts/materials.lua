@@ -2,13 +2,25 @@
 
 -- Materials for Eye of the Beholder mod --
 
+-- Transparent texture --
+defineMaterial{
+   name = "clear_wall",
+   diffuseMap = "mod_assets/textures/env/clear_walls_dif.tga",
+   doubleSided = false,
+   lighting = true,
+   alphaTest = true,
+   blendMode = "Opaque",
+   textureAddressMode = "Wrap",
+   glossiness = 0,
+   depthBias = 0,
+}
+
 -- Sewers Wall --
 defineMaterial{
 	name = "eob_sewers_wall",
-	-- there is a new texture - sewers_hd_wall02 --
-	diffuseMap = "mod_assets/textures/env/sewers_hd_wall01_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_wall01_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_wall01_normal.tga",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_wall_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_wall_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_wall_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
@@ -17,12 +29,13 @@ defineMaterial{
 	glossiness = 5,
 	depthBias = 0,
 }
--- Sewers Wall 01 -- ( retexturing of grimrock dungeon wall model )
+
+-- Texture for sewer wall with the slime pipe drainage --
 defineMaterial{
-	name = "eob_sewers_wall01",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_wall01v_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_wall01v_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_wall01v_normal.tga",
+	name = "eob_sewers_wall_pipe",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_wall_pipe_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_wall_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_wall_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
@@ -31,26 +44,13 @@ defineMaterial{
 	glossiness = 5,
 	depthBias = 0,
 }
--- Sewers Wall with Illusion Rune (Rune 2) - used for secret door / illusionary walls
+
+-- Sewers wall decorations (pipe drainage) --
 defineMaterial{
-	name = "eob_sewers_wall_rune2",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_wall01vrune2_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_wall01vrune2_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_wall01vrune2_normal.tga",
-	doubleSided = false,
-	lighting = true,
-	alphaTest = false,
-	blendMode = "Opaque",
-	textureAddressMode = "Wrap",
-	glossiness = 5,
-	depthBias = 0,
-}
--- Sewers Wall - clear - without the dirty bottom - used for pits / ceiling shafts
-defineMaterial{
-	name = "eob_sewers_wall_clear",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_wall01c_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_wall01c_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_wall01c_normal.tga",
+	name = "eob_sewers_decoration",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_decorations_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_decorations_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_decorations_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
@@ -88,20 +88,6 @@ defineMaterial{
 	glossiness = 80,
 	depthBias = 0,
 }
--- Sewers Floor Rocks (decoration) --
-defineMaterial{
-	name = "sewers_floor_rocks",
-	diffuseMap = "mod_assets/textures/env/sewers_floor_rocks_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_floor_rocks_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_floor_rocks_normal.tga",
-	doubleSided = false,
-	lighting = true,
-	alphaTest = false,
-	blendMode = "Opaque",
-	textureAddressMode = "Wrap",
-	glossiness = 40,
-	depthBias = 0,
-}
 
 -- Sewers Floor Pressure Plate --
 defineMaterial{
@@ -121,39 +107,9 @@ defineMaterial{
 -- Ceiling for Sewers
 defineMaterial{
 	name = "eob_sewers_ceiling",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_ceiling_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_ceiling_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_ceiling_normal.tga",
-	doubleSided = false,
-	lighting = true,
-	alphaTest = false,
-	blendMode = "Opaque",
-	textureAddressMode = "Wrap",
-	glossiness = 5,
-	depthBias = 0, 
-}
-
--- Sewers Stairs - used for the alcoves too --
-defineMaterial{
-	name = "sewers_stairs",
-	diffuseMap = "mod_assets/textures/env/sewers_stairs_dif.tga",
-	specularMap = "assets/textures/env/dungeon_stairs_spec.tga",
-	normalMap = "assets/textures/env/dungeon_stairs_normal.tga",
-	doubleSided = false,
-	lighting = true,
-	alphaTest = false,
-	blendMode = "Opaque",
-	textureAddressMode = "Wrap",
-	glossiness = 10,
-	depthBias = 0,
-}
-
--- Wall Text - Runes Entrance and Carving
-defineMaterial{
-	name = "sewers_wall_text_rune1",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_walltext_runes1_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_walltext_runes1_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_walltext_runes1_normal.tga",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_ceiling_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_ceiling_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_ceiling_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
@@ -162,12 +118,13 @@ defineMaterial{
 	glossiness = 5,
 	depthBias = 0,
 }
--- Wall Text - Rune Illusion and Text 1 line
+
+-- Wall text (5x) - short text, rune Entrance
 defineMaterial{
-	name = "sewers_wall_text_rune2",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_walltext_runes2_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_walltext_runes2_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_walltext_runes2_normal.tga",
+	name = "eob_sewers_walltext01",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_walltext01_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_walltext01_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_walltext01_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
@@ -194,10 +151,10 @@ defineMaterial{
 
 -- Sewers Door Frame (Arch) --
 defineMaterial{
-	name = "sewers_door_frame",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_arch_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_arch_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_arch_normal.tga",
+	name = "eob_sewers_door_frame",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_door_frame_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_door_frame_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_door_frame_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
@@ -222,20 +179,20 @@ defineMaterial{
 	depthBias = 0,
 }
 
--- Sewers Wall Secret Button - Small -- 
- defineMaterial{
-	name = "sewers_wall_secret_button",
-	diffuseMap = "mod_assets/textures/env/sewers_hd_secret_button_dif.tga",
-	specularMap = "mod_assets/textures/env/sewers_hd_secret_button_spec.tga",
-	normalMap = "mod_assets/textures/env/sewers_hd_secret_button_normal.tga",
+-- Sewers Wall Secret Button - Large -- 
+defineMaterial{
+	name = "eob_sewers_sbutton_large",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_sbutton_large_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_sbutton_large_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_sbutton_large_normal.tga",
 	doubleSided = false,
 	lighting = true,
 	alphaTest = false,
 	blendMode = "Opaque",
 	textureAddressMode = "Wrap",
-	glossiness = 15,
+	glossiness = 5,
 	depthBias = 0,
-} 
+}
 -- Wall Button - BLUE -
 defineMaterial{
 	name = "eob_button_blue",

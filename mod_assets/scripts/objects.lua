@@ -9,7 +9,7 @@
 cloneObject{
 	name = "eob_sewers_secret_door",
 	baseObject = "dungeon_secret_door",
-	model = "mod_assets/models/env/sewers_secret_door.fbx",
+		model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
 	openVelocity = 0.7,
 	closeVelocity = -0.7,
 }
@@ -18,7 +18,7 @@ cloneObject{
 	name = "eob_sewers_door_metal",
 	baseObject = "dungeon_door_metal",
 	model = "mod_assets/models/env/eob_sewers_door.fbx",
-	doorFrameModel = "mod_assets/models/env/sewers_door_frame.fbx",
+	doorFrameModel = "mod_assets/models/env/eob_sewers_door_frame.fbx",
 }
 cloneObject{
 	name = "eob_sewers_door_metal_force",
@@ -120,13 +120,13 @@ cloneObject{
 	-- this object is used in party hooks --
 	name = "eob_sewers_illusion_wall",
 	baseObject = "dungeon_secret_door",
-	model = "mod_assets/models/env/sewers_secret_door.fbx",
+	model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
 }
 defineObject{
 	-- this object is used in party hooks --
 	name = "eob_sewers_illusion_wall_fake",
 	class = "Decoration",
-	model = "mod_assets/models/env/sewers_secret_door.fbx",
+	model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
 	placement = "wall",
 	editorIcon = 92,
 }
@@ -134,13 +134,13 @@ cloneObject{
 	-- this object is used in party hooks --
 	name = "eob_sewers_illusion_wall_rune",
 	baseObject = "dungeon_secret_door",
-	model = "mod_assets/models/env/sewers_secret_door_rune2.fbx",
+	model = "mod_assets/models/env/eob_sewers_secret_door_rune.fbx",
 }
 defineObject{
 	-- this object is used in party hooks --
 	name = "eob_sewers_illusion_wall_rune_fake",
 	class = "Decoration",
-	model = "mod_assets/models/env/sewers_secret_door_rune2.fbx",
+	model = "mod_assets/models/env/eob_sewers_secret_door_rune.fbx",
 	placement = "wall",
 	editorIcon = 92,
 }
@@ -183,7 +183,7 @@ defineObject{
 cloneObject{
 	name = "eob_sewers_wall_text_rune1",
 	baseObject = "dungeon_wall_text",
-	model = "mod_assets/models/env/sewers_wall_text_rune1.fbx",
+	model = "mod_assets/models/env/eob_sewers_walltext_rune1.fbx",
 }
 -- Wall Text - Rune for Illusion
 cloneObject{
@@ -191,11 +191,11 @@ cloneObject{
 	baseObject = "dungeon_wall_text",
 	model = "mod_assets/models/env/sewers_wall_text_rune2.fbx",
 }
--- Wall Text Long - Runes text 1 line
+-- Wall Text Short - Runes on 1 brick
 cloneObject{
 	name = "eob_sewers_wall_text_long",
 	baseObject = "dungeon_wall_text_long",
-	model = "mod_assets/models/env/sewers_wall_text_long.fbx",
+	model = "mod_assets/models/env/eob_sewers_walltext_short.fbx",
 }
 -- Wall Text - Carving on the wall
 cloneObject{
@@ -216,14 +216,17 @@ cloneObject{
 
 cloneObject{
 	name = "eob_sewers_wall_drainage",
-	baseObject = "dungeon_wall_drainage",
-	model = "mod_assets/models/env/sewers_wall_drainage.fbx",
+	baseObject = "dungeon_wall_text",
+	model = "mod_assets/models/env/eob_sewers_drainage.fbx",
+	editorIcon = 92,
 }
+
 cloneObject{
 	name = "eob_sewers_wall_pipe",
-	baseObject = "receptor",
-	model = "mod_assets/models/env/sewers_pipe.fbx",
-	placement = "wall",
+	--baseObject = "receptor",
+	baseObject = "dungeon_wall_text",
+	model = "mod_assets/models/env/eob_sewers_pipe.fbx",
+	editorIcon = 72,
 }
 
 -- ======================== --
@@ -246,10 +249,16 @@ cloneObject{
 -- ======  Alcoves  ======= --
 -- ======================== --
 -- ------------------------------------------------------------------- ++
-cloneObject{
+defineObject{
 	name = "eob_sewers_alcove",
-	baseObject = "dungeon_alcove",
-	model = "mod_assets/models/env/sewers_wall_alcove.fbx",
+	class = "Alcove",
+	model = "mod_assets/models/env/eob_sewers_alcove.fbx",
+	anchorPos = vec(0, 1.211, 0.32),
+	targetPos = vec(0, 1.3, 0),
+	targetSize = vec(0.6, 0.8, 0.6),
+	placement = "wall",
+	replacesWall = true,
+	editorIcon = 8,
 }
 defineObject{
 	-- dagger carving on the wall, after insert dagger(1) must be undetachable:
@@ -304,10 +313,10 @@ cloneObject{
 	baseObject = "wall_button",
 }
 defineObject{
-	name = "eob_sewers_secret_button",
+	name = "eob_sewers_secret_button_large",
 	class = "Button",
-	model = "mod_assets/models/env/sewers_secret_button_small.fbx",
-	pressAnim = "assets/animations/env/dungeon_secret_button_small_press.fbx",
+	model = "mod_assets/models/env/eob_sewers_sbutton_large.fbx",
+	pressAnim = "assets/animations/env/temple_secret_button_large_press.fbx",
 	replacesWall = true,
 	placement = "wall",
 	editorIcon = 12,
