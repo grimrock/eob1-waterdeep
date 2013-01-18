@@ -2,6 +2,11 @@
 v0.02.14 (not released yet)
 - (JKos) Grimwidgets and LoG Framework updated. (sorry about previous accidental commit)
 - (Thomson) Grimwidgets framework integrated. Currently only compass is functional.
+- (DJ) New sewer wallset: 
+      - models and textures
+	  - clean up the old model/texture files
+	  - changes in scripts
+	  - need little more testing...
 
 v0.02.13 (2012-12-31)
 - (Thomson) Initial early version of events added. Example is on (15,13), level 4
