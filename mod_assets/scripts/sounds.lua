@@ -28,3 +28,12 @@ defineSound{
    minDistance = 1,
    maxDistance = 6,
 }
+
+defineSound{
+   name = "waterfall_loop",
+   filename = "mod_assets/sounds/waterfall.wav",
+   loop = true,
+   volume = 1,
+   minDistance = 1,
+   maxDistance = 5,
+}

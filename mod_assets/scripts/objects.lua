@@ -397,6 +397,31 @@ defineObject{
 	editorIcon = 88,
 }
 
+defineObject{
+	name = "sewers_wall_pipe_water",
+	class = "LightSource",
+	lightPosition = vec(1, 1, -0.14),
+	lightRange = 0,
+	lightColor = vec(0.45, 0.40, 0.10),
+	brightness = 0.3,
+	castShadow = false,
+	particleSystem = "sewers_pipe_water",
+	placement = "wall",
+	editorIcon = 88,
+}
+defineObject{
+	name = "sewers_drainage_water",
+	class = "LightSource",
+	lightPosition = vec(0,0,0.6),
+	lightRange = 0,
+	lightColor = vec(0.45, 0.40, 0.10),
+	brightness = 0.3,
+	castShadow = false,
+	particleSystem = "sewers_drainage_water",
+	placement = "wall",
+	editorIcon = 88,
+}
+
 -- --------------------------------------------------------------------
 -- EXPERIMENTS --------------------------------------------------------
 -- --------------------------------------------------------------------

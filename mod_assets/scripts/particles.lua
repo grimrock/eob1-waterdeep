@@ -141,3 +141,60 @@ defineParticleSystem{
 
 	}
 }
+
+defineParticleSystem{
+	name = "sewers_pipe_water",
+	emitters = {		
+		{
+			emissionRate = 500,
+         	emissionTime = 0,
+         	maxParticles = 5000,
+        	spawnBurst = false,
+        	boxMin = {-1, 0.6,0},
+        	boxMax = {-1, 0.6,0},
+        	sprayAngle = {170,180},
+        	velocity = {0.1,3},
+        	objectSpace = true,
+        	texture = "assets/textures/particles/fog.tga",
+        	lifetime = {5,5},
+        	colorAnimation = false,
+       	 	color0 = {0.35, 0.30, 0.08},
+       		opacity = 0.1,
+         	fadeIn = 0.3,
+         	fadeOut = 1,
+         	size = {0.1, 0.1},
+         	gravity = {0,-0.85,0},
+         	airResistance = 0.1,
+         	rotationSpeed = 0.3,
+         	blendMode = "Translucent",
+		}		
+	}
+}
+defineParticleSystem{
+	name = "sewers_drainage_water",
+	emitters = {		
+		{
+			emissionRate = 500,
+         	emissionTime = 0,
+         	maxParticles = 1000,
+        	spawnBurst = false,
+        	boxMin = {-0.5,0,-0.5},
+        	boxMax = {0.5,0.2,0.5},
+        	sprayAngle = {0,360},
+        	velocity = {0.3,0.3},
+        	objectSpace = false,
+        	texture = "assets/textures/particles/fog.tga",
+        	lifetime = {5,5},
+        	colorAnimation = false,
+       	 	color0 = {0.35, 0.30, 0.08},
+       		opacity = 0.4,
+         	fadeIn = 0.3,
+         	fadeOut = 1,
+         	size = {0.15, 0.15},
+         	gravity = {0,-0.85,0},
+         	airResistance = 0.1,
+         	rotationSpeed = 0.3,
+         	blendMode = "Translucent",
+		}
+	}
+}

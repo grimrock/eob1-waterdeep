@@ -332,6 +332,8 @@ end\
 -- EOBsetDefaultParty()\
 EOBsetDefaultItems()\
 \
+playSoundAt(\"waterfall_loop\", 1, 15, 14)\
+\
 hudPrint(\" \")\
 hudPrint(\" \")\
 hudPrint(\" \")\
@@ -359,7 +361,6 @@ spawn("eob_sewers_wall_text_rune1", 18,12,1, "dungeon_wall_text_rune1")
 spawn("floor_dirt", 14,16,0, "floor_dirt_1")
 spawn("eob_sewers_wall_text_rune1", 15,23,0, "dungeon_wall_text_rune2")
 	:setWallText("")
-spawn("sewers_fog", 13,15,2, "sewers_fog_1")
 spawn("sewers_fog", 18,15,2, "sewers_fog_2")
 spawn("sewers_fog", 22,11,1, "sewers_fog_3")
 spawn("sewers_fog", 22,21,2, "sewers_fog_4")
@@ -2482,6 +2483,10 @@ function autoexec()\
 \9-- gw.addElement(e,'gui')\
 end")
 spawn("starting_location", 10,15,0, "starting_location_1")
+spawn("sewers_wall_pipe_water", 20,11,2, "sewers_wall_pipe_water_1")
+spawn("sewers_wall_pipe_water", 20,13,0, "sewers_wall_pipe_water_2")
+spawn("sewers_drainage_water", 14,14,1, "sewers_drainage_water_1")
+spawn("sewers_drainage_water", 16,14,3, "sewers_drainage_water_2")
 
 --- level 2 ---
 
