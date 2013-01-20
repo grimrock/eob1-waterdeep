@@ -9,9 +9,20 @@
 cloneObject{
 	name = "eob_sewers_secret_door",
 	baseObject = "dungeon_secret_door",
-		model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
+	model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
 	openVelocity = 0.7,
 	closeVelocity = -0.7,
+}
+-- Secret door as wall cube, must be faced to 0 (north) or 2 (south) --
+cloneObject{
+	name = "eob_sewers_secret_door_cube",
+	baseObject = "eob_sewers_secret_door",
+	model = "mod_assets/models/env/eob_sewers_wall_cube_gate.fbx",
+}
+cloneObject{
+	name = "eob_secret_door_empty",
+	baseObject = "eob_sewers_secret_door",
+	model = "mod_assets/models/env/empty_object_gate.fbx",
 }
 
 cloneObject{
@@ -425,6 +436,7 @@ defineObject{
 -- --------------------------------------------------------------------
 -- EXPERIMENTS --------------------------------------------------------
 -- --------------------------------------------------------------------
+-- Wall cube as decoration (sewers wallset)
 defineObject{
 	name = "eob_sewers_wall_cube",
 	class = "Decoration",
@@ -433,6 +445,9 @@ defineObject{
 	editorIcon = 92,
 }
 
+-- --------------------------------------------------------------------
+-- EXTERNAL SOURCES ---------------------------------------------------
+-- --------------------------------------------------------------------
 
 -- Imported things from external sources
 -- Please keep their original names for easy merging of possible new version
