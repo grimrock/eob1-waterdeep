@@ -242,8 +242,8 @@ defineObject{
 	name = "eob_sewers_alcove_dagger",
 	class = "Alcove",
 	model = "mod_assets/models/env/eob_sewers_wallbrick_carving.fbx",
-	anchorPos = vec(0.068, 1.52, 0.015),
-	anchorRotation = vec(90, 0, 0),
+	anchorPos = vec(0.32, 1.50, 0.015),
+	anchorRotation = vec(90, -2, 0),
 	targetPos = vec(0, 1.5, 0),
 	targetSize = vec(0.5, 0.2, 0.2),
 	onInsertItem = function(self, item)

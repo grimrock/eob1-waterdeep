@@ -3,10 +3,16 @@ v0.02.14 (not released yet)
 - (JKos) Grimwidgets and LoG Framework updated. (sorry about previous accidental commit)
 - (Thomson) Grimwidgets framework integrated. Currently only compass is functional.
 - (DJ) New sewer wallset: 
-      - models and textures
-	  - clean up the old model/texture files
-	  - changes in scripts
-	  - need little more testing...
+	 - models and textures
+	 - clean up the old model/texture files
+	 - changes in scripts
+	 - need little more testing...
+- (DJ) Change object type for Grating/Pipe to walltext. Now we can set the text messages from EOB
+- (DJ) Bug fix: Kobold rune walltext model
+- (DJ) Added new lightsource objects with particle effect for sewer pipes ang drainage grate. Added sound effect too.
+- (DJ) New empty object for secret door: secret_door_empty
+- (DJ) Reworked Illusion walls script and mechanics. Now we need only one object "eob_illusion_wall_door" for any wallset illusion walls. Walls will be created using the proper "wall_cube" decoration object.
+- (DJ) Bug fix: Dagger carving alcove position fix
 
 v0.02.13 (2012-12-31)
 - (Thomson) Initial early version of events added. Example is on (15,13), level 4

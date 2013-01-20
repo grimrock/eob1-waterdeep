@@ -2528,7 +2528,6 @@ function doTheMagicOld(wall,opener)\
 \9\9iw_timer:activate()\
 \9end\
 end")
-spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -3505,6 +3504,7 @@ spawn("eob_sewers_walltext_rune_transport", 30,26,2, "eob_sewers_walltext_rune_t
 spawn("eob_sewers_secret_door_cube", 3,27,0, "eob_sewers_secret_door_cube_2")
 spawn("eob_secret_door_empty", 3,27,2, "eob_secret_door_empty_3")
 spawn("eob_secret_door_empty", 3,27,1, "eob_secret_door_empty_4")
+spawn("starting_location", 22,17,0, "starting_location_1")
 
 --- level 3 ---
 
