@@ -2205,13 +2205,8 @@ end\
 \
 \
 ")
-spawn("script_entity", 21,1,1, "illusion_walls")
+spawn("script_entity", 21,2,1, "illusion_walls")
 	:setSource("\
-stayOpenAfterPartyPass = true\
-\
---true = monsters can go through illusionary walls\
-monstersCanPass = false \
-\
 function isIllusionWall(entity)\
 \9return grimq.isDoor(entity) and string.find(entity.name,'illusion_wall')\
 end\
@@ -2236,69 +2231,15 @@ function activate()\
 \9\9\9end\
 \9\9}\
 \9)\
-\9if not monstersCanPass then\
-\9\9return\
-\9end\
-\
-\9fw.addHooks('monsters','illusion_walls',{\
-\9\9onMove = function(self,dir)\
-\9\9\9\9-- performace optimization\
-\9\9\9\9if self.level ~= party.level then\
-\9\9\9\9\9return\
-\9\9\9\9end\
-\9\9\9\9-- for monsters we have to get entities at 2 tiles ahead also, because if the door is facing towards the monster\
-\9\9\9\9-- it can't move to that tile\
-\9\9\9\9for e in help.entitiesAtDir(self,self.facing,2) do\
-\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then\
-\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
-\9\9\9\9\9end\
-\9\9\9\9end\
-\9\9\9\9for e in help.entitiesAtAhead(self) do\
-\9\9\9\9\9if (illusion_walls.isIllusionWall(e)) then\
-\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
-\9\9\9\9\9end\
-\9\9\9\9end\9\9\
-\9\9\9\9for e in help.entitiesAtSameTile(self) do\
-\9\9\9\9\9if (illusion_walls.isIllusionWall(e)) then\
-\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
-\9\9\9\9\9end\
-\9\9\9\9end\9\9\9\
-\9\9\9end\
-\9\9}\
-\9)\
-\9\
 \
 end --activate\
 \
 function doTheMagic(wall,opener)\
-\9if fw.executeEntityHooks('doors','onPass',wall,opener) == false then\
-\9\9data.unset(wall,'found')\
-\9\9wall:setDoorState('closed')\
-\9\9return\
-\9end\
-\9if data.get(wall,'found') then return end\
+\9if wall:isOpen() then return end\
+\9fw.debugPrint(\"open illusionwall secret door id=\"..wall.id)\
 \9wall:setDoorState('open')\
-\9if not findEntity(wall.id..'_fake') then\
-\9\9spawn(wall.name..\"_fake\", wall.level, wall.x, wall.y, wall.facing, wall.id..'_fake')\
-\9end\9\
-\9if stayOpenAfterPartyPass and opener.name == 'party' then\
-\9\9data.set(wall,'found',true)\
-\9\9return\
-\9else\
-\9\9local iw_timer = timers:create()\
-\9\9iw_timer:setTimerInterval(2)\
-\9\9iw_timer:setTickLimit(1,true)\
-\9\9iw_timer.wallId = wall.id\
-\9\9iw_timer:addCallback(\
-\9\9\9function(self)\
-\9\9\9\9local iwall = findEntity(self.wallId)\
-\9\9\9\9iwall:setDoorState('closed')\
-\9\9\9end\
-\9\9)\
-\9\9\
-\9\9iw_timer:activate()\
-\9end\
-end")
+end\
+")
 spawn("testpoint", 29,31,3, "testpoint_1")
 	:setSource("-- (This script is here just for a syntax reference, and of course it can be used as a template for your testpoints) \
 -- If you want to make a new testpoint just put a new testpoint entity to dungeon and copy paste \
@@ -2479,7 +2420,6 @@ function autoexec()\
 \9-- Uncomment this to have compass permanently visible\
 \9-- gw.addElement(e,'gui')\
 end")
-spawn("starting_location", 10,15,0, "starting_location_1")
 spawn("sewers_wall_pipe_water", 20,11,2, "sewers_wall_pipe_water_1")
 spawn("sewers_wall_pipe_water", 20,13,0, "sewers_wall_pipe_water_2")
 spawn("sewers_drainage_water", 14,14,1, "sewers_drainage_water_1")
@@ -2487,6 +2427,108 @@ spawn("sewers_drainage_water", 16,14,3, "sewers_drainage_water_2")
 spawn("eob_sewers_secret_door_cube", 19,20,0, "eob_sewers_secret_door_cube_1")
 spawn("eob_secret_door_empty", 19,20,3, "eob_secret_door_empty_1")
 spawn("eob_secret_door_empty", 19,20,2, "eob_secret_door_empty_2")
+spawn("script_entity", 22,2,1, "illusion_walls_obsolete")
+	:setSource("-- Illusion walls script - delete - 20/01/2013 --\
+\
+stayOpenAfterPartyPass = true\
+\
+--true = monsters can go through illusionary walls\
+monstersCanPass = false \
+\
+function isIllusionWall(entity)\
+\9return grimq.isDoor(entity) and string.find(entity.name,'illusion_wall')\
+end\
+\
+function activate()\
+\9\
+\9fw.addHooks('party','illusion_walls',{\
+\9\9\9onMove = function(self,dir)\
+\9\9\9\9for e in help.entitiesAtDir(self,dir) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9\9for e in help.entitiesAtSameTile(self) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == dir) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\9\9\9\
+\9\9\9end,\
+\9\9\9onAttack = function(champion,weapon)\
+\9\9\9\9fw.hooks.party.illusion_walls.onMove(party,party.facing)\
+\9\9\9end\
+\9\9}\
+\9)\
+\9if not monstersCanPass then\
+\9\9return\
+\9end\
+\
+\9fw.addHooks('monsters','illusion_walls',{\
+\9\9onMove = function(self,dir)\
+\9\9\9\9-- performace optimization\
+\9\9\9\9if self.level ~= party.level then\
+\9\9\9\9\9return\
+\9\9\9\9end\
+\9\9\9\9-- for monsters we have to get entities at 2 tiles ahead also, because if the door is facing towards the monster\
+\9\9\9\9-- it can't move to that tile\
+\9\9\9\9for e in help.entitiesAtDir(self,self.facing,2) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e) and e.facing == (dir + 2)%4) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9\9for e in help.entitiesAtAhead(self) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e)) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\9\9\
+\9\9\9\9for e in help.entitiesAtSameTile(self) do\
+\9\9\9\9\9if (illusion_walls.isIllusionWall(e)) then\
+\9\9\9\9\9\9illusion_walls.doTheMagic(e,self)\
+\9\9\9\9\9end\
+\9\9\9\9end\9\9\9\
+\9\9\9end\
+\9\9}\
+\9)\
+\9\
+\
+end --activate\
+\
+function doTheMagic(wall,opener)\
+\9fw.debugPrint(\"doTheMagic\")\
+\9--if data.get(wall,'found') then return end\
+\9wall:setDoorState('open')\
+end\
+\
+function doTheMagicOld(wall,opener)\
+\9if fw.executeEntityHooks('doors','onPass',wall,opener) == false then\
+\9\9data.unset(wall,'found')\
+\9\9wall:setDoorState('closed')\
+\9\9return\
+\9end\
+\9if data.get(wall,'found') then return end\
+\9wall:setDoorState('open')\
+\9if not findEntity(wall.id..'_fake') then\
+\9\9spawn(wall.name..\"_fake\", wall.level, wall.x, wall.y, wall.facing, wall.id..'_fake')\
+\9end\9\
+\9if stayOpenAfterPartyPass and opener.name == 'party' then\
+\9\9data.set(wall,'found',true)\
+\9\9return\
+\9else\
+\9\9local iw_timer = timers:create()\
+\9\9iw_timer:setTimerInterval(2)\
+\9\9iw_timer:setTickLimit(1,true)\
+\9\9iw_timer.wallId = wall.id\
+\9\9iw_timer:addCallback(\
+\9\9\9function(self)\
+\9\9\9\9local iwall = findEntity(self.wallId)\
+\9\9\9\9iwall:setDoorState('closed')\
+\9\9\9end\
+\9\9)\
+\9\9\
+\9\9iw_timer:activate()\
+\9end\
+end")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -2539,8 +2581,7 @@ end\
 \
 -- creates Illusionary Wall at 20,30\
 function IluWall1()\
-\9spawn(\"eob_sewers_illusion_wall\", 2, 19, 30, 1, \"illusion_wall_2_20_30_1\")\
-\9spawn(\"eob_sewers_illusion_wall\", 2, 20, 30, 1, \"illusion_wall_2_20_30_3\")\
+\9spawn(\"eob_sewers_wall_cube\", 2, 20, 30, 0, \"illusion_wall_2_20_30\")\
 \9playSound(\"laugh_human_male_echo\")\
 \9hudPrint(texts.getT(\"hollow_laughter\"))\
 \9teleporter_4:setTeleportTarget(party.x, party.y, (party.facing + 1)%4)\
@@ -2617,8 +2658,6 @@ eob_sewers_wall_text_long_1:setWallText(texts.getT(\"not_all_is_as_it_appears\")
 eob_sewers_wall_text_long_2:setWallText(texts.getT(\"watch_your_step\"))\
 eob_sewers_wall_text_long_strength:setWallText(texts.getT(\"only_the_strong\"))\
 -- eob_sewers_wall_text_carving_1:setWallText(texts.getT(\"carving_to_place\"))\
--- eob_sewers_wall_text_carving_2:setWallText(texts.getT(\"carving_to_place\"))\
--- eob_sewers_wall_text_carving_3:setWallText(texts.getT(\"carving_to_place\"))\
 ")
 spawn("eob_sewers_door_metal", 19,24,2, "dungeon_door_metal_11")
 spawn("eob_sewers_door_metal", 19,22,0, "dungeon_door_metal_12")
@@ -2826,8 +2865,6 @@ spawn("sewers_fog", 25,19,0, "sewers_fog_10")
 spawn("sewers_fog", 19,27,3, "sewers_fog_11")
 spawn("floor_dirt", 24,19,3, "floor_dirt_17")
 spawn("floor_dirt", 26,24,3, "floor_dirt_26")
-spawn("floor_dirt", 14,30,2, "floor_dirt_27")
-spawn("floor_dirt", 21,27,3, "floor_dirt_28")
 spawn("floor_dirt", 26,29,1, "floor_dirt_29")
 spawn("floor_dirt", 26,26,1, "floor_dirt_30")
 spawn("floor_dirt", 30,25,2, "floor_dirt_31")
@@ -2843,7 +2880,6 @@ spawn("eob_sewers_alcove", 29,17,1, "eob_sewers_alcove_2")
 	:addItem(spawn("eob_rations"))
 	:addItem(spawn("eob_potion_giant_strength"))
 	:addConnector("any", "script_entity_3", "AlcoveDoors")
-spawn("eob_sewers_illusion_wall", 15,29,0, "eob_sewers_illusion_wall_1")
 spawn("dungeon_ceiling_root_1", 17,27,2, "dungeon_ceiling_root_1_1")
 spawn("teleporter_rotator90", 19,27,3, "teleporter_rotator90_1")
 	:setTriggeredByParty(true)
@@ -3133,13 +3169,10 @@ spawn("eob_bow", 6,20,2, "eob_bow_1")
 spawn("eob_scroll_invisibility", 6,24,2, "eob_scroll_invisibility_1")
 	:setScrollText("")
 spawn("eob_sewers_secret_button_large", 3,26,3, "eob_sewers_secret_button_3")
-	:addConnector("toggle", "eob_sewers_secret_door_3", "open")
-	:addConnector("toggle", "eob_sewers_secret_door_4", "open")
-	:addConnector("toggle", "eob_sewers_secret_door_2", "open")
+	:addConnector("toggle", "eob_sewers_secret_door_cube_2", "open")
+	:addConnector("toggle", "eob_secret_door_empty_4", "open")
+	:addConnector("toggle", "eob_secret_door_empty_3", "open")
 	:addConnector("toggle", "secret_4", "activate")
-spawn("eob_sewers_secret_door", 3,28,0, "eob_sewers_secret_door_2")
-spawn("eob_sewers_secret_door", 3,27,1, "eob_sewers_secret_door_3")
-spawn("eob_sewers_secret_door", 3,27,0, "eob_sewers_secret_door_4")
 spawn("torch_holder", 13,20,3, "torch_holder_1")
 	:addTorch()
 spawn("torch_holder", 20,23,2, "torch_holder_7")
@@ -3427,23 +3460,51 @@ spawn("eob_sewers_wall_pipe", 25,27,2, "eob_sewers_wall_pipe_17")
 	:setWallText("")
 spawn("eob_sewers_wall_pipe", 25,29,0, "eob_sewers_wall_pipe_18")
 	:setWallText("")
-spawn("eob_sewers_illusion_wall", 17,27,3, "eob_sewers_illusion_wall_2")
-spawn("eob_sewers_illusion_wall", 15,27,1, "eob_sewers_illusion_wall_3")
-spawn("eob_sewers_illusion_wall", 15,27,2, "eob_sewers_illusion_wall_4")
 spawn("eob_sewers_walltext_rune_transport", 17,27,3, "eob_sewers_walltext_rune_transport_1")
 	:setWallText("")
-spawn("eob_sewers_illusion_wall", 22,28,1, "eob_sewers_illusion_wall_5")
-spawn("eob_sewers_illusion_wall", 23,29,0, "eob_sewers_illusion_wall_6")
-spawn("eob_sewers_illusion_wall", 24,28,3, "eob_sewers_illusion_wall_7")
-spawn("eob_sewers_illusion_wall", 24,27,1, "eob_sewers_illusion_wall_8")
-spawn("eob_sewers_illusion_wall", 25,26,2, "eob_sewers_illusion_wall_9")
-spawn("eob_sewers_illusion_wall", 26,27,3, "eob_sewers_illusion_wall_10")
-spawn("eob_sewers_illusion_wall", 28,28,1, "eob_sewers_illusion_wall_11")
-spawn("eob_sewers_illusion_wall", 30,28,3, "eob_sewers_illusion_wall_12")
-spawn("eob_sewers_illusion_wall", 30,28,0, "eob_sewers_illusion_wall_13")
-spawn("eob_sewers_illusion_wall", 30,26,2, "eob_sewers_illusion_wall_14")
-spawn("eob_sewers_walltext_rune_transport", 22,28,1, "eob_sewers_walltext_rune_transport_2")
+spawn("eob_sewers_wall_cube", 23,28,0, "eob_sewers_wall_cube_1")
+spawn("eob_illusion_wall_door", 23,28,3, "eob_illusion_wall_door_1")
+spawn("eob_illusion_wall_door", 23,29,0, "eob_illusion_wall_door_2")
+spawn("eob_illusion_wall_door", 24,28,3, "eob_illusion_wall_door_3")
+spawn("eob_sewers_wall_cube", 25,27,0, "eob_sewers_wall_cube_3")
+spawn("eob_illusion_wall_door", 25,27,3, "eob_illusion_wall_door_4")
+spawn("eob_illusion_wall_door", 25,27,0, "eob_illusion_wall_door_5")
+spawn("eob_illusion_wall_door", 26,27,3, "eob_illusion_wall_door_6")
+spawn("eob_sewers_wall_cube", 29,28,0, "eob_sewers_wall_cube_4")
+spawn("eob_sewers_wall_cube", 30,27,0, "eob_sewers_wall_cube_5")
+spawn("eob_illusion_wall_door", 28,28,1, "eob_illusion_wall_door_7")
+spawn("eob_illusion_wall_door", 30,28,0, "eob_illusion_wall_door_8")
+spawn("eob_sewers_wall_cube", 16,27,0, "eob_sewers_wall_cube_6")
+spawn("eob_sewers_wall_cube", 15,28,0, "eob_sewers_wall_cube_7")
+spawn("eob_illusion_wall_door", 17,27,3, "eob_illusion_wall_door_9")
+spawn("eob_illusion_wall_door", 15,27,2, "eob_illusion_wall_door_10")
+spawn("eob_sewers_walltext_rune_transport", 15,27,1, "eob_sewers_walltext_rune_transport_3")
 	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 15,27,2, "eob_sewers_walltext_rune_transport_4")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 22,28,1, "eob_sewers_walltext_rune_transport_5")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 24,28,3, "eob_sewers_walltext_rune_transport_6")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 23,29,0, "eob_sewers_walltext_rune_transport_7")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 24,27,1, "eob_sewers_walltext_rune_transport_8")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 26,27,3, "eob_sewers_walltext_rune_transport_9")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 25,26,2, "eob_sewers_walltext_rune_transport_10")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 28,28,1, "eob_sewers_walltext_rune_transport_11")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 30,28,3, "eob_sewers_walltext_rune_transport_12")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 30,28,0, "eob_sewers_walltext_rune_transport_13")
+	:setWallText("")
+spawn("eob_sewers_walltext_rune_transport", 30,26,2, "eob_sewers_walltext_rune_transport_14")
+	:setWallText("")
+spawn("eob_sewers_secret_door_cube", 3,27,0, "eob_sewers_secret_door_cube_2")
+spawn("eob_secret_door_empty", 3,27,2, "eob_secret_door_empty_3")
+spawn("eob_secret_door_empty", 3,27,1, "eob_secret_door_empty_4")
 
 --- level 3 ---
 

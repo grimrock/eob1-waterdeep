@@ -129,31 +129,9 @@ cloneObject{
 -- ------------------------------------------------------------------- ++
 cloneObject{
 	-- this object is used in party hooks --
-	name = "eob_sewers_illusion_wall",
+	name = "eob_illusion_wall_door",
 	baseObject = "dungeon_secret_door",
-	model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
-}
-defineObject{
-	-- this object is used in party hooks --
-	name = "eob_sewers_illusion_wall_fake",
-	class = "Decoration",
-	model = "mod_assets/models/env/eob_sewers_secret_door.fbx",
-	placement = "wall",
-	editorIcon = 92,
-}
-cloneObject{
-	-- this object is used in party hooks --
-	name = "eob_sewers_illusion_wall_rune",
-	baseObject = "dungeon_secret_door",
-	model = "mod_assets/models/env/eob_sewers_secret_door_rune.fbx",
-}
-defineObject{
-	-- this object is used in party hooks --
-	name = "eob_sewers_illusion_wall_rune_fake",
-	class = "Decoration",
-	model = "mod_assets/models/env/eob_sewers_secret_door_rune.fbx",
-	placement = "wall",
-	editorIcon = 92,
+	model = "mod_assets/models/env/empty_object_gate.fbx",
 }
 -- Added by JKos ++
 defineObject{
@@ -190,25 +168,13 @@ cloneObject{
 	baseObject = "dungeon_wall_text",
 	model = "mod_assets/models/env/eob_sewers_walltext_rune1.fbx",
 }
--- Wall Text - Rune for Illusion
-cloneObject{
-	name = "eob_sewers_wall_text_rune2",
-	baseObject = "dungeon_wall_text",
-	model = "mod_assets/models/env/eob_sewers_walltext_rune2.fbx",
-}
 -- Wall Text Short - Runes on 1 brick
 cloneObject{
 	name = "eob_sewers_wall_text_long",
 	baseObject = "dungeon_wall_text_long",
 	model = "mod_assets/models/env/eob_sewers_walltext_short.fbx",
 }
--- Wall Text - Carving on the wall
-cloneObject{
-	name = "eob_sewers_wall_text_carving",
-	baseObject = "dungeon_wall_text_long",
-	model = "mod_assets/models/env/sewers_wall_text_carving.fbx",
-}
--- Wall Text - Rune for Transport (Illusionary walls)
+-- Wall Text - Rune for Transport (Illusion walls)
 cloneObject{
 	name = "eob_sewers_walltext_rune_transport",
 	baseObject = "dungeon_wall_text",
