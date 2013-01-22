@@ -58,6 +58,20 @@ defineMaterial{
 	glossiness = 5,
 	depthBias = 0,
 }
+-- Sewers WallBrick - R.A.T.S text and arrow
+defineMaterial{
+	name = "eob_sewers_wallbrick_rats",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_wallbrick_rats_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_sewers_wallbrick_rats_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_sewers_wallbrick_rats_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 5,
+	depthBias = 0,
+}
 
 -- Texture for sewer wall with the slime pipe drainage --
 defineMaterial{

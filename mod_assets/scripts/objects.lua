@@ -181,6 +181,13 @@ cloneObject{
 	model = "mod_assets/models/env/eob_sewers_wallbrick_rune_transport.fbx",
 	replacesWall = false,
 }
+-- Wall Text - R.A.T.S text and arrow (brick)
+cloneObject{
+	name = "eob_sewers_walltext_rats",
+	baseObject = "dungeon_wall_text",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_rats.fbx",
+	replacesWall = false,
+}
 -- ======================== --
 -- ====  Decorations  ===== --
 -- ======================== --
