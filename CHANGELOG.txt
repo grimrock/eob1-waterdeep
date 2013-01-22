@@ -13,6 +13,7 @@ v0.02.14 (not released yet)
 - (DJ) New empty object for secret door: secret_door_empty
 - (DJ) Reworked Illusion walls script and mechanics. Now we need only one object "eob_illusion_wall_door" for any wallset illusion walls. Walls will be created using the proper "wall_cube" decoration object.
 - (DJ) Bug fix: Dagger carving alcove position fix
+- (DJ) Added new R.A.T.S. walltext object, fix facing of all secret doors
 
 v0.02.13 (2012-12-31)
 - (Thomson) Initial early version of events added. Example is on (15,13), level 4

@@ -2528,6 +2528,7 @@ function doTheMagicOld(wall,opener)\
 \9\9iw_timer:activate()\
 \9end\
 end")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -3504,7 +3505,6 @@ spawn("eob_sewers_walltext_rats", 9,25,3, "eob_sewers_walltext_rats_1")
 	:setWallText("R.A.T.S.")
 spawn("eob_sewers_walltext_rats", 28,10,3, "eob_sewers_walltext_rats_3")
 	:setWallText("R.A.T.S.")
-spawn("starting_location", 9,26,0, "starting_location_1")
 
 --- level 3 ---
 
