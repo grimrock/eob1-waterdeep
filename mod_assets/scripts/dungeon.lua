@@ -2528,7 +2528,6 @@ function doTheMagicOld(wall,opener)\
 \9\9iw_timer:activate()\
 \9end\
 end")
-spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -2972,8 +2971,6 @@ spawn("eob_teleporter_rats", 8,24,1, "eob_teleporter_rats_1")
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
 	:setTeleportTarget(28,9,1,2)
-spawn("eob_sewers_wall_text_long", 9,25,3, "eob_sewers_wall_text_long_4")
-	:setWallText("R.A.T.S.")
 spawn("eob_sewers_wall_drainage", 12,23,1, "eob_sewers_wall_drainage_1")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 26,24,2, "eob_sewers_wall_drainage_10")
@@ -3313,8 +3310,6 @@ spawn("eob_lock_golden", 27,6,0, "eob_lock_golden_1")
 spawn("blocker", 18,13,3, "blocker_2")
 spawn("blocker", 9,11,1, "blocker_3")
 spawn("blocker", 25,8,2, "blocker_4")
-spawn("eob_sewers_wall_text_long", 28,10,3, "eob_sewers_wall_text_long_10")
-	:setWallText("R.A.T.S.")
 spawn("floor_dirt", 1,11,2, "floor_dirt_15")
 spawn("dungeon_ivy_1", 1,11,2, "dungeon_ivy_1_26")
 spawn("sewers_fog", 18,4,2, "sewers_fog_25")
@@ -3505,6 +3500,11 @@ spawn("eob_sewers_walltext_rune_transport", 30,26,2, "eob_sewers_walltext_rune_t
 spawn("eob_sewers_secret_door_cube", 3,27,0, "eob_sewers_secret_door_cube_2")
 spawn("eob_secret_door_empty", 3,27,2, "eob_secret_door_empty_3")
 spawn("eob_secret_door_empty", 3,27,1, "eob_secret_door_empty_4")
+spawn("eob_sewers_walltext_rats", 9,25,3, "eob_sewers_walltext_rats_1")
+	:setWallText("R.A.T.S.")
+spawn("eob_sewers_walltext_rats", 28,10,3, "eob_sewers_walltext_rats_3")
+	:setWallText("R.A.T.S.")
+spawn("starting_location", 9,26,0, "starting_location_1")
 
 --- level 3 ---
 
@@ -3668,10 +3668,6 @@ spawn("eob_teleporter_rats", 3,19,0, "eob_teleporter_rats_5")
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(true)
 	:setTeleportTarget(21,1,0,3)
-spawn("eob_sewers_wall_text_long", 2,20,0, "eob_sewers_wall_text_long_11")
-	:setWallText("R.A.T.S.")
-spawn("eob_sewers_wall_text_long", 22,1,2, "eob_sewers_wall_text_long_12")
-	:setWallText("R.A.T.S.")
 spawn("eob_kuotoa", 23,4,2, "eob_kuotoa_1")
 	:addItem(spawn("eob_rations"))
 spawn("pressure_plate_hidden", 30,4,2, "pressure_plate_hidden_10")
@@ -3841,6 +3837,10 @@ spawn("pressure_plate_hidden", 22,20,2, "pressure_plate_hidden_19")
 	:setSilent(true)
 	:addConnector("activate", "script_entity_12", "SpawnPit")
 spawn("eob_sewers_door_metal", 21,24,0, "eob_sewers_door_metal_19")
+spawn("eob_sewers_walltext_rats", 22,1,2, "eob_sewers_walltext_rats_2")
+	:setWallText("R.A.T.S.")
+spawn("eob_sewers_walltext_rats", 4,20,0, "eob_sewers_walltext_rats_4")
+	:setWallText("R.A.T.S.")
 
 --- level 4 ---
 
