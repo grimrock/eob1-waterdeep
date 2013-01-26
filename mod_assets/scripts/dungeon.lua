@@ -2075,7 +2075,7 @@ spawn("eob_sewers_wall_text_long", 8,15,0, "eob_sewers_wall_text_long_13")
 This is feature to testing AD&D Spells")
 spawn("eob_wall_button", 8,15,0, "eob_wall_button_13")
 	:addConnector("toggle", "script_entity_11", "levelUp")
-spawn("note", 9,14,3, "note_1")
+spawn("note", 8,15,3, "note_1")
 	:setScrollText("Hi!\
 We, developers of this mod, frequently test various\
 aspects of the dungeon. To make it easier, we've\
@@ -2529,6 +2529,7 @@ function doTheMagicOld(wall,opener)\
 \9end\
 end")
 spawn("starting_location", 10,15,0, "starting_location_1")
+spawn("sewers_fog", 13,15,0, "sewers_fog_1")
 
 --- level 2 ---
 
@@ -3522,12 +3523,12 @@ mapDesc([[
 #.##.#....##.###....#.##.#...#.#
 #....##....#....#.#.#......###.#
 #.##.##....#.##.#.#..#.#####...#
-#.##..##.#.#.#..#.####.........#
+#.##..##.#.#.#..#.##.#.........#
 #.##.#####.#.####.#...##########
 #.##.........#....#.#.##########
 #.######.#####....#.#.....#..###
 #.#..#.#.#...##.###...###....###
-#.#..#...#........###...#.###..#
+###..#...#........###...#.###..#
 #.#...#################.#..#...#
 #.###.....#..........##.###..#.#
 #.####..#.#.######.#.##.....#..#
@@ -3639,7 +3640,7 @@ spawn("teleporter_rotator180", 25,10,3, "teleporter_rotator180_2")
 	:setHideLight(true)
 	:setScreenFlash(false)
 spawn("eob_silver_key", 28,9,0, "eob_silver_key_2")
-spawn("eob_sewers_wall_text_long", 20,9,2, "eob_sewers_wall_text_long_6")
+spawn("eob_sewers_wall_text_long", 1,15,2, "eob_sewers_wall_text_long_6")
 	:setWallText("Under construction.\
 Thank you for playing...")
 spawn("teleporter", 27,4,3, "teleporter_10")
@@ -3661,7 +3662,7 @@ spawn("eob_sewers_wall_drainage", 25,20,0, "eob_sewers_wall_drainage_21")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 25,18,2, "eob_sewers_wall_drainage_22")
 	:setWallText("")
-spawn("blocker", 19,9,3, "blocker_7")
+spawn("blocker", 19,8,3, "blocker_7")
 spawn("blocker", 1,20,1, "blocker_10")
 spawn("eob_teleporter_rats", 3,19,0, "eob_teleporter_rats_5")
 	:setTriggeredByParty(true)
@@ -3719,13 +3720,14 @@ spawn("eob_flind", 22,8,2, "eob_flind_1")
 spawn("eob_arrow", 21,6,3, "eob_arrow_4")
 spawn("eob_kuotoa", 17,5,2, "eob_kuotoa_2")
 spawn("eob_kuotoa", 19,3,2, "eob_kuotoa_3")
-spawn("eob_sewers_secret_door", 13,2,1, "eob_sewers_secret_door_30")
+spawn("eob_sewers_secret_door", 14,2,3, "eob_sewers_secret_door_30")
 spawn("eob_sewers_secret_button_large", 14,3,3, "eob_sewers_secret_button_5")
 	:addConnector("toggle", "eob_sewers_secret_door_30", "toggle")
 spawn("eob_scroll_cause_light_wnds", 12,2,3, "eob_scroll_cause_light_wnds_1")
+	:setScrollText("")
 spawn("eob_sewers_door_metal", 17,12,0, "eob_sewers_door_metal_17")
 	:addPullChain()
-spawn("eob_sewers_secret_door", 15,14,0, "eob_sewers_secret_door_31")
+spawn("eob_sewers_secret_door", 15,13,2, "eob_sewers_secret_door_31")
 spawn("arrow", 15,13,1, "arrow_1")
 spawn("eob_lock_silver_large", 16,13,2, "eob_lock_silver_large_1")
 	:setOpenedBy("eob_silver_key")
@@ -3787,6 +3789,7 @@ spawn("pressure_plate_hidden", 12,15,2, "pressure_plate_hidden_16")
 spawn("eob_gem_red", 10,15,3, "eob_gem_red_1")
 spawn("eob_dagger_backstabber", 10,15,0, "eob_dagger_backstabber_1")
 spawn("eob_scroll_detect_magic", 12,14,0, "eob_scroll_detect_magic_2")
+	:setScrollText("")
 spawn("eob_sewers_pit_illusion_off", 11,15,2, "eob_sewers_pit_illusion_off_3")
 spawn("teleporter", 11,15,0, "teleporter_pit_8")
 	:setTriggeredByParty(true)
@@ -3841,6 +3844,7 @@ spawn("eob_sewers_walltext_rats", 22,1,2, "eob_sewers_walltext_rats_2")
 	:setWallText("R.A.T.S.")
 spawn("eob_sewers_walltext_rats", 4,20,0, "eob_sewers_walltext_rats_4")
 	:setWallText("R.A.T.S.")
+spawn("blocker", 30,17,2, "blocker_11")
 
 --- level 4 ---
 

@@ -1,5 +1,5 @@
 
-v0.02.14 (not released yet)
+v0.02.14 (2013-01-22)
 - (JKos) Grimwidgets and LoG Framework updated. (sorry about previous accidental commit)
 - (Thomson) Grimwidgets framework integrated. Currently only compass is functional.
 - (DJ) New sewer wallset: 

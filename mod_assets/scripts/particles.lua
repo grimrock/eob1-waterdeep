@@ -20,7 +20,7 @@ defineParticleSystem{
         	lifetime = {10,10},
         	colorAnimation = false,
        	 	color0 = {0.67, 0.58, 0.13},
-       		opacity = 0.06,
+       		opacity = 0.02,
          	fadeIn = 5,
          	fadeOut = 5,
          	size = {2.5, 2.5},
