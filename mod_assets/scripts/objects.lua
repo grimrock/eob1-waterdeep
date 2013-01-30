@@ -204,6 +204,18 @@ cloneObject{
 	model = "mod_assets/models/env/eob_sewers_drainage.fbx",
 	editorIcon = 92,
 }
+cloneObject{
+	name = "eob_sewers_wall_drainage_bent",
+	baseObject = "dungeon_wall_text",
+	model = "mod_assets/models/env/eob_sewers_drainage_bent.fbx",
+	editorIcon = 92,
+}
+
+cloneObject{
+	name = "eob_sewers_wall_drainage_eyes",
+	baseObject = "dungeon_ivy_1",
+	model = "mod_assets/models/env/eob_sewers_drainage_eyes.fbx",
+}
 
 cloneObject{
 	name = "eob_sewers_wall_pipe",
@@ -402,6 +414,18 @@ defineObject{
 	brightness = 0.3,
 	castShadow = false,
 	particleSystem = "sewers_drainage_water",
+	placement = "wall",
+	editorIcon = 88,
+}
+defineObject{
+	name = "sewers_drainage_darkness",
+	class = "LightSource",
+	lightPosition = vec(0,0,0.6),
+	lightRange = 0,
+	lightColor = vec(0.01, 0.01, 0.01),
+	brightness = 0.1,
+	castShadow = false,
+	particleSystem = "sewers_drainage_darkness",
 	placement = "wall",
 	editorIcon = 88,
 }

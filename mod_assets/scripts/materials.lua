@@ -102,6 +102,17 @@ defineMaterial{
 	glossiness = 5,
 	depthBias = 0,
 }
+defineMaterial{
+	name = "eob_sewers_glowing_red",
+	diffuseMap = "mod_assets/textures/env/eob_sewers_decorations_dif.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Translucent",
+	textureAddressMode = "Wrap",
+	glossiness = 40,
+	depthBias = 0,
+}
 
 -- Sewers Floor --
 defineMaterial{

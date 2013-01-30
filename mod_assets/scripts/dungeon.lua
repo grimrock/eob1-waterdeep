@@ -91,6 +91,8 @@ setT(\"door_party_try_open\",\"The party tries to force the door...\")\
 setT(\"door_party_try_open_ok\",\"The party forces the door.\")\
 setT(\"door_party_try_open_failed\",\"The party tries to force the door and fails.\")\
 setT(\"door_party_try_open_again\",\"You can try to force the door again by moving to it once more...\")\
+setT(\"drainage_grate\",\"There is a drainage grate here.\")\
+setT(\"drainage_grate_eyes\",\"Something scurries deeper into the floor drain.\")\
 setT(\"feel_dizzy\", \"You feel dizzy.\")\
 setT(\"feels_no_longer_hungry\", \"feels no longer hungry!\")\
 setT(\"goind_down\",\"Going down...\")\
@@ -115,7 +117,7 @@ spawn("eob_sewers_door_metal", 18,13,0, "dungeon_door_metal_3")
 spawn("eob_lever", 13,14,0, "eob_lever_1")
 	:addConnector("any", "eob_sewers_door_metal_1", "toggle")
 spawn("eob_sewers_cave_in", 10,14,0, "eob_sewers_cave_in_1")
-spawn("pressure_plate_hidden", 18,13,2, "pressure_plate_hidden_1")
+spawn("pressure_plate_hidden", 17,12,2, "pressure_plate_hidden_1")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
@@ -174,7 +176,7 @@ function SpecialQuest1()\
 \9\9end\
 \9end\
 end")
-spawn("pressure_plate_hidden", 16,11,0, "pressure_plate_hidden_2")
+spawn("pressure_plate_hidden", 16,10,0, "pressure_plate_hidden_2")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
@@ -430,7 +432,6 @@ spawn("dungeon_ivy_1", 11,21,2, "dungeon_ivy_1_11")
 spawn("dungeon_ivy_2", 11,17,0, "dungeon_ivy_2_5")
 spawn("eob_wall_button", 16,24,1, "eob_wall_button_3")
 	:addConnector("toggle", "dungeon_door_metal_4", "open")
-spawn("floor_dirt", 16,14,2, "floor_dirt_25")
 spawn("dungeon_ivy_1", 17,18,1, "dungeon_ivy_1_12")
 spawn("temple_ceiling_lamp", 25,19,0, "temple_ceiling_lamp_1")
 spawn("eob_sewers_ceiling_shaft", 25,19,0, "eob_sewers_ceiling_shaft_1")
@@ -696,8 +697,6 @@ function activate()\
 \9fw.debugPrint(\"Party ladders activated\")\
 end")
 spawn("eob_sewers_wall_drainage", 14,14,1, "eob_sewers_wall_drainage_2")
-	:setWallText("")
-spawn("eob_sewers_wall_drainage", 16,14,3, "eob_sewers_wall_drainage_3")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 17,17,1, "eob_sewers_wall_drainage_4")
 	:setWallText("")
@@ -2423,7 +2422,6 @@ end")
 spawn("sewers_wall_pipe_water", 20,11,2, "sewers_wall_pipe_water_1")
 spawn("sewers_wall_pipe_water", 20,13,0, "sewers_wall_pipe_water_2")
 spawn("sewers_drainage_water", 14,14,1, "sewers_drainage_water_1")
-spawn("sewers_drainage_water", 16,14,3, "sewers_drainage_water_2")
 spawn("eob_sewers_secret_door_cube", 19,20,0, "eob_sewers_secret_door_cube_1")
 spawn("eob_secret_door_empty", 19,20,3, "eob_secret_door_empty_1")
 spawn("eob_secret_door_empty", 19,20,2, "eob_secret_door_empty_2")
@@ -2528,8 +2526,12 @@ function doTheMagicOld(wall,opener)\
 \9\9iw_timer:activate()\
 \9end\
 end")
-spawn("starting_location", 10,15,0, "starting_location_1")
 spawn("sewers_fog", 13,15,0, "sewers_fog_1")
+spawn("starting_location", 10,15,0, "starting_location_1")
+spawn("eob_sewers_wall_drainage_bent", 16,14,3, "eob_sewers_wall_drainage_bent_1")
+	:setWallText("Something scurries deeper into the floor drain.")
+spawn("eob_sewers_wall_drainage_eyes", 16,14,3, "eob_sewers_wall_drainage_eyes_1")
+spawn("sewers_drainage_darkness", 16,14,3, "sewers_drainage_darkness_1")
 
 --- level 2 ---
 

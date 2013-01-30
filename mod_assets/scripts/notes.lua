@@ -22,7 +22,7 @@ If the water flowed from the north, certain
 passageways would close to prevent the water
 from flooding the level. The same would happen
 if the water flowed from the east.
-]], l = 1, x = 16, y = 12, f = 1 }
+]], l = 1, x = 15, y = 12, f = 1 }
 
 WentlysNote[3] = { text = [[
 According to the city sewer layout, some of the

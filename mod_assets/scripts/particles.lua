@@ -198,3 +198,32 @@ defineParticleSystem{
 		}
 	}
 }
+
+defineParticleSystem{
+	name = "sewers_drainage_darkness",
+	emitters = {		
+		{
+			emissionRate = 250,
+         	emissionTime = 0,
+         	maxParticles = 500,
+        	spawnBurst = false,
+        	boxMin = {-0.5,0,-0.5},
+        	boxMax = {0.5,0.2,0.5},
+        	sprayAngle = {0,360},
+        	velocity = {0.3,0.3},
+        	objectSpace = false,
+        	texture = "assets/textures/particles/fog.tga",
+        	lifetime = {5,5},
+        	colorAnimation = false,
+       	 	color0 = {0.01, 0.01, 0.01},
+       		opacity = 0.4,
+         	fadeIn = 0.3,
+         	fadeOut = 1,
+         	size = {0.3, 0.5},
+         	gravity = {0,0.01,0},
+         	airResistance = 0.5,
+         	rotationSpeed = 0.8,
+         	blendMode = "Translucent",
+		}
+	}
+}
