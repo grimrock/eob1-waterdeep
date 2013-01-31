@@ -696,8 +696,6 @@ function activate()\
 \9})\
 \9fw.debugPrint(\"Party ladders activated\")\
 end")
-spawn("eob_sewers_wall_drainage", 14,14,1, "eob_sewers_wall_drainage_2")
-	:setWallText("")
 spawn("eob_sewers_wall_drainage", 17,17,1, "eob_sewers_wall_drainage_4")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 19,17,3, "eob_sewers_wall_drainage_5")
@@ -710,7 +708,7 @@ spawn("eob_sewers_wall_drainage", 13,21,2, "eob_sewers_wall_drainage_8")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 13,21,0, "eob_sewers_wall_drainage_9")
 	:setWallText("")
-spawn("script_entity", 21,0,2, "logfw_init")
+spawn("script_entity", 20,0,1, "logfw_init")
 	:setSource("spawn(\"LoGFramework\", 1,1,1,0,'fwInit')\
 fwInit:open()\
 \
@@ -743,6 +741,7 @@ function activate()\
 \9ladders_updown.activate()\
 \9forceable_doors.activate()\
 \9party_rotators.activate()\
+\9drainage_eyes_alcoves.activate()\
 \9\
 \9-- Wently's Notes --\
 \9spawn(\"WentlysNoteSpawner\", 1,1,1,0,'wnInit')\
@@ -2421,7 +2420,6 @@ function autoexec()\
 end")
 spawn("sewers_wall_pipe_water", 20,11,2, "sewers_wall_pipe_water_1")
 spawn("sewers_wall_pipe_water", 20,13,0, "sewers_wall_pipe_water_2")
-spawn("sewers_drainage_water", 14,14,1, "sewers_drainage_water_1")
 spawn("eob_sewers_secret_door_cube", 19,20,0, "eob_sewers_secret_door_cube_1")
 spawn("eob_secret_door_empty", 19,20,3, "eob_secret_door_empty_1")
 spawn("eob_secret_door_empty", 19,20,2, "eob_secret_door_empty_2")
@@ -2528,10 +2526,64 @@ function doTheMagicOld(wall,opener)\
 end")
 spawn("sewers_fog", 13,15,0, "sewers_fog_1")
 spawn("starting_location", 10,15,0, "starting_location_1")
-spawn("eob_sewers_wall_drainage_bent", 16,14,3, "eob_sewers_wall_drainage_bent_1")
-	:setWallText("Something scurries deeper into the floor drain.")
-spawn("eob_sewers_wall_drainage_eyes", 16,14,3, "eob_sewers_wall_drainage_eyes_1")
-spawn("sewers_drainage_darkness", 16,14,3, "sewers_drainage_darkness_1")
+spawn("script_entity", 15,14,2, "eob_drainage_eyes_alcove_1_15_14")
+	:setSource("-- ============================================== config begin\
+eyestate = 0\
+eyes = { { 14, 14, 1 }, { 16, 14, 3 } }\
+alcovename = \"eob_sewers_drainage_bent_alcove\"\
+eyesname = \"eob_drainage_eyes\"\
+-- ============================================== config end\
+\
+function setDrainageEyes()\
+\9if ( eyestate == 0 ) then\
+\9\9for i=1,2 do\
+\9\9\9for e in entitiesAt(self.level, eyes[i][1], eyes[i][2]) do\
+\9\9\9\9if (e.name == alcovename and e.facing == eyes[i][3]) then\
+\9\9\9\9\9e:destroy()\
+\9\9\9\9end\
+\9\9\9end\
+\9\9\9spawn(alcovename, self.level, eyes[i][1], eyes[i][2], eyes[i][3], self.id..\"_\"..i)\
+\9\9\9spawn(\"sewers_drainage_darkness\", self.level, eyes[i][1], eyes[i][2], eyes[i][3])\
+\9\9end\
+\9\9eyestate = 1\
+\9end\
+\9if ( eyestate > 0 ) then\
+\9\9local alcovetmp = findEntity(self.id..\"_\"..eyestate)\
+\9\9alcovetmp:addItem(spawn(eyesname, nil, nil, nil, nil, self.id..\"_eyes\"))\
+\9end\
+end\
+\
+function action()\
+\9eyestate = eyestate % 2 + 1\
+\9fw.debugPrint(\"destroying items... (\"..eyestate..\")\")\
+\9for i=1,2 do\
+\9\9local atmp = findEntity(self.id..\"_\"..i)\
+\9\9for itm in atmp:containedItems() do\
+\9\9\9itm:destroy()\
+\9\9end\
+\9end\
+\9findEntity(self.id..\"_\"..eyestate):addItem(spawn(eyesname, nil, nil, nil, nil, self.id..\"_eyes\"))\
+\9hudPrint(texts.getT(\"drainage_grate_eyes\"))\
+end\
+\
+setDrainageEyes()")
+spawn("script_entity", 1,17,3, "drainage_eyes_alcoves")
+	:setSource("\
+function activate()\
+\9fw.addHooks('party','drainage_eyes_alcoves', {\
+\9\9onPickUpItem = function(self, item)\
+\9\9\9if item.name == \"eob_drainage_eyes\" then\
+\9\9\9\9local scriptmp = findEntity(string.sub(item.id,1,-6))\
+\9\9\9\9fw.debugPrint(\"scriptid = \"..scriptmp.id)\
+\9\9\9\9scriptmp:action()\
+\9\9\9\9return false\
+\9\9\9end\
+\9\9end\
+\9})\
+\9fw.debugPrint(\"Drainage eyes alcoves activated\")\
+end")
+spawn("eob_sewers_drainage_bent_alcove", 14,14,1, "eob_sewers_drainage_bent_alcove_1")
+spawn("eob_sewers_drainage_bent_alcove", 16,14,3, "eob_sewers_drainage_bent_alcove_2")
 
 --- level 2 ---
 

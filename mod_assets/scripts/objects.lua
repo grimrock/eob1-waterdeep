@@ -278,6 +278,29 @@ defineObject{
 	editorIcon = 8,
 }
 
+defineObject{
+   name = "eob_sewers_drainage_bent_alcove",
+   class = "Alcove",
+   anchorPos = vec(0, 0, 0),
+   anchorRotation = vec(0, 0, 0),
+   targetPos = vec(0, 0,2, 0.5),
+   targetSize = vec(1, 1, 1),
+   model = "mod_assets/models/env/eob_sewers_drainage_bent.fbx",
+   placement = "wall",
+   replacesWall = true,
+   editorIcon = 8,
+   onInsertItem = function(self, item)
+		if item.name ~= "eob_drainage_eyes" then
+			return false
+		end
+	end,
+}
+cloneObject{
+   name = "eob_drainage_eyes",
+   baseObject = "rock",
+   model = "mod_assets/models/env/eob_sewers_drainage_eyes.fbx",
+}
+
 -- ======================== --
 -- ======  Locks  ======= --
 -- ======================== --

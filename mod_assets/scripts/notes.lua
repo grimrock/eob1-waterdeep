@@ -43,7 +43,7 @@ WentlysNote[5] = { text = [[
 There is a depression in the north wall with rolled
 up papers inside. I am surprised that the papers
 survived. I would have thought that unprotected
-paper would rot in the sewer .
+paper would rot in the sewer.
 ]], l = 1, x = 12, y = 25, f = 1 }
 
 WentlysNote[6] = { text = [[
