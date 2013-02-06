@@ -279,6 +279,19 @@ defineObject{
 }
 
 defineObject{
+   name = "eob_sewers_drainage_alcove",
+   class = "Alcove",
+   anchorPos = vec(0.25, 0, 0.25),
+   anchorRotation = vec(0, 0.5, 0),
+   targetPos = vec(0, 0, 0),
+   targetSize = vec(0.5, 0.5, 0.2),
+   model = "mod_assets/models/env/eob_sewers_drainage.fbx",
+   placement = "wall",
+   replacesWall = true,
+   editorIcon = 8,
+}
+
+defineObject{
    name = "eob_sewers_drainage_bent_alcove",
    class = "Alcove",
    anchorPos = vec(0, 0, 0),

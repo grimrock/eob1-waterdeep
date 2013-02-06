@@ -334,7 +334,9 @@ end\
 -- EOBsetDefaultParty()\
 EOBsetDefaultItems()\
 \
-playSoundAt(\"waterfall_loop\", 1, 15, 14)\
+-- drainage grate water sounds --\
+playSoundAt(\"waterfall_loop\", 1, 18, 17)\
+playSoundAt(\"waterfall_loop\", 1, 13, 22)\
 \
 hudPrint(\" \")\
 hudPrint(\" \")\
@@ -408,7 +410,6 @@ spawn("eob_sewers_secret_button_large", 25,21,1, "eob_sewers_secret_button_1")
 	:addConnector("toggle", "dungeon_secret_door_5", "toggle")
 	:addConnector("toggle", "secret_2", "activate")
 spawn("floor_dirt", 6,21,2, "floor_dirt_18")
-spawn("floor_dirt", 13,21,2, "floor_dirt_19")
 spawn("floor_dirt", 20,25,1, "floor_dirt_20")
 spawn("floor_dirt", 17,26,1, "floor_dirt_21")
 spawn("floor_dirt", 12,26,2, "floor_dirt_22")
@@ -704,9 +705,7 @@ spawn("eob_sewers_wall_drainage", 25,21,3, "eob_sewers_wall_drainage_6")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 23,21,1, "eob_sewers_wall_drainage_7")
 	:setWallText("")
-spawn("eob_sewers_wall_drainage", 13,21,2, "eob_sewers_wall_drainage_8")
-	:setWallText("")
-spawn("eob_sewers_wall_drainage", 13,21,0, "eob_sewers_wall_drainage_9")
+spawn("eob_sewers_wall_drainage", 13,23,0, "eob_sewers_wall_drainage_9")
 	:setWallText("")
 spawn("script_entity", 20,0,1, "logfw_init")
 	:setSource("spawn(\"LoGFramework\", 1,1,1,0,'fwInit')\
@@ -2525,10 +2524,11 @@ function doTheMagicOld(wall,opener)\
 \9end\
 end")
 spawn("sewers_fog", 13,15,0, "sewers_fog_1")
-spawn("starting_location", 10,15,0, "starting_location_1")
 spawn("script_entity", 15,14,2, "eob_drainage_eyes_alcove_1_15_14")
 	:setSource("-- ============================================== config begin\
+-- eyestate: 0 = create alcoves, 1,2 = eyes in alcove 1,2\
 eyestate = 0\
+-- eyes: array of alcove position - x,y,facing\
 eyes = { { 14, 14, 1 }, { 16, 14, 3 } }\
 alcovename = \"eob_sewers_drainage_bent_alcove\"\
 eyesname = \"eob_drainage_eyes\"\
@@ -2584,6 +2584,13 @@ function activate()\
 end")
 spawn("eob_sewers_drainage_bent_alcove", 14,14,1, "eob_sewers_drainage_bent_alcove_1")
 spawn("eob_sewers_drainage_bent_alcove", 16,14,3, "eob_sewers_drainage_bent_alcove_2")
+spawn("eob_sewers_drainage_alcove", 13,21,2, "eob_sewers_drainage_alcove_1")
+	:addItem(spawn("eob_rock_glowing"))
+spawn("sewers_drainage_water", 13,21,2, "sewers_drainage_water_1")
+spawn("sewers_drainage_water", 13,23,0, "sewers_drainage_water_2")
+spawn("sewers_drainage_water", 17,17,1, "sewers_drainage_water_3")
+spawn("sewers_drainage_water", 19,17,3, "sewers_drainage_water_4")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 

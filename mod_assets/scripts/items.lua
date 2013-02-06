@@ -12,6 +12,12 @@ cloneObject{
 	uiName = "Rock",
 }
 
+cloneObject {
+	name = "eob_rock_glowing",
+	baseObject = "eob_rock",
+	uiName = "Igneous Rock",
+}
+
 cloneObject{
 	name = "eob_note_commission",
 	baseObject = "note",
@@ -39,7 +45,9 @@ cloneObject{
 	baseObject = "machine_part_south",
 	uiName = "Lock Picks",
 	description = "Set of a special Lock Picks",
-	stackable = true,
+	gfxIndex = 1,
+    gfxAtlas = "mod_assets/textures/gui/items_3.tga",
+	model = "mod_assets/models/items/lockpick/eob_lockpicks.fbx",
 	key = true,
 	weight = 0.5,
 }

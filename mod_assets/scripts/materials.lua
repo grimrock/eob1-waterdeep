@@ -346,3 +346,19 @@ defineMaterial{
 	glossiness = 20,
 	depthBias = 0,
 }
+
+-- Item: Lockpick --
+-- by Gizmojunk (http://grimrock.nexusmods.com/mods/98/)
+defineMaterial{
+	name = "eob_lockpicks",
+	diffuseMap = "mod_assets/models/items/lockpick/eob_lockpicks_d.tga",
+	specularMap = "mod_assets/models/items/lockpick/eob_lockpicks_s.tga",
+	normalMap = "mod_assets/models/items/lockpick/eob_lockpicks_n.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 30,
+	depthBias = 0,
+}
