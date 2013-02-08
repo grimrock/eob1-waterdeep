@@ -7,10 +7,14 @@ elements = {
 	inventory = {}
 }
 
+defaultColor = {255,255,255,255}
+defaultTextColor = {255,255,255,255}
+
 function _drawGUI(g)
 	_processKeyHooks(g)
 	_drawElements(g,'gui')
 	gw_events.processEvents(g)
+
 end
 
 function _drawInventory(g,champ)
@@ -27,9 +31,27 @@ end
 
 function _drawElements(g,hookName,champion)
 	hookName = hookName or 'gui'
-	for id,element in pairs(elements[hookName]) do
-		element:draw(g,champion)
+	local hasDeletedElements = false
+	
+	for i,elem in ipairs(elements[hookName]) do
+		if elem.deleted then
+			hasDeletedElements = true
+		else
+			elem:draw(g,champion)
+		end
 	end
+	-- safely delete elements marked as deleted
+	-- maintaining indexes. This way a element can delete itself without crash
+	if hasDeletedElements and #elements[hookName] > 0 then
+		for i = #elements[hookName], 1, -1 do
+			if (elements[hookName][i].deleted) then
+				table.remove(elements[hookName],i)	
+			end
+		end	
+	
+	end
+	
+	
 end
 
 function _processKeyHooks(g)
@@ -56,14 +78,6 @@ function _destroyKeyToggleThresholdTimer()
 	keyToggleThresholdTimer:destroy()
 end
 
-function _addChild(parent, child,id,x,y,width,height)
-	if type(child) == 'string' then
-		child = gw['create'..child](id,x,y,width,height)
-	end 
-
-	table.insert(parent.children, child)
-	return child
-end
 
 function setKeyHook(key,ptoggle,pcallback)
 	keyHooks[key] = {callback=pcallback,toggle=ptoggle,active=false}
@@ -71,59 +85,62 @@ end
 
 function addElement(element,hookName)
 	hookName = hookName or 'gui'
+	removeElement(element.id,hookName)
    	table.insert(elements[hookName],element)
 end
 
-function removeElement(id,hookName)
+function getElement(id,hookName)
 	hookName = hookName or 'gui'
 	for i,elem in ipairs(elements[hookName]) do
 		if elem.id == id then
-			table.remove(elements[hookName],i)
-			return
+			return elem
+		end
+	end	
+end
+
+function removeElement(id,hookName)
+	local elem = getElement(id,hookName)
+	if elem then elem.deleted = true end
+end
+
+-- general element factory method
+function create(elementType,id,arg1,arg2,arg3,arg4,arg5,arg6)
+	if type(elementType) ~= 'string' then
+		print('Element type must be string')
+		return false
+	end
+	local elementFactory = findEntity('gw_'..elementType)
+	if (not elementFactory or elementFactory.create == nil) then
+		print('Invalid grimwidgets element type: '..elementType)
+		return false
+	end
+	return elementFactory.create(id,arg1,arg2,arg3,arg4,arg5,arg6)
+end
+
+function new(def)
+	local elem = gw.create(def[1])
+	for prop,value in pairs(def) do
+		if (prop ~= 1) then
+			elem[prop] = value		
 		end
 	end
-end
-
-function createElement(id, x, y, width, height)
-    local elem = {}
-    elem.id = id
-	elem.x = x
-	elem.y = y
-	elem.width = width
-	elem.height = height
-	elem.parent = nil
-	elem.children = {}
-	elem.addChild = _addChild
-	elem.drawSelf = gw_util.drawNone
-	elem.draw = gw_util.drawAll
-	elem.onPress = nil
-	elem.onClick = nil
-	elem.firstMousePressPoint = nil
 	return elem
 end
 
-function createRectangle(id, x, y, width, height)
-	local elem = createElement(id, x, y, width, height)
-	elem.drawSelf = gw_util.drawRect
-	return elem
+function setDefaultColor(color)
+	defaultColor = color
 end
 
-function createButton(id, x, y, text)
-	local width = gw_util.stringWidth(text)
-	local elem = createRectangle(id, x, y, width, 23)
-	elem.text = text
-	elem.drawSelf = gw_util.drawButton
-	return elem
+function getDefaultColor()
+	return defaultColor
 end
- 
-function createButton3D(id, x, y, text, width, height, color)
-	width = gw_util.defaultValue(width, gw_util.stringWidth(text))
-	height = gw_util.defaultValue(height, 27)
-	
-	local elem = createRectangle(id, x, y, width, height)
-	elem.text = text
-	elem.drawSelf = gw_util.drawButton3D
-	elem.color = gw_util.defaultValue(color, { 128, 128, 128 })
-	return elem
+
+function setDefaultTextColor(color)
+	defaultTextColor = color
 end
+
+function getDefaultTextColor()
+	return defaultTextColor
+end
+
 ]])
