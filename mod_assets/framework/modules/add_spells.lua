@@ -621,7 +621,7 @@ createSpell{
 	   skill = "fire_magic",
 	   level = 0,
 	   runes = "A",
-	   manaCost = 15,
+	   manaCost = 0,
 	   description = [[Range:Long
 Duration:Instantaneous
 Area of Effect:One target 
@@ -635,7 +635,7 @@ createSpell{
 	   skill = "fire_magic",
 	   level = 0,
 	   runes = "B",
-	   manaCost = 10,
+	   manaCost = 0,
 	   description = [[Range:Close
 Duration:Instantaneous
 Area of Effect:One target
@@ -649,7 +649,7 @@ createSpell{
 	   skill = "fire_magic",
 	   level = 0,
 	   runes = "D",
-	   manaCost = 10,
+	   manaCost = 0,
 	   description = [[Range:0
 Duration:Short to medium
 Area of Effect:Spell-caster
@@ -662,7 +662,7 @@ createSpell{
 	   skill = "spellcraft",
 	   level = 0,
 	   runes = "E",
-	   manaCost = 50,
+	   manaCost = 0,
 	   description = [[Range:Long
 Duration:Medium
 Area of Effect:One square
@@ -675,7 +675,7 @@ createSpell{
 	   skill = "spellcraft",
 	   level = 0,
 	   runes = "F",
-	   manaCost = 15,
+	   manaCost = 0,
 	   description = [[Range:0
 Duration:Special
 Area of Effect:Once Character
@@ -689,7 +689,7 @@ createSpell{
 	   skill = "spellcraft",
 	   level = 0,
 	   runes = "H",
-	   manaCost = 20,
+	   manaCost = 0,
 	   description = [[Range:0
 Duration:Special
 Area of Effect:One target
@@ -702,7 +702,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "I",
-	manaCost = 35,
+	manaCost = 0,
 	description = [[Range:0
 Duration:Special
 Area of Effect:Entire party
@@ -715,7 +715,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AB",
-	manaCost = 20,
+	manaCost = 0,
 	description = [[Range:Long
 Duration:Special
 Area of Effect:One target
@@ -729,7 +729,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AC",
-	manaCost = 20,
+	manaCost = 0,
 	description = [[Range:Long
 Duration:Special
 Area of Effect:One target
@@ -743,7 +743,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AD",
-	manaCost = 35,
+	manaCost = 0,
 	description = [[Range:Long
 Duration:Instantaneous
 Area of Effect:Target square
@@ -759,7 +759,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AE",
-	manaCost = 35,
+	manaCost = 0,
 	description = [[Range:Long
 Duration:Instantaneous
 Area of Effect:2 square
@@ -774,7 +774,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AF",
-	manaCost = 35,
+	manaCost = 0,
 	description = [[Range:0
 Duration: Medium
 Area of Effect: One target per caster level 
@@ -787,7 +787,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AH",
-	manaCost = 40,
+	manaCost = 0,
 	description = [[Range:0
 Duration:Instantaneous
 Area of Effect:3 squares
@@ -801,7 +801,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "AI",
-	manaCost =  50,
+	manaCost =  0,
 	description = [[Range:Medium to long
 Duration:Instantaneous
 Area of Effect:A cross-shaped area of 3x3 squares
@@ -815,7 +815,7 @@ createSpell{
 	skill = "air_magic",
 	level = 0,
 	runes = "BC",
-	manaCost = 60,
+	manaCost = 0,
 	description = [[Range:0
 Duration:Special
 Area of Effect:1 character
