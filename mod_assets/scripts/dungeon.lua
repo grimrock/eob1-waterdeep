@@ -283,6 +283,9 @@ spawn("script_entity", 11,1,0, "script_beginning")
 \9party:getChampion(4):setRace(\"Human\")\
 \9party:getChampion(4):setSex(\"male\")\
 \9party:getChampion(4):setPortrait(\"mod_assets/textures/portraits/eob1-valanau.tga\")\
+\
+\
+\9\
 end\
 \
 function EOBsetDefaultItems()\
@@ -331,19 +334,33 @@ function FallingRocks()\
 \9playSoundAt(\"rockfall_01\", 1, 10, 14)\
 end\
 \
--- EOBsetDefaultParty()\
-EOBsetDefaultItems()\
+-- level up all champions by 2 levels (added by JKos)\
+-- you can remove this if you don't like it\
+function EOBlevelUp()\
+\9for i=1,2 do\
+\9\9for j = 1,4 do\
+\9\9\9party:getChampion(j):levelUp()\
+\9\9end\
+\9end\9\
+end\
 \
--- drainage grate water sounds --\
-playSoundAt(\"waterfall_loop\", 1, 18, 17)\
-playSoundAt(\"waterfall_loop\", 1, 13, 22)\
+function autoexec()\
 \
-hudPrint(\" \")\
-hudPrint(\" \")\
-hudPrint(\" \")\
-hudPrint(texts.getT(\"welcome_to_eob\"))\
-hudPrint(\" \")\
-hudPrint(texts.getT(\"entrance_is_blocked\"))")
+\9EOBlevelUp()\
+\9-- EOBsetDefaultParty()\
+\9EOBsetDefaultItems()\
+\9\
+\9-- drainage grate water sounds --\
+\9playSoundAt(\"waterfall_loop\", 1, 18, 17)\
+\9playSoundAt(\"waterfall_loop\", 1, 13, 22)\
+\9\
+\9hudPrint(\" \")\
+\9hudPrint(\" \")\
+\9hudPrint(\" \")\
+\9hudPrint(texts.getT(\"welcome_to_eob\"))\
+\9hudPrint(\" \")\
+\9hudPrint(texts.getT(\"entrance_is_blocked\"))\
+end")
 spawn("pressure_plate_hidden", 18,12,1, "pressure_plate_hidden_5")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
@@ -1623,8 +1640,11 @@ function initChampion(champ)\
 \9updateSpellPoints(champ)\
 \9\
 \9fw.addHooks('party','add_spells_memorize',{\
-\9\9\9onRest = function(champ)\
+\9\9\9onRest = function(p)\
 \9\9\9\9add_spells.learnSpells()\
+\9\9\9end,\
+\9\9\9onWakeUp = function(p)\
+\9\9\9\9add_spells.stopLearnSpells()\
 \9\9\9end,\
 \9\9\9onLevelUp = function(champ)\
 \9\9\9\9if champ:getClass() == 'Mage' then\
@@ -1656,19 +1676,40 @@ function _onCastSpell(champ,spellName)\
 \9return canCast\
 end\
 \
+function stopLearnSpells()\
+\9local timer = timers:find('memorize_spells_timer')\
+\9if timer then\
+\9\9timer:deactivate()\
+\9\9timer:destroy()\
+\9end\
+end\
+\
 function learnSpells()\
-\9for i,champ in pairs(help.getAliveChampions()) do\
-\9\9if champ:getClass() == 'Mage' then\
-\9\9\9local spells = data.get(champ,'spells')\9\9\
-\9\9\9for level,spells in pairs(spells) do\
-\9\9\9\9for _,spell in pairs(spells) do\
-\9\9\9\9\9spell.memorized = true\
+\
+\9local timer = timers:create('memorize_spells_timer')\
+\9\
+\9\
+\9local memorizeSpells = function(self)\
+\9\9for i,champ in pairs(help.getAliveChampions()) do\
+\9\9\9if champ:getClass() == 'Mage' then\
+\9\9\9\9\
+\9\9\9\9local spells = data.get(champ,'spells')\
+\9\9\9\9if (spells[self.tick] ~= nil) then\
+\9\9\9\9\9for _,spell in pairs(spells[self.tick]) do\
+\9\9\9\9\9\9spell.memorized = true\
+\9\9\9\9\9end\
+\9\9\9\9\9data.set(champ,'spells',spells)\
+\9\9\9\9\9add_spells.updateSpellBook(champ)\
 \9\9\9\9end\
 \9\9\9end\
-\9\9\9data.set(champ,'spells',spells)\
-\9\9\9add_spells.updateSpellBook(champ)\
-\9\9end\
-\9end\
+\9\9end\9\
+\9\9hudPrint('Level '..self.tick..' spells memorized')\
+\9\9timer:setTimerInterval(5 * self.tick)\
+\9end\9\
+\9timer:addCallback(memorizeSpells)\
+\9timer:setTickLimit(5,true) \
+\9timer:setTimerInterval(5)\
+\9timer:activate()\
 end\
 \
 function updateSpellPoints(champ)\
@@ -1737,7 +1778,7 @@ function unmemorizeSpell(champion,spellName)\
 \9\
 \9for i,spell in ipairs(champSpells[sl]) do\
 \9\9if (spell.name == spellName) then\
-\9\9\9table.remove(champSpells[i],i)\
+\9\9\9table.remove(champSpells[sl],i)\
 \9\9\9local sp = data.get(champion,'spellPoints')\
 \9\9\9sp[sl] = sp[sl] + 1\
 \9\9\9add_spells.updateSpellBook(champion)\
