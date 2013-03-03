@@ -31,8 +31,14 @@ cloneObject{
 	model = "mod_assets/models/env/eob_sewers_door.fbx",
 	doorFrameModel = "mod_assets/models/env/eob_sewers_door_frame.fbx",
 }
+
 cloneObject{
 	name = "eob_sewers_door_metal_force",
+	baseObject = "eob_sewers_door_metal",
+}
+
+cloneObject {
+	name = "eob_sewers_door_metal_one",
 	baseObject = "eob_sewers_door_metal",
 }
 
@@ -93,7 +99,7 @@ cloneObject{
 cloneObject{
 	name = "eob_sewers_pit",
 	baseObject = "dungeon_pit",
-	model = "mod_assets/models/env/sewers_pit.fbx",
+	model = "mod_assets/models/env/eob_sewers_pit_round.fbx",
 	trapDoorModel = "mod_assets/models/env/sewers_pit_trapdoor.fbx",
 }
 
