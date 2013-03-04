@@ -284,6 +284,25 @@ defineObject{
 	editorIcon = 8,
 }
 
+-- added by Thomson. This is the cat eye sockets used on level 3.
+-- They supposed to have one eye already filled with unremovable
+-- blue gem and the player must put another blue gem in the second
+-- socket (eye). Let's use daemon head this for now
+defineObject {
+   name = "eob_sewers_lock_eye",
+   class = "Alcove",
+   model = "assets/models/env/demon_head_puzzle.fbx",
+   anchorPos = vec(-0.21, 1.58, -0.45),
+   targetPos = vec(-0.2, 1.65, -0.45),
+   targetSize = vec(0.1, 0.1, 0.1),
+   placement = "wall",
+   onInsertItem = function(self, item)
+      return item.name == "eob_gem_blue_u" and self:getItemCount() == 0
+   end,
+   editorIcon = 92,
+}
+
+
 defineObject{
    name = "eob_sewers_drainage_alcove",
    class = "Alcove",

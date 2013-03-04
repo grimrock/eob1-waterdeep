@@ -3812,10 +3812,13 @@ mapDesc([[
 spawn("eob_sewers_alcove", 10,2,2, "eob_sewers_alcove_105")
 	:addItem(spawn("eob_gem_blue_u"))
 spawn("eob_sewers_lock_eye", 6,5,1, "eob_sewers_lock_eye_47")
+	:addConnector("deactivate", "blue_gems_puzzle", "remove")
+	:addConnector("activate", "blue_gems_puzzle", "add")
 spawn("eob_sewers_alcove", 2,6,1, "eob_sewers_alcove_106")
 	:addItem(spawn("eob_gem_blue_u"))
-spawn("eob_sewers_ladder_down", 8,6,0, "eob_sewers_ladder_down_69")
 spawn("eob_sewers_lock_eye", 11,6,2, "eob_sewers_lock_eye_48")
+	:addConnector("activate", "blue_gems_puzzle", "add")
+	:addConnector("deactivate", "blue_gems_puzzle", "remove")
 spawn("eob_sewers_alcove", 9,7,1, "eob_sewers_alcove_107")
 	:addItem(spawn("eob_arrow_u"))
 spawn("eob_sewers_alcove", 7,9,3, "eob_sewers_alcove_108")
@@ -3823,9 +3826,13 @@ spawn("eob_sewers_alcove", 7,9,3, "eob_sewers_alcove_108")
 	:addItem(spawn("eob_rations_iron_u"))
 	:addItem(spawn("eob_rations_iron_u"))
 spawn("eob_sewers_lock_eye", 5,10,0, "eob_sewers_lock_eye_49")
+	:addConnector("activate", "blue_gems_puzzle", "add")
+	:addConnector("deactivate", "blue_gems_puzzle", "remove")
 spawn("eob_sewers_alcove", 14,10,3, "eob_sewers_alcove_109")
 	:addItem(spawn("eob_gem_blue_u"))
 spawn("eob_sewers_lock_eye", 10,11,3, "eob_sewers_lock_eye_50")
+	:addConnector("activate", "blue_gems_puzzle", "add")
+	:addConnector("deactivate", "blue_gems_puzzle", "remove")
 spawn("eob_sewers_alcove", 6,14,0, "eob_sewers_alcove_110")
 	:addItem(spawn("eob_gem_blue_u"))
 spawn("eob_sewers_wall_text_long", 11,17,3, "eob_sewers_wall_text_long_70")
@@ -4255,6 +4262,59 @@ spawn("eob_sewers_lock_gem", 19,17,2, "eob_sewers_lock_gem_2")
 	:addConnector("activate", "eob_sewers_door_metal_21", "open")
 spawn("eob_kuotoa", 15,17,3, "eob_kuotoa_6")
 spawn("eob_kuotoa", 17,17,3, "eob_kuotoa_7")
+spawn("script_entity", 10,5,2, "blue_gems_puzzle")
+	:setSource("-- function called when a blue gem is inserted into the socket\
+-- there are 4 such sockets\
+function add()\
+\9if eob_sewers_lock_eye_47:getItemCount() == 1 and\
+\9   eob_sewers_lock_eye_48:getItemCount() == 1 and\
+       eob_sewers_lock_eye_49:getItemCount() == 1 and\
+\9   eob_sewers_lock_eye_50:getItemCount() == 1 then\
+\9\9hudPrint(\"All sockets in place!\")\
+\9\9removeWalls()\
+\9end\
+end\
+\
+-- function called when a blue gem is removed from the socket\
+function remove()\
+\9if eob_sewers_secret_door_cube_3:isOpen() and\
+\9   eob_sewers_lock_eye_47:getItemCount() == 0 and\
+\9   eob_sewers_lock_eye_48:getItemCount() == 0 and\
+       eob_sewers_lock_eye_49:getItemCount() == 0 and\
+\9   eob_sewers_lock_eye_50:getItemCount() == 0 then\
+\9\9hudPrint(\"Special quest for this level!\")\
+\9end\
+end\
+\
+-- this function is called when all four blue gems are in sockets\
+function removeWalls()\
+\9eob_sewers_secret_door_cube_3:open()\
+\9eob_sewers_secret_door_cube_4:open()\
+end")
+spawn("eob_sewers_secret_door_cube", 6,6,0, "eob_sewers_secret_door_cube_3")
+spawn("eob_sewers_secret_door_cube", 10,10,2, "eob_sewers_secret_door_cube_4")
+spawn("eob_ladder_down", 8,6,0, "eob_ladder_down_4")
+spawn("eob_ladder_down", 8,10,2, "eob_ladder_down_5")
+spawn("eob_sewers_pit_fake", 8,6,3, "eob_sewers_pit_fake_4")
+spawn("eob_sewers_pit_fake", 8,10,0, "eob_sewers_pit_fake_5")
+spawn("teleporter", 8,6,0, "teleporter_22")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(16,14,0,4)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("teleporter", 8,10,2, "teleporter_23")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(16,20,2,4)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
 
 --- level 4 ---
 
