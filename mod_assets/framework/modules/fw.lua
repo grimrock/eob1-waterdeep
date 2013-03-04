@@ -145,7 +145,12 @@ end
 function getById(id)
 	local entity = findEntity(id)
 	if not entity and string.sub(id,1,9) == 'champion_' then
-		return party:getChampion(string.sub(id,-1)+0)
+		for i=1,4 do
+			local champ = party:getChampion(i)
+			if champ and getId(champ) == id then
+				return champ 
+			end
+		end
 	end
 	return entity
 end

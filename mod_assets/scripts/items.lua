@@ -117,7 +117,7 @@ cloneObject{
 }
 cloneObject{
 	name = "eob_scroll_armor",
-	baseObject = "scroll",
+	baseObject = "scroll_armor",
 	uiName = "Scroll of Armor",
 	description = "Mage scroll of Armor.",
 }
@@ -179,13 +179,13 @@ cloneObject{
 
 cloneObject{
 	name = "eob_scroll_shield",
-	baseObject = "scroll",
+	baseObject = "scroll_shield",
 	uiName = "Scroll of Shield",
 	description = "Mage scroll of Shield.",
 }
 cloneObject{
 	name = "eob_scroll_invisibility",
-	baseObject = "scroll",
+	baseObject = "scroll_invisibility",
 	uiName = "Scroll of Invisibility",
 	description = "Mage scroll of Invisibility.",
 }

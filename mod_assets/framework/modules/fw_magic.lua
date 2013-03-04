@@ -538,8 +538,19 @@ function createSpell(spellDef,createScroll)
 	if spellDef.runes == nil then
 		return
 	end
-	
 	fw_defineObject{
+		name = "scroll_"..spellDef.name,
+		class = "Item",
+		uiName = "Scroll of "..spellDef.uiName,
+		model = "assets/models/items/scroll_spell.fbx",
+		gfxIndex = 113,
+		scroll = true,
+		weight = 0.3,
+		onUseItem = function(scroll,champ)
+			return fw.executeHooks('scrolls',"onReadScroll",scroll,champ)
+		end,
+	}	
+	--[[fw_defineObject{
 	   name = 'spell_book_'..spellDef.name,
 	   uiName = spellDef.uiName,
 		class = "Item",
@@ -568,23 +579,12 @@ function createSpell(spellDef,createScroll)
 		onUseItem = function(self,p1,p2,p3)
 			return false
 		end
-	}
+	}]]
 	
 	-- automatically create a scroll for every spell
-	fw_defineObject{
-		name = "scroll_"..spellDef.name,
-		class = "Item",
-		uiName = "Scroll of "..spellDef.uiName,
-		model = "assets/models/items/scroll_spell.fbx",
-		gfxIndex = 113,
-		scroll = true,
-		weight = 0.3,
-		onUseItem = function(scroll,champ)
-			return fw.executeHooks('scrolls',"onReadScroll",scroll,champ)
-		end,
-	}
-end
 
+end
+--[[
 function createSpellBook()
 	fw_defineObject{
 		name = "spell_book_mage",
@@ -616,3 +616,4 @@ function createSpellBook()
 end
 
 createSpellBook()
+]]

@@ -991,9 +991,23 @@ function activate()\
 \9for i,champ in ipairs(help.getChampions()) do\
 \9\9if champ:getClass() == 'Mage' then\
 \9\9\9initChampion(champ)\
-\9\9\9createSpellBook(champ)\
 \9\9end\
 \9end\
+\9\
+\9fw.addHooks('party','add_spells_memorize',{\
+\9\9\9onRest = function(p)\
+\9\9\9\9add_spells.learnSpells()\
+\9\9\9end,\
+\9\9\9onWakeUp = function(p)\
+\9\9\9\9add_spells.stopLearnSpells()\
+\9\9\9end,\
+\9\9\9onLevelUp = function(champ)\
+\9\9\9\9if champ:getClass() == 'Mage' then\
+\9\9\9\9\9add_spells.updateSpellPoints(champ)\
+\9\9\9\9end\
+\9\9\9end\
+\9\9}\9\
+\9)\9\
 \9\
 \9fw.setHook('party.add_spells.onCastSpell',_onCastSpell)\
 \
@@ -1639,20 +1653,7 @@ function initChampion(champ)\
 \9\
 \9updateSpellPoints(champ)\
 \9\
-\9fw.addHooks('party','add_spells_memorize',{\
-\9\9\9onRest = function(p)\
-\9\9\9\9add_spells.learnSpells()\
-\9\9\9end,\
-\9\9\9onWakeUp = function(p)\
-\9\9\9\9add_spells.stopLearnSpells()\
-\9\9\9end,\
-\9\9\9onLevelUp = function(champ)\
-\9\9\9\9if champ:getClass() == 'Mage' then\
-\9\9\9\9\9add_spells.updateSpellPoints(champ)\
-\9\9\9\9end\
-\9\9\9end\
-\9\9}\9\
-\9)\
+\9createSpellBook(champ)\
 end\
 \
 \
@@ -1737,6 +1738,12 @@ function updateSpellPoints(champ)\
 \9{5, 5, 5, 5, 5},\
 }\
 \9local spellPoints = data.get(champ,'spellPoints')\
+\9-- in case a Mage joins to the party\
+\9if spellPoints == nil then\
+\9\9add_spells.initChampion(champ)\
+\9\9spellPoints = data.get(champ,'spellPoints')\
+\9end \
+\9\
 \9local spells = data.get(champ,'spells')\
 \9\
 \9for spellLevel,points in ipairs(progressionTable[champ:getLevel()]) do\
@@ -1898,51 +1905,6 @@ function activate()\
 \9\9end\
 \9})\9\
 end\
-\
-function enableSpellBook()\
-\9for i,champ in ipairs(help.getChampions()) do\
-\9\9if champ:getClass() == 'Mage' then\
-\9\9\9data.set(champ,'learnedSpells',{})\9\
-\9\9\9addSpellBookToChampion(champ)\
-\9\9end\
-\9end\9\
-\9\
-\9if not testMode then\
-\9\9fw.addHooks('party','fw_magic',{\
-\9\9\9onCastSpell = fw_magic.canCast\
-\9\9},1)\
-\9end\9\9\
-\9fw.addHooks('items_spell_book','fw_magic',{\
-\9\9onLearnSpell = fw_magic.onLearnSpell\
-\9})\9\
-end\
-\
-function onLearnSpell(scroll,champion)\
-\9local spellName = string.sub(scroll.name,12)\
-\9local spellDef = fw_magic.spells[spellName]\
-\9if spellDef.skill then\
-\9\9if champion:getSkillLevel(spellDef.skill) < spellDef.level then\
-\9\9\9hudPrint(\"Not skillfull enough to learn this spell\")\
-\9\9\9return false\
-\9\9end\
-\9elseif champion:getLevel() < spellDef.level then\
-\9\9hudPrint(\"Not skillfull enough to learn this spell\")\
-\9\9return false\9\
-\9end\
-\9learnSpell(spellName,champion,scroll)\
-\
-\9return true\
-end\
-\
-function learnSpell(spellName,champion,scroll)\
-\9local spells = data.get(champion,'learnedSpells')\
-\9spells[spellName] = true\
-\9data.set(champion,'learnedSpells',spells)\
-\9hudPrint('Learned a new spell: '..scroll:getUIName())\
-\9playSound('discover_spell')\
-\9--spawnSpellBook(champion)\
-end\
-\
 \
 function defineSpell(spellDef)\
 \9spells[spellDef.name] = spellDef\
@@ -2215,81 +2177,6 @@ end\
 \
 -- SPELL BOOK ++\
 \
-function addSpellBookToChampion(champion)\
-\9spawnSpellBook(champion)\
-\9table.insert(mages,champion:getOrdinal())\
-\9preventPickingUpSpellBook()\
-end\
-\
-function spawnSpellBook(champion)\
-\9local champId = '_'..champion:getOrdinal()\
-\
-\9local book = champion:getItem(11)\
-\9if book and string.sub(book.name,1,11) == 'spell_book_' then\
-\9\9champion:removeItem(11)\
-\9\9-- this is the only way to close the container gui if it's opened\
-\9\9for c in book:containedItems() do\
-\9\9\9champion:insertItem(11,c)\
-\9\9\9champion:removeItem(11)\
-\9\9end\
-\9end\
-\9\
-\9book = spawn('spell_book_mage',nil,nil,nil,nil,'spell_book_mage'..champId)\
-\9\
-\9for i=1,5 do \
-\9\9local chapter = spawn('spell_book_level_'..i,nil,nil,nil,nil,'spell_book_level'..i..champId)\
-\9\9book:addItem(chapter)\
-\9\9for spellName,properties in pairs(fw_magic.spells) do\
-\9\9\9if properties.book_page == i then\
-\9\9\9\9if data.get(champion,'learnedSpells')[spellName] then\
-\9\9\9\9\9chapter:addItem(spawn('spell_book_'..spellName..'_learned',nil,nil,nil,nil,'spell_book_'..spellName..champId))\
-\9\9\9\9else\
-\9\9\9\9\9chapter:addItem(spawn('spell_book_'..spellName,nil,nil,nil,nil,'spell_book_'..spellName..champId))\9\
-\9\9\9\9end\
-\9\9\9end\
-\9\9end\
-\9end\
-\9\
-\9local item = champion:getItem(11)\
-\9if (item) then\
-\9\9if string.sub(item.name,1,11) ~= 'spell_book_' then\
-\9\9\9setMouseItem(item)\
-\9\9end\
-\9\9champion:removeItem(11)\
-\9end\
-\9champion:insertItem(11,book)\9\
-end\
-\
-\
-\
-function preventPickingUpSpellBook()\
-\9if spell_book_timer then\
-\9\9return\
-\9end\
-\9local sbtimer = timers:create('spell_book_timer') \
-\
-\9sbtimer:setTimerInterval(0.3)\
-\9sbtimer:addConnector('activate','fw_magic','spellBookScanner')\
-\9sbtimer:setConstant()\
-\9sbtimer:activate()\
-end\
-\
-function spellBookScanner()\
-\9local mouseItem = getMouseItem()\
-\9for _,i in ipairs(mages) do\
-\9\9local book = findEntity('spell_book_mage_'..i)\
-\9\9-- respawn spell book if it is in dungeon or \
-\9\9-- the book or any of it pages is set as mouse item\
-\9\9if book or (mouseItem and string.sub(mouseItem.name,1,11) == 'spell_book_') then\
-\9\9\9if book then\
-\9\9\9\9book:destroy()\
-\9\9\9end\9\
-\9\9\9setMouseItem()\
-\9\9\9spawnSpellBook(party:getChampion(i))\
-\9\9end\
-\9end\
-\9\
-end\
 \
 -- monsters spell support\
 \
@@ -2806,7 +2693,9 @@ end\
 function createSpellBook(champion)\
 \9local book = gw_image.create('spell_book_'..champion:getOrdinal(),20,20,900,800,'mod_assets/textures/grimwidgets/book2_900.tga')\
 \9book.onDraw = function(self,ctx,champion) \
-\9\9if champion and champion:getClass() ~= 'Mage' then\
+\9\9if champion == nil then return false end\
+\9\
+\9\9if champion:getClass() ~= 'Mage' or self:getChampion():getOrdinal() ~= champion:getOrdinal() then\
 \9\9\9return false\
 \9\9end\9\9\
 \9end\
