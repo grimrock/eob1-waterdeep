@@ -3791,7 +3791,7 @@ mapDesc([[
 #.##.........#....#.#.##########
 #.######.#####....#.#.....#..###
 #.#..#.#.#...##.###...###....###
-###..#...#........###...#.###..#
+#.#..#...#........###...#.###..#
 #.#...#################.#..#...#
 #.###.....#..........##.###..#.#
 #.####..#.#.######.#.##.....#..#
@@ -4043,9 +4043,6 @@ spawn("teleporter_rotator180", 25,10,3, "teleporter_rotator180_2")
 	:setHideLight(true)
 	:setScreenFlash(false)
 spawn("eob_silver_key", 28,9,0, "eob_silver_key_2")
-spawn("eob_sewers_wall_text_long", 1,15,2, "eob_sewers_wall_text_long_6")
-	:setWallText("Under construction.\
-Thank you for playing...")
 spawn("teleporter", 27,4,3, "teleporter_10")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
@@ -4255,11 +4252,11 @@ end")
 spawn("eob_sewers_door_metal", 18,17,2, "eob_sewers_door_metal_21")
 spawn("eob_sewers_door_metal", 11,17,2, "eob_sewers_door_metal_22")
 spawn("eob_sewers_lock_gem", 20,23,2, "eob_sewers_lock_gem_1")
-	:setOpenedBy("eob_gem_red")
 	:addConnector("activate", "eob_sewers_door_metal_19", "open")
+	:addConnector("deactivate", "script_entity_13", "noRemove")
 spawn("eob_sewers_lock_gem", 19,17,2, "eob_sewers_lock_gem_2")
-	:setOpenedBy("eob_gem_red")
 	:addConnector("activate", "eob_sewers_door_metal_21", "open")
+	:addConnector("deactivate", "script_entity_13", "noRemove")
 spawn("eob_kuotoa", 15,17,3, "eob_kuotoa_6")
 spawn("eob_kuotoa", 17,17,3, "eob_kuotoa_7")
 spawn("script_entity", 10,5,2, "blue_gems_puzzle")
@@ -4315,6 +4312,13 @@ spawn("teleporter", 8,10,2, "teleporter_23")
 	:setSilent(true)
 	:setHideLight(true)
 	:setScreenFlash(false)
+spawn("script_entity", 19,18,1, "script_entity_13")
+	:setSource("function noRemove(alcove)\
+\9hudPrint(\"This hole is tightly sealed.\")\
+\9setMouseItem(nil)\
+\9alcove:addItem(spawn(\"eob_gem_red\"))\
+end\
+")
 
 --- level 4 ---
 
