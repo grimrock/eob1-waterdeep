@@ -1336,11 +1336,9 @@ When a mage casts this spell, a jet of searing flame shoots from hisfingertips. 
 \9\9name='vampiric_touch',\
 \9\9uiname='Vampiric touch',\
 \9\9description = [[Range:Close\
-Duration: Instantaneous\
-Area of Effect: One target\
-\
-When a mage casts this spell, a jet of searing flame shoots from hisfingertips. The damage inflicted bu the flame increases as the mage increases in level and gains power. The spell does one to three points of damage plus two points per level of the caster. For example, a 10th level mage would do 21-23 points of damage.]]\
-,\9\9\9\9\9\
+Duration:One attack\
+Area of Effect:Caster\
+  When the caster touches an opponent with a successful attack, the spell does 1-6 points of damage for every two levels of the mage. For example, a 10th level mage would do 5 to 30 points of damage. These points in turn are transferred temporarily to the mage, so any damages he takes is subtracted from these points first.]],\9\9\9\9\9\
 \9\9level=3,\
 \9\9runes='BD',\
 \9\9book_page=1,\
