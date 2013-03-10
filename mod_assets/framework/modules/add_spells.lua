@@ -822,35 +822,15 @@ Area of Effect:1 character
 
 This spell grants the recipient virtual immunity to any attack by cut, blow, projectile, or the like. Stoneskin protects the user from almost any non-magical attack and also gives +35 resistance to fire. The spell lasts for one to four attacks plus one for every two levels of the caster. For example, a 9th level mage casting Stoneskin would protect against 5 to 8 attacks.]],
 }	
---[[
-fw_defineObject{
-	name = "spell_book_mage",
-	class = "Item",
-	uiName = "Spell book",
-	model = "assets/models/items/tome.fbx",
-	gfxIndex = 30,
-	weight = 1,
-	scroll = true,
-	container = true,
-	containerType = "chest",
-	capacity = 10,
-}
-
-for i=1,10 do
-	fw_defineObject{
-		name = "spell_book_level_"..i,
-		class = "Item",
-		uiName = "Level "..i.." spells",
-		model = "assets/models/items/tome.fbx",
-		gfxIndex = 30,
-		weight = 0,
-		scroll = true,
-		container = true,	
-		containerType = "chest",
-		capacity = 10,	
-	}	
-end	
-]]
+createSpell{
+	name = "vampiric_touch",
+	uiName = "Vampiric touch",
+	skill = "air_magic",
+	level = 0,
+	runes = "BD",
+	manaCost = 0,
+	description = [[]],
+}	
 
 
 defineParticleSystem{

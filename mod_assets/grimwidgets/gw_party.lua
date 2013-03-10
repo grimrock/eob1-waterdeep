@@ -62,7 +62,7 @@ end
 function dropAllItems(champion)
 	for slot=1,31 do
 		local item = champion:getItem(slot)
-		if item then
+		if item and item.name ~= 'spell_book_mage' then
 			local saveditem = grimq.saveItem(item)
 			champion:removeItem(slot)
 			grimq.loadItem(saveditem, party.level, party.x, party.y, party.facing, saveditem.id)			

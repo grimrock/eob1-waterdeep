@@ -299,7 +299,7 @@ function onDraw(h_gwelement, h_gui)
 		h_gui.color(255, 255, 255, 255)				
 		for n_y = 0, n_maxY do
 			for n_x = 0, n_maxX do
-				h_gui.drawImage("mod_assets/lnr/textures/dialog/window_"..getTileName(n_x, n_maxX, n_y, n_maxY, n_multipleWidth, n_multipleHeight, n_windowTileSize)..".tga", n_windowOffsetX + n_x * n_windowTileSize, n_windowOffsetY + n_y * n_windowTileSize)
+				h_gui.drawImage("mod_assets/grimwidgets/images/dialog/window_"..getTileName(n_x, n_maxX, n_y, n_maxY, n_multipleWidth, n_multipleHeight, n_windowTileSize)..".tga", n_windowOffsetX + n_x * n_windowTileSize, n_windowOffsetY + n_y * n_windowTileSize)
 			end
 		end
 
@@ -341,7 +341,7 @@ function onDraw(h_gwelement, h_gui)
 			n_buttonY = n_windowOffsetY + n_buttonOffsetY 
 			for n_y = 0, n_maxY do
 				for n_x = 0, n_maxX do
-					h_gui.drawImage("mod_assets/lnr/textures/dialog/button_"..getTileName(n_x, n_maxX, n_y, n_maxY, 16, 16, 16)..".tga", n_buttonX + n_x * 16, n_buttonY + n_y * 16)
+					h_gui.drawImage("mod_assets/grimwidgets/images/dialog/button_"..getTileName(n_x, n_maxX, n_y, n_maxY, 16, 16, 16)..".tga", n_buttonX + n_x * 16, n_buttonY + n_y * 16)
 				end
 			end
 

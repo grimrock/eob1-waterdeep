@@ -68,7 +68,7 @@ function _drawAll(self, ctx,champion)
 	self.y = self.y + self.marginTop
 
 	
-	self.drawSelf(self, ctx)
+	self.drawSelf(self, ctx, champion)
 	if (self.onPress ~= nil) and (ctx.button(self.id, self.x, self.y, self.width, self.height)) then
 		self:onPress()
 	end

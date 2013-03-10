@@ -208,7 +208,7 @@ spawn("eob_sewers_pressure_plate", 16,23,3, "dungeon_pressure_plate_4")
 	:addConnector("activate", "dungeon_door_metal_4", "close")
 spawn("eob_sewers_alcove", 12,25,0, "dungeon_alcove_1")
 	:setActivateAlways(true)
-	:addItem(spawn("eob_scroll_armor"))
+	:addItem(spawn("scroll_armor"))
 	:addItem(spawn("eob_scroll_bless"))
 	:addConnector("activate", "script_entity_1", "SpecialQuest1")
 spawn("eob_sewers_secret_button_large", 19,21,3, "eob_sewers_secret_button_4")
@@ -1020,11 +1020,14 @@ function defineSpells()\
 \9fw_magic.defineSpell{\
 \9\9name='magic_missile',\
 \9\9uiname='Magic missile',\
-\9\9description = [[Range: Long\
+\9\9description = [[\
+Range: Long\
 Duration: Instantaneous\
-Area of Effect: One target \
+Area of Effect: One target\
 \
-The mage creates a bolt of magic force that unerringly strikes one target. Magic Missiles do greater damage as a mage increases in level. Initially, Magic Missile does two to five points of damage, and for every two extra levels the spell does two to five more points. So a first or second-level mage does two to five points of damage, but a third or fourth-level mage does four to ten, and so on.]],\
+The mage creates a bolt of magic force that unerringly strikes one target. \
+Magic Missiles do greater damage as a mage increases in level. \
+Initially, Magic Missile does two to five points of damage, and for every two extra levels the spell does two to five more points. So a first or second-level mage does two to five points of damage, but a third or fourth-level mage does four to ten, and so on.]],\
 \9\9level=1,\
 \9\9runes='A',\
 \9\9book_page=1,\
@@ -1328,6 +1331,29 @@ When a mage casts this spell, a jet of searing flame shoots from hisfingertips. 
 \9\9\9damageTile(party.level, x+dx, y+dy, direction, originator, 'fire', 3+skill*2)\
 \9\9end\
 \9}\9\
+\9\
+\9fw_magic.defineSpell{\
+\9\9name='vampiric_touch',\
+\9\9uiname='Vampiric touch',\
+\9\9description = [[Range:Close\
+Duration: Instantaneous\
+Area of Effect: One target\
+\
+When a mage casts this spell, a jet of searing flame shoots from hisfingertips. The damage inflicted bu the flame increases as the mage increases in level and gains power. The spell does one to three points of damage plus two points per level of the caster. For example, a 10th level mage would do 21-23 points of damage.]]\
+,\9\9\9\9\9\
+\9\9level=3,\
+\9\9runes='BD',\
+\9\9book_page=1,\
+\9\9onCast = function(caster, x, y, direction, skill)\
+\9\9\9local dx,dy = getForward(direction)\
+\9\9\9playSoundAt(\"snail_attack\",party.level,x,y)\
+\9\9\9local originator = 2 ^ (caster:getOrdinal()+1) \
+\9\9\9local skill = caster:getLevel()\
+\9\9\9local damage = math.random(1*skill,6*skill)\
+\9\9\9damageTile(party.level, x+dx, y+dy, direction, originator + 1, 'physical', damage)\
+\9\9\9caster:modifyStat('health', damage)\
+\9\9end\
+\9}\9\9\
 \
 \9fw_magic.defineSpell{\
 \9\9name='stoneskin',\
@@ -2560,7 +2586,7 @@ function drawCompass(self, g)\
 \9local y = g.height - 200\
 \9\
 \9local dir = string.sub(\"NESW\", party.facing + 1, party.facing + 1)\
-\9g.drawImage(\"mod_assets/textures/grimwidgets/compass_full_\"..dir..\".tga\", x, y)\
+\9g.drawImage(\"mod_assets/grimwidgets/images/compass_full_\"..dir..\".tga\", x, y)\
 end\
 \
 -- this is a simple wrapper function that is called as key press\
@@ -2672,7 +2698,7 @@ function getRuneImage(runeChar)\
 \9\9I='rune9_water'\
 \9}\
 \
-\9return 'mod_assets/textures/grimwidgets/'..runeMap[runeChar]..'.tga'\
+\9return 'mod_assets/grimwidgets/images/'..runeMap[runeChar]..'.tga'\
 end\
 \
 function getRunePosition(runeChar)\
@@ -2691,7 +2717,7 @@ function getRunePosition(runeChar)\
 end\
 \
 function createSpellBook(champion)\
-\9local book = gw_image.create('spell_book_'..champion:getOrdinal(),20,20,900,800,'mod_assets/textures/grimwidgets/book2_900.tga')\
+\9local book = gw_image.create('spell_book_'..champion:getOrdinal(),20,20,900,800,'mod_assets/grimwidgets/images/book2_900.tga')\
 \9book.onDraw = function(self,ctx,champion) \
 \9\9if champion == nil then return false end\
 \9\
@@ -2708,7 +2734,7 @@ function createSpellBook(champion)\
 \9\
 \9book.onMemorize = function() end\
 \9\
-\9local page1 = book:addChild('element','page1',20,20,350,500)\
+\9local page1 = book:addChild('element','page1',20,0,350,500)\
 \9local page2 = book:addChild('element','page2',490,30,350,500)\
 \9\
 \9return book\
@@ -2780,7 +2806,7 @@ function addSpell(book,spell)\
 \9\
 \9local spellText = spellDescr:addChild('text','spell_text_'..spell.name,0,250,350,200,spell.description)\
 \9spellText.textColor = {200,200,200,200}\
-\9spellText.textSize = 'small'\
+\9spellText.textSize = 'medium'\
 \
 end\
 \
@@ -2972,7 +2998,7 @@ spawn("pressure_plate_hidden", 17,27,1, "pressure_plate_hidden_9")
 	:setSilent(true)
 	:addConnector("activate", "script_entity_2", "MessageDeadEnd")
 spawn("blocker", 15,29,3, "blocker_1")
-spawn("eob_scroll_shield", 15,27,3, "eob_scroll_shield_1")
+spawn("scroll_shield", 15,27,3, "eob_scroll_shield_1")
 spawn("eob_zombie", 14,29,1, "eob_zombie_1")
 spawn("eob_zombie", 14,30,1, "eob_zombie_2")
 spawn("eob_zombie", 29,13,3, "eob_zombie_3")
@@ -3428,7 +3454,7 @@ spawn("eob_sewers_door_metal", 6,20,3, "eob_sewers_door_metal_7")
 spawn("eob_sewers_door_metal", 4,19,0, "eob_sewers_door_metal_8")
 	:addPullChain()
 spawn("eob_bow", 6,20,2, "eob_bow_1")
-spawn("eob_scroll_invisibility", 6,24,2, "eob_scroll_invisibility_1")
+spawn("scroll_invisibility", 6,24,2, "eob_scroll_invisibility_1")
 	:setScrollText("")
 spawn("eob_sewers_secret_button_large", 3,26,3, "eob_sewers_secret_button_3")
 	:addConnector("toggle", "eob_sewers_secret_door_cube_2", "open")
@@ -3917,7 +3943,7 @@ spawn("eob_rations_u", 10,20,1, "eob_rations_u_12")
 spawn("eob_potion_healing", 9,21,0, "eob_potion_healing_4")
 spawn("eob_rock_u", 5,22,1, "eob_rock_u_7")
 spawn("eob_cleric_scroll_flame_blade", 11,22,3, "eob_cleric_scroll_flame_blade_1")
-spawn("eob_mage_scroll_fireball", 15,22,2, "eob_mage_scroll_fireball_1")
+spawn("scroll_fireball", 15,22,2, "eob_mage_scroll_fireball_1")
 spawn("eob_arrow_u", 17,24,1, "eob_arrow_u_6")
 spawn("eob_long_sword_u", 1,30,3, "eob_long_sword_u_1")
 spawn("eob_wand_magic_missile_3_u", 30,30,3, "eob_wand_magic_missile_3_u_1")
@@ -4534,7 +4560,7 @@ spawn("eob_robe_u", 10,17,2, "eob_robe_u_1")
 spawn("eob_axe_drow_cleaver_u", 11,18,3, "eob_axe_drow_cleaver_u_1")
 spawn("eob_stone_scepter_u", 27,2,2, "eob_stone_scepter_u_1")
 spawn("eob_potion_healing", 3,19,0, "eob_potion_healing_6")
-spawn("eob_mage_scroll_flame_arrow", 3,19,2, "eob_mage_scroll_flame_arrow_1")
+spawn("scroll_flame_arrow", 3,19,2, "eob_mage_scroll_flame_arrow_1")
 spawn("eob_cleric_scroll_slow_poison", 3,19,3, "eob_cleric_scroll_slow_poison_1")
 spawn("eob_rations_iron_u", 20,19,1, "eob_rations_iron_u_1")
 spawn("eob_rations_iron_u", 20,19,1, "eob_rations_iron_u_2")
@@ -4913,7 +4939,7 @@ spawn("eob_cleric_scroll_hold_person", 1,1,1, "eob_cleric_scroll_hold_person_1")
 spawn("eob_rations_iron_u", 21,2,3, "eob_rations_iron_u_4")
 spawn("eob_spear_u", 21,2,3, "eob_spear_u_2")
 spawn("eob_cleric_scroll_aid", 5,6,2, "eob_cleric_scroll_aid_1")
-spawn("eob_mage_scroll_haste", 6,6,3, "eob_mage_scroll_haste_1")
+spawn("scroll_haste", 6,6,3, "eob_mage_scroll_haste_1")
 spawn("eob_rations_iron_u", 8,7,0, "eob_rations_iron_u_5")
 spawn("eob_cleric_scroll_detect_magic", 24,8,0, "eob_cleric_scroll_detect_magic_1")
 spawn("eob_rations_iron_u", 12,10,1, "eob_rations_iron_u_6")
@@ -5486,7 +5512,7 @@ spawn("eob_drow_door", 19,30,1, "eob_drow_door_29")
 spawn("eob_drow_lock_ornate", 20,30,2, "eob_drow_lock_ornate_4")
 spawn("eob_drow_door", 21,30,1, "eob_drow_door_30")
 spawn("eob_drow_lock_ornate", 22,30,2, "eob_drow_lock_ornate_5")
-spawn("eob_mage_scroll_fireball", 2,3,3, "eob_mage_scroll_fireball_2")
+spawn("scroll_fireball", 2,3,3, "eob_mage_scroll_fireball_2")
 spawn("eob_rations_iron_u", 17,5,2, "eob_rations_iron_u_9")
 spawn("eob_medallion_of_adornment_u", 17,5,2, "eob_medallion_of_adornment_u_2")
 spawn("eob_cleric_scroll_bless", 17,5,2, "eob_cleric_scroll_bless_1")
@@ -5512,7 +5538,7 @@ spawn("eob_arrow_u", 27,23,0, "eob_arrow_u_18")
 spawn("eob_arrow_u", 27,23,1, "eob_arrow_u_19")
 spawn("eob_arrow_u", 27,23,2, "eob_arrow_u_20")
 spawn("eob_key_drow_u", 14,25,0, "eob_key_drow_u_1")
-spawn("eob_mage_scroll_lightning_bolt", 30,25,1, "eob_mage_scroll_lightning_bolt_1")
+spawn("scroll_lightning_bolt", 30,25,1, "eob_mage_scroll_lightning_bolt_1")
 spawn("eob_key_u", 4,26,1, "eob_key_u_5")
 spawn("eob_potion_healing", 4,26,0, "eob_potion_healing_7")
 spawn("eob_key_drow_u", 17,27,2, "eob_key_drow_u_2")
@@ -5768,13 +5794,13 @@ spawn("eob_cleric_scroll_raise_dead", 21,15,0, "eob_cleric_scroll_raise_dead_1")
 spawn("eob_key_ruby_u", 25,16,0, "eob_key_ruby_u_3")
 spawn("eob_key_drow_u", 20,20,2, "eob_key_drow_u_4")
 spawn("eob_key_jeweled_u", 21,21,0, "eob_key_jeweled_u_3")
-spawn("eob_mage_scroll_shield", 21,21,0, "eob_mage_scroll_shield_2")
+spawn("scroll_shield", 21,21,0, "eob_mage_scroll_shield_2")
 spawn("eob_plate_mail_cursed3_u", 4,23,0, "eob_plate_mail_cursed3_u_1")
 spawn("eob_flail_u", 8,23,1, "eob_flail_u_1")
 spawn("eob_key_drow_u", 28,23,1, "eob_key_drow_u_5")
 spawn("eob_robe_u", 1,28,0, "eob_robe_u_2")
 spawn("eob_mace_u", 1,28,0, "eob_mace_u_3")
-spawn("eob_mage_scroll_ice_storm", 14,28,2, "eob_mage_scroll_ice_storm_1")
+spawn("scroll_ice_storm", 14,28,2, "eob_mage_scroll_ice_storm_1")
 spawn("eob_lock_picks_u", 12,29,0, "eob_lock_picks_u_2")
 spawn("eob_gem_red_u", 20,20,3, "eob_gem_red_u_2")
 spawn("eob_mage_scroll_vampiric_touch", 15,14,3, "eob_mage_scroll_vampiric_touch_1")
@@ -6073,17 +6099,17 @@ spawn("eob_drow_wall_illusion", 29,30,3, "eob_drow_wall_illusion_27")
 spawn("eob_key_drow_u", 30,2,1, "eob_key_drow_u_6")
 spawn("eob_cleric_scroll_detect_magic", 12,3,0, "eob_cleric_scroll_detect_magic_2")
 spawn("eob_potion_poison", 15,6,0, "eob_potion_poison_2")
-spawn("eob_mage_scroll_stone_skin", 30,8,3, "eob_mage_scroll_stone_skin_1")
+spawn("scroll_stoneskin", 30,8,3, "eob_mage_scroll_stone_skin_1")
 spawn("eob_arrow_u", 25,14,3, "eob_arrow_u_21")
 spawn("eob_arrow_u", 25,14,1, "eob_arrow_u_22")
 spawn("eob_arrow_u", 25,14,2, "eob_arrow_u_23")
 spawn("eob_key_drow_u", 9,15,2, "eob_key_drow_u_7")
 spawn("eob_cleric_scroll_dispel_magic", 2,16,1, "eob_cleric_scroll_dispel_magic_2")
 spawn("eob_cleric_scroll_cure_serious_wnds", 2,16,3, "eob_cleric_scroll_cure_serious_wnds_2")
-spawn("eob_mage_scroll_invisibility", 29,18,2, "eob_mage_scroll_invisibility_2")
+spawn("scroll_invisibility", 29,18,2, "eob_mage_scroll_invisibility_2")
 spawn("eob_cleric_scroll_flame_blade", 13,19,0, "eob_cleric_scroll_flame_blade_3")
 spawn("eob_cleric_scroll_protect_evil10", 1,20,2, "eob_cleric_scroll_protect_evil10_2")
-spawn("eob_mage_scroll_armor", 14,20,0, "eob_mage_scroll_armor_1")
+spawn("scroll_armor", 14,20,0, "eob_mage_scroll_armor_1")
 spawn("eob_shield_drow_u", 24,20,0, "eob_shield_drow_u_1")
 spawn("eob_cleric_scroll_raise_dead", 12,21,2, "eob_cleric_scroll_raise_dead_2")
 spawn("eob_leather_boots_u", 28,21,3, "eob_leather_boots_u_4")
@@ -6341,7 +6367,7 @@ spawn("eob_arrow_u", 4,11,2, "eob_arrow_u_24")
 spawn("eob_arrow_u", 15,24,1, "eob_arrow_u_25")
 spawn("eob_key_skull_u", 3,12,0, "eob_key_skull_u_1")
 spawn("eob_cleric_scroll_neutral_poison", 19,13,0, "eob_cleric_scroll_neutral_poison_2")
-spawn("eob_mage_scroll_cone_of_cold", 25,22,2, "eob_mage_scroll_cone_of_cold_1")
+spawn("scroll_cone_of_cold", 25,22,2, "eob_mage_scroll_cone_of_cold_1")
 spawn("eob_bones_elf_tyrra_u", 3,12,1, "eob_bones_elf_tyrra_u_1")
 spawn("eob_mantis1_1", 27,24,0, "eob_mantis1_1_1")
 spawn("eob_mantis1_2", 16,21,0, "eob_mantis1_2_1")
@@ -6520,7 +6546,7 @@ spawn("eob_rock_mossy_u", 9,11,0, "eob_rock_mossy_u_2")
 spawn("eob_long_sword_slasher", 1,1,0, "eob_long_sword_slasher_1")
 spawn("eob_banded_armor_plus3_u", 1,1,0, "eob_banded_armor_plus3_u_1")
 spawn("eob_ring2_u", 12,4,3, "eob_ring2_u_4")
-spawn("eob_mage_scroll_hold_monster", 1,17,0, "eob_mage_scroll_hold_monster_1")
+spawn("scroll_hold_monster", 1,17,0, "eob_mage_scroll_hold_monster_1")
 spawn("eob_cleric_scroll_cure_serious_wnds", 23,16,2, "eob_cleric_scroll_cure_serious_wnds_3")
 spawn("eob_robe_protection5_u", 16,27,0, "eob_robe_protection5_u_1")
 spawn("eob_dagger_flicka_u", 16,27,0, "eob_dagger_flicka_u_1")

@@ -5,7 +5,7 @@ function create(id,x,y)
 	local book = gw.new{
 		'image',
 		id = id,
-		image="mod_assets/textures/book2_900.tga",
+		image="mod_assets/grimwidgets/images/book2_900.tga",
 		x=x,
 		y=y,
 		width=900,

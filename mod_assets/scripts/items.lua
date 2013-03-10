@@ -115,12 +115,13 @@ cloneObject{
 	uiName = "Scroll of Detect Magic",
 	description = "Mage scroll of Detect Magic.",
 }
+--[[
 cloneObject{
 	name = "eob_scroll_armor",
 	baseObject = "scroll_armor",
 	uiName = "Scroll of Armor",
 	description = "Mage scroll of Armor.",
-}
+}]]
 cloneObject{
 	name = "eob_scroll_bless",
 	baseObject = "scroll",
@@ -176,7 +177,7 @@ cloneObject{
 	uiName = "Gold Key",
 	description = "Gold Key.",
 }
-
+--[[
 cloneObject{
 	name = "eob_scroll_shield",
 	baseObject = "scroll_shield",
@@ -189,6 +190,7 @@ cloneObject{
 	uiName = "Scroll of Invisibility",
 	description = "Mage scroll of Invisibility.",
 }
+]]
 
 cloneObject{
 	name = "eob_sling",

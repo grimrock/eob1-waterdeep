@@ -66,7 +66,7 @@ function wrap(text,width,size)
 	for _,p in ipairs(paragraphs) do
 		line = line +1
 		local words = split(p,' ')
-	
+		len = 0
 		for i,word in ipairs(words) do
 			len = len + stringWidth(word,size)
 			if len > width then
