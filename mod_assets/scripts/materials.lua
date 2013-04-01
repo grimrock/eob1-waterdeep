@@ -320,6 +320,20 @@ defineMaterial{
 	glossiness = 50,
 	depthBias = 0,
 }
+-- Leech by Wallasaurus
+defineMaterial{
+	name = "leech_worm_mat",
+	diffuseMap = "mod_assets/textures/monsters/leech_worm_diffuse.tga",
+	specularMap = "mod_assets/textures/monsters/leech_worm_spec.tga",
+	normalMap = "mod_assets/textures/monsters/leech_worm_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 25,
+	depthBias = 0,
+}
 
 -- Giant breakable spider webs
 -- by montagneyaya (http://grimrock.nexusmods.com/mods/120/)
