@@ -4291,7 +4291,7 @@ function add()\
 \9   eob_sewers_lock_eye_48:getItemCount() == 1 and\
        eob_sewers_lock_eye_49:getItemCount() == 1 and\
 \9   eob_sewers_lock_eye_50:getItemCount() == 1 then\
-\9\9hudPrint(\"All sockets in place!\")\
+\9\9hudPrint(\"All gems in place!\")\
 \9\9removeWalls()\
 \9end\
 end\
@@ -4343,6 +4343,23 @@ spawn("script_entity", 19,18,1, "script_entity_13")
 \9alcove:addItem(spawn(\"eob_gem_red\"))\
 end\
 ")
+spawn("eob_sewers_lock_eye_right", 11,6,2, "eob_sewers_lock_eye_right_1")
+	:addItem(spawn("eob_gem_blue_u"))
+	:addConnector("deactivate", "script_entity_14", "leaveGemInPlace")
+spawn("script_entity", 9,5,2, "script_entity_14")
+	:setSource("function leaveGemInPlace(alcove)\
+\9setMouseItem(nil)\
+\9alcove:addItem(spawn(\"eob_gem_blue_u\"))\
+end")
+spawn("eob_sewers_lock_eye_right", 6,5,1, "eob_sewers_lock_eye_right_3")
+	:addItem(spawn("eob_gem_blue_u"))
+	:addConnector("deactivate", "script_entity_14", "leaveGemInPlace")
+spawn("eob_sewers_lock_eye_right", 5,10,0, "eob_sewers_lock_eye_right_4")
+	:addItem(spawn("eob_gem_blue_u"))
+	:addConnector("deactivate", "script_entity_14", "leaveGemInPlace")
+spawn("eob_sewers_lock_eye_right", 10,11,3, "eob_sewers_lock_eye_right_5")
+	:addItem(spawn("eob_gem_blue_u"))
+	:addConnector("deactivate", "script_entity_14", "leaveGemInPlace")
 
 --- level 4 ---
 
@@ -6138,7 +6155,7 @@ spawn("eob_dart_plus4_u", 11,13,0, "eob_dart_plus4_u_10")
 spawn("eob_disbeast", 15,4,0, "eob_disbeast_1")
 spawn("eob_rust", 13,28,0, "eob_rust_1")
 spawn("eob_disbeast", 9,6,0, "eob_disbeast_2")
-spawn("eob_rust", 20,7,0, "eob_rust_2")
+spawn("eob_rust", 22,7,0, "eob_rust_2")
 spawn("eob_disbeast", 29,26,0, "eob_disbeast_3")
 spawn("eob_disbeast", 24,14,0, "eob_disbeast_4")
 spawn("eob_disbeast", 29,4,0, "eob_disbeast_5")

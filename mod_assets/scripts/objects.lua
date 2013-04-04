@@ -285,21 +285,47 @@ defineObject{
 }
 
 -- added by Thomson. This is the cat eye sockets used on level 3.
--- They supposed to have one eye already filled with unremovable
--- blue gem and the player must put another blue gem in the second
--- socket (eye). Let's use daemon head this for now
+-- They supposed to have one (right) eye already filled with unremovable
+-- blue gem and the player must put another blue gem in the second,
+-- left socket (eye).
 defineObject {
    name = "eob_sewers_lock_eye",
    class = "Alcove",
-   model = "assets/models/env/demon_head_puzzle.fbx",
-   anchorPos = vec(0.21, 1.58, -0.45),
-   targetPos = vec(0.2, 1.65, -0.45),
+   --model = "assets/models/env/demon_head_puzzle.fbx",
+   model = "mod_assets/models/env/eob_sewers_wall_eye_sockets.fbx",
+
+   -- right eye
+   -- anchorPos = vec(0.44, 1.54, 0.02),
+   -- targetPos = vec(0.43, 1.61, 0.02),
+   -- targetSize = vec(0.1, 0.1, 0.1),
+
+   -- left eye
+   anchorPos = vec(-0.31, 1.54, 0.02),
+   targetPos = vec(-0.30, 1.61, 0.02),
    targetSize = vec(0.1, 0.1, 0.1),
    placement = "wall",
+   replacesWall = true,
    onInsertItem = function(self, item)
       return item.name == "eob_gem_blue_u" and self:getItemCount() == 0
    end,
    editorIcon = 92,
+}
+
+-- added by Thomson. This is the right eye socket for eob_sewers_lock_eye.
+-- It should have one unremovable gem in it, hence the onInsertItem return
+-- false all the time. There's no model for it, as the physical alcove (or
+-- socket) is already provided in eob_sewers_lock_eye
+defineObject {
+   name = "eob_sewers_lock_eye_right",
+   class = "Alcove",
+   anchorPos = vec(0.44, 1.54, 0.02),
+   targetPos = vec(0.43, 1.61, 0.02),
+   targetSize = vec(0.1, 0.1, 0.1),
+   placement = "wall",
+   editorIcon = 92,
+   onInsertItem = function(self, item)
+      return false
+   end,
 }
 
 defineObject {
