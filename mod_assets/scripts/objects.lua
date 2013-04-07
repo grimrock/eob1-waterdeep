@@ -544,6 +544,21 @@ defineObject{
 	editorIcon = 92,
 }
 
+
+-- --------------------------------------------------------------------
+-- OBJECTS FOR DWARVEN WALLSET ----------------------------------------
+-- --------------------------------------------------------------------
+
+-- Wall cube as decoration (sewers wallset)
+defineObject{
+	name = "eob_dwarven_wall_cube",
+	class = "Blockage",
+	model = "mod_assets/models/env/eob_dwarven_wall_cube.fbx",
+	placement = "floor",
+	editorIcon = 0,
+}
+
+
 -- --------------------------------------------------------------------
 -- EXTERNAL SOURCES ---------------------------------------------------
 -- --------------------------------------------------------------------
