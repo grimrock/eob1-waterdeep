@@ -1,3 +1,11 @@
+v0.02.16 (not released yet)
+- (DJ) Leech (by Wallasaurus) added
+- (JKos) spellbook update
+- (Thomson) level 3 gem socket/lock (by Thomson) added
+- (Thomson) level 3 cat eyes sockets (by Thomson) added
+- (Thomson) several fixes on level 3. Levels 1-3 are now playable
+- (Thomson) stub wallset for dwarven levels added
+- (Thomson) Skeleton with axe (by Leki) added
 
 v0.02.14 (2013-01-22)
 - (JKos) Grimwidgets and LoG Framework updated. (sorry about previous accidental commit)

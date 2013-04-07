@@ -26,6 +26,9 @@ import "mod_assets/scripts/monsters_EobConverter.lua"
 import "mod_assets/scripts/items_EobConverter.lua"
 import "mod_assets/scripts/objects_EobConverter.lua"
 
+-- Custom skeleton+axe by Leki
+import "mod_assets/plugins/skeleton_warrior_axe/skeleton_warrior_axe.lua"
+
 -- import custom assets
 import "mod_assets/scripts/monsters.lua"
 import "mod_assets/scripts/items.lua"

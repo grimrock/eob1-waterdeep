@@ -117,7 +117,7 @@ cloneObject{
 
 cloneObject{
    name = "eob_skeleton",
-   baseObject = "skeleton_warrior",
+   baseObject = "leki_skeleton_warrior_axe",
    health = 90,
    attackPower = 9,
    accuracy = 10,
