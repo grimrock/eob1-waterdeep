@@ -31,3 +31,33 @@ defineWallSet{
 	
 	pillarDecorations = {},
 }
+
+defineWallSet{
+	name = "dwarven",
+	randomFloorFacing = false,
+	floors = {
+		"mod_assets/models/env/eob_dwarven_floor.fbx", 1,
+	},
+	
+	walls = {
+		"mod_assets/models/env/eob_dwarven_wall.fbx", 1,
+	},
+	
+	pillars = {
+		"mod_assets/models/env/eob_dwarven_pillar.fbx", 1,
+	},
+
+	ceilings = {
+		"mod_assets/models/env/eob_dwarven_ceiling.fbx", 1,
+	},
+	
+	ceilingShafts = {
+		"mod_assets/models/env/eob_dwarven_ceiling_pit.fbx", 1,
+	},
+
+	floorDecorations = {},
+	
+	wallDecorations = {},
+	
+	pillarDecorations = {},
+}

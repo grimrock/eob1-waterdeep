@@ -4364,7 +4364,7 @@ spawn("eob_sewers_lock_eye_right", 10,11,3, "eob_sewers_lock_eye_right_5")
 --- level 4 ---
 
 mapName("Upper Level Dwarven Ruins")
-setWallSet("temple")
+setWallSet("dwarven")
 playStream("assets/samples/music/temple_ambient.ogg")
 mapDesc([[
 ##############################.#
@@ -4375,9 +4375,9 @@ mapDesc([[
 #.....#.#..........##..###.#...#
 #.#.#.#.#..##..#.#.....#.#.#.#.#
 #.....#.#.#...#...#.###....#.#.#
-#.#.#.#.###.#####.#...####...#.#
+#.#.#.#.###.###.#.#...####...#.#
 #.....#.#.....#.#.#.##..##.###.#
-###.###.#.....#.###.....##.#..##
+###.###.#.....#.#.#.....##.#..##
 #...###.#.....#...#.####.#.#..##
 #.##.##.#.....##.#.....#.#.#.#.#
 #.##.#..#.#.#.#..#.##..#..##.#.#
@@ -4734,7 +4734,7 @@ end\
 --- level 5 ---
 
 mapName("Dwarven Ruins and Camp")
-setWallSet("temple")
+setWallSet("dwarven")
 playStream("assets/samples/music/temple_ambient.ogg")
 mapDesc([[
 ################################
@@ -4999,7 +4999,7 @@ spawn("eob_spider", 21,16,0, "eob_spider_26")
 --- level 6 ---
 
 mapName("Botton Level of Dwarven Ruins")
-setWallSet("temple")
+setWallSet("dwarven")
 playStream("assets/samples/music/temple_ambient.ogg")
 mapDesc([[
 ####.###########################

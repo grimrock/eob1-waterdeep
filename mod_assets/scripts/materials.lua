@@ -376,3 +376,51 @@ defineMaterial{
 	glossiness = 30,
 	depthBias = 0,
 }
+
+
+--- dwarven wallset ---
+--- based on temple wallset for now ---
+--- by Thomson (by Almost Human really, Thomson just recolorized the textures)
+--- used settings: hue 229, saturation 21 in colorize... command in gimp
+defineMaterial{
+    name = "eob_dwarven_wall",
+    -- original material: temple_wall
+    diffuseMap = "mod_assets/textures/env/eob_dwarven_wall_dif.tga",
+    specularMap = "mod_assets/textures/env/eob_dwarven_wall_spec.tga",
+    normalMap = "mod_assets/textures/env/eob_dwarven_wall_normal.tga",
+    doubleSided = false,
+    lighting = true,
+    alphaTest = false,
+    blendMode = "Opaque",
+    textureAddressMode = "Wrap",
+    glossiness = 30,
+    depthBias = 0,
+}
+
+defineMaterial{
+	name = "eob_dwarven_ceiling",
+	diffuseMap = "mod_assets/textures/env/eob_dwarven_ceiling_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_dwarven_ceiling_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_dwarven_ceiling_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 30,
+	depthBias = 0,
+}
+
+defineMaterial{
+	name = "eob_dwarven_floor",
+	diffuseMap = "mod_assets/textures/env/eob_dwarven_floor_dif.tga",
+	specularMap = "mod_assets/textures/env/eob_dwarven_floor_spec.tga",
+	normalMap = "mod_assets/textures/env/eob_dwarven_floor_normal.tga",
+	doubleSided = false,
+	lighting = true,
+	alphaTest = false,
+	blendMode = "Opaque",
+	textureAddressMode = "Wrap",
+	glossiness = 30,
+	depthBias = 0,
+}
