@@ -2816,6 +2816,7 @@ function _turnPage(self)\
 \9self.spellDescr:activate()\
 end\
 ")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -4737,7 +4738,6 @@ spawn("eob_dwarven_wall_cube", 15,11,3, "eob_dwarven_wall_cube_5")
 spawn("eob_dwarven_wall_cube", 15,10,0, "eob_dwarven_wall_cube_6")
 spawn("eob_dwarven_wall_cube", 15,9,3, "eob_dwarven_wall_cube_7")
 spawn("eob_dwarven_wall_cube", 15,8,0, "eob_dwarven_wall_cube_8")
-spawn("starting_location", 16,12,3, "starting_location_1")
 
 --- level 5 ---
 
