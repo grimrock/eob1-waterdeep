@@ -615,18 +615,16 @@ function onLearnSpell(scroll,champion)
 end
 ]])
 
+
+
 createSpell{
 	   name = "magic_missile",
 	   uiName = "Magic missile",
 	   skill = "fire_magic",
-	   level = 0,
+	   level = 1,
 	   runes = "A",
-	   manaCost = 0,
-	   description = [[Range:Long
-Duration:Instantaneous
-Area of Effect:One target 
-
-The mage creates a bolt of magic force that unerringly strikes one target. Magic Missiles do greater damage as a mage increases in level. Initially, Magic Missile does two to five points of damage, and for every two extra levels the spell does two to five more points. So a first or second-level mage does two to fivepoints of damage, but a third or fourth-level mage does four to ten, and so on.]]
+	   manaCost = 1,
+	   description = [[]]
 	}
 
 createSpell{
@@ -822,15 +820,19 @@ Area of Effect:1 character
 
 This spell grants the recipient virtual immunity to any attack by cut, blow, projectile, or the like. Stoneskin protects the user from almost any non-magical attack and also gives +35 resistance to fire. The spell lasts for one to four attacks plus one for every two levels of the caster. For example, a 9th level mage casting Stoneskin would protect against 5 to 8 attacks.]],
 }	
+-- Becouse of the amount limit (15) of custom spells I had to use the names of the original spells for the rest
+
 createSpell{
-	name = "vampiric_touch",
+	name = "ice_shards",
 	uiName = "Vampiric touch",
 	skill = "air_magic",
 	level = 0,
 	runes = "BD",
 	manaCost = 0,
-	description = [[]],
+	description = "",
 }	
+
+
 
 
 defineParticleSystem{

@@ -222,7 +222,7 @@ createSpell{
 	uiName = "Fireburst",
 	skill = "fire_magic",
 	level = 2,
-	runes = "A",
+	runes = "C",
 	manaCost = 15,
 	onCast = "fireburst",
 }

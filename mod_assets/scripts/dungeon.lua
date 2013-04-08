@@ -1333,7 +1333,7 @@ When a mage casts this spell, a jet of searing flame shoots from hisfingertips. 
 \9}\9\
 \9\
 \9fw_magic.defineSpell{\
-\9\9name='vampiric_touch',\
+\9\9name='ice_shards',\
 \9\9uiname='Vampiric touch',\
 \9\9description = [[Range:Close\
 Duration:One attack\
@@ -1684,6 +1684,9 @@ end\
 function _onCastSpell(champ,spellName)\
 \9local memorizedSpells = data.get(champ,'spells')\
 \9local canCast = false\
+\9if fw_magic.spells[spellName] == nil then\
+\9\9return false\
+\9end\
 \9local spellLevel = fw_magic.spells[spellName].level\
 \9if memorizedSpells[spellLevel] == nil then return false end\
 \9\
