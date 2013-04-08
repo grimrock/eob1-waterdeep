@@ -4450,6 +4450,9 @@ spawn("eob_ruins_wall_small_statue", 16,5,0, "eob_ruins_wall_small_statue_3")
 spawn("eob_ruins_button", 1,6,1, "eob_ruins_button_1")
 spawn("eob_ruins_door_stone", 3,6,0, "eob_ruins_door_stone_5")
 spawn("eob_ruins_chain_lever", 18,6,2, "eob_ruins_chain_lever_1")
+	:setLeverState("activated")
+	:addConnector("deactivate", "moving_walls_lv4", "disable")
+	:addConnector("activate", "moving_walls_lv4", "enable")
 spawn("eob_ruins_door_stone", 20,6,3, "eob_ruins_door_stone_6")
 	:addPullChain()
 spawn("eob_ruins_door_stone", 2,7,3, "eob_ruins_door_stone_7")
@@ -4731,13 +4734,167 @@ end\
 \
 ")
 spawn("eob_dwarven_wall_cube", 17,10,0, "eob_dwarven_wall_cube_1")
-spawn("eob_dwarven_wall_cube", 17,9,3, "eob_dwarven_wall_cube_2")
-spawn("eob_dwarven_wall_cube", 17,8,3, "eob_dwarven_wall_cube_3")
-spawn("eob_dwarven_wall_cube", 17,7,3, "eob_dwarven_wall_cube_4")
-spawn("eob_dwarven_wall_cube", 15,11,3, "eob_dwarven_wall_cube_5")
-spawn("eob_dwarven_wall_cube", 15,10,0, "eob_dwarven_wall_cube_6")
-spawn("eob_dwarven_wall_cube", 15,9,3, "eob_dwarven_wall_cube_7")
-spawn("eob_dwarven_wall_cube", 15,8,0, "eob_dwarven_wall_cube_8")
+spawn("eob_dwarven_wall_cube", 15,8,0, "eob_dwarven_wall_cube_5")
+spawn("pressure_plate_hidden", 17,11,2, "pressure_plate_hidden_18")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("script_entity", 16,10,3, "moving_walls_lv4")
+	:setSource("-- this script controls \"walking\" walls. When party approaches a wall around\
+-- locations 15,7 to 17,11, the wall moves away. It is really a wall moving\
+-- in counter-clockwise pattern here. This behavior can be disabled by\
+-- pulling the chain (lever) at location 18,6\
+\
+\
+-- control whether the walls are moving or not (used by level at 18,7)\
+movingWallsEnabled = true\
+\
+specialQuestDone = false\
+\
+function disable()\
+\9movingWallsEnabled = false\
+\9\
+\9-- check if special quest has been fulfilled\
+\9\
+\9local keyFound = false\
+\9local wallFound = false\
+\9for x in entitiesAt(4, 15, 8) do\
+\9\9if x.name == \"eob_dwarven_wall_cube\" then\
+\9\9\9wallFound = true\
+\9\9end\
+\9\9if x.name == \"eob_key_dwarven_u\" then\
+\9\9\9keyFound = true\
+\9\9end\
+\9end\
+\9if wallFound and not keyFound and not specialQuestDone then\
+\9\9specialQuest()\
+\9end\
+end\
+\
+function enable()\
+\9movingWallsEnabled = true\
+end\
+\
+\
+function stepOnPlate(self)\
+\9if not movingWallsEnabled then\
+\9\9return\
+\9end\
+\
+    local locations = { {17,11}, {17,10}, {17,9}, {17,8}, {17,7}, {16,7}, {15,7}, {15,8}, {15,9}, {15,10}, {15,11}, {16,11} }\
+\
+\9local size = #locations\
+\9\
+\9-- let's find out which plate did we press?\
+\9for i = 1,size,1 do\
+\9\9local pos = locations[i]\
+\9\9if pos[1] == party.x and pos[2] == party.y then\
+\9\9\9local destroy1 = ((i) % size) + 1\
+\9\9\9local destroy2 = ((i - 6) % size) + 1\
+\9\9\9local create1 = ((i - 5) % size) + 1\
+\9\9\9local create2 = ((i + 1) % size) + 1\
+\9\9\9if destroyWall(locations[destroy1]) then\
+\9\9\9\9createWall(locations[create1])\
+\9\9\9\9destroyWall(locations[destroy2])\
+\9\9\9\9createWall(locations[create2])\
+\9\9\9end\
+\9\9end\
+\9end\
+end\
+\
+-- function tries to destroy a wall at position specified by pos\
+-- pos is a two element array\
+-- function returns true if destruction was successful or false,\
+-- if there was no eob_dwarven_wall_cube there\
+function destroyWall(pos)\
+\9for x in entitiesAt(party.level, pos[1], pos[2]) do\
+\9\9if x.name == \"eob_dwarven_wall_cube\" then\
+\9\9\9x:destroy()\
+\9\9\9return true\
+\9\9end\
+\9end\
+\9return false\
+end\
+\
+-- function spawns a new eob_dwarven_wall_cube at specified location\
+function createWall(pos)\
+\9spawn(\"eob_dwarven_wall_cube\", party.level, pos[1], pos[2], 0)\
+end\
+\
+function specialQuest()\
+\9secret_5:activate()\
+\9specialQuestDone = true\
+\9hudPrint(\"Special quest for this level!\")\
+end")
+spawn("pressure_plate_hidden", 17,10,2, "pressure_plate_hidden_21")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 17,9,2, "pressure_plate_hidden_22")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 17,8,2, "pressure_plate_hidden_23")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 17,7,2, "pressure_plate_hidden_24")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 16,7,2, "pressure_plate_hidden_25")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 15,7,2, "pressure_plate_hidden_26")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 15,8,2, "pressure_plate_hidden_27")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 15,9,2, "pressure_plate_hidden_28")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 15,10,2, "pressure_plate_hidden_29")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 15,11,2, "pressure_plate_hidden_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("pressure_plate_hidden", 16,11,2, "pressure_plate_hidden_31")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
+spawn("secret", 16,9,3, "secret_5")
 
 --- level 5 ---
 
