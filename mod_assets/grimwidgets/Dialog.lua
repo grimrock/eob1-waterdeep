@@ -92,7 +92,9 @@ function activate(s_id, f_callBack)
 
 		end
 	else
-		print("Calling dialog.activate() with wrong number and/or type of parameters.")
+		-- commented out for now to avoid this stupid warning (JKos framework tries to call
+		-- activate() in every script that has it.
+		-- print("Calling dialog.activate() with wrong number and/or type of parameters.")
 		return
 	end
 
