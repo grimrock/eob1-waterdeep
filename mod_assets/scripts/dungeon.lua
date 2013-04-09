@@ -4417,6 +4417,8 @@ spawn("eob_ruins_lever", 15,2,3, "eob_ruins_lever_1")
 spawn("eob_ruins_door_stone", 24,2,0, "eob_ruins_door_stone_3")
 	:addPullChain()
 spawn("eob_ruins_statue_lock", 1,3,1, "eob_ruins_statue_lock_1")
+	:setOpenedBy("eob_key_dwarven_u")
+	:addConnector("activate", "script_entity_15", "keyInserted")
 spawn("eob_ruins_statue_lever", 3,3,0, "eob_ruins_statue_lever_1")
 spawn("eob_ruins_illusion_wall", 5,3,2, "eob_ruins_illusion_wall_2")
 spawn("eob_ruins_pressure_plate", 9,3,3, "eob_ruins_pressure_plate_1")
@@ -4445,6 +4447,8 @@ spawn("eob_ruins_wall_text", 23,4,2, "eob_ruins_wall_text_3")
 spawn("eob_ruins_alcove", 24,4,2, "eob_ruins_alcove_3")
 spawn("eob_ruins_net", 30,4,2, "eob_ruins_net_2")
 spawn("eob_ruins_statue_lock", 1,5,3, "eob_ruins_statue_lock_2")
+	:setOpenedBy("eob_key_dwarven_u")
+	:addConnector("activate", "script_entity_15", "keyInserted")
 spawn("eob_ruins_wall_text", 2,5,2, "eob_ruins_wall_text_4")
 	:setWallText("")
 spawn("eob_ruins_button", 4,5,2, "eob_ruins_button_2")
@@ -4470,6 +4474,8 @@ spawn("eob_ruins_wall_text", 21,8,2, "eob_ruins_wall_text_6")
 spawn("eob_ruins_statue_lever", 21,8,1, "eob_ruins_statue_lever_3")
 spawn("eob_ruins_button", 2,9,0, "eob_ruins_button_3")
 spawn("eob_ruins_statue_lock", 4,9,2, "eob_ruins_statue_lock_4")
+	:setOpenedBy("eob_key_dwarven_u")
+	:addConnector("activate", "script_entity_17", "keyInserted")
 spawn("eob_ruins_wall_text", 13,9,1, "eob_ruins_wall_text_5")
 	:setWallText("")
 spawn("eob_ruins_door_stone", 3,10,0, "eob_ruins_door_stone_11")
@@ -4479,6 +4485,8 @@ spawn("eob_ruins_door_stone", 20,10,3, "eob_ruins_door_stone_12")
 	:addPullChain()
 spawn("eob_ruins_net_torn", 26,10,0, "eob_ruins_net_torn_2")
 spawn("eob_ruins_statue_lock", 2,11,0, "eob_ruins_statue_lock_3")
+	:setOpenedBy("eob_key_dwarven_u")
+	:addConnector("activate", "script_entity_17", "keyInserted")
 spawn("eob_ruins_wall_text", 13,11,1, "eob_ruins_wall_text_8")
 	:setWallText("")
 spawn("eob_ruins_stairs_down", 4,12,0, "eob_ruins_stairs_down_1")
@@ -4499,6 +4507,8 @@ spawn("eob_ruins_statue_lever", 14,14,1, "eob_ruins_statue_lever_4")
 spawn("eob_ruins_wall_text", 14,14,0, "eob_ruins_wall_text_10")
 	:setWallText("")
 spawn("eob_ruins_statue_lock", 4,15,1, "eob_ruins_statue_lock_6")
+	:setOpenedBy("eob_key_dwarven_u")
+	:addConnector("activate", "eob_ruins_door_stone_17", "open")
 spawn("eob_ruins_stairs_up", 16,15,2, "eob_ruins_stairs_up_1")
 spawn("eob_ruins_door_stone", 4,16,0, "eob_ruins_door_stone_17")
 spawn("eob_ruins_door_stone", 21,16,0, "eob_ruins_door_stone_18")
@@ -4530,6 +4540,8 @@ spawn("eob_ruins_door_stone", 2,22,1, "eob_ruins_door_stone_21")
 spawn("eob_ruins_door_stone", 16,22,2, "eob_ruins_door_stone_22")
 spawn("eob_ruins_door_stone", 14,23,1, "eob_ruins_door_stone_23")
 spawn("eob_ruins_statue_lock", 15,23,2, "eob_ruins_statue_lock_7")
+	:setOpenedBy("eob_key_dwarven_u")
+	:addConnector("activate", "eob_ruins_door_stone_23", "open")
 spawn("eob_ruins_pressure_plate", 16,23,2, "eob_ruins_pressure_plate_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -4898,6 +4910,42 @@ spawn("pressure_plate_hidden", 16,11,2, "pressure_plate_hidden_31")
 	:setSilent(true)
 	:addConnector("activate", "moving_walls_lv4", "stepOnPlate")
 spawn("secret", 16,9,3, "secret_5")
+spawn("script_entity", 2,4,2, "script_entity_15")
+	:setSource("\
+function keyInserted()\
+\
+  -- open the door\
+  eob_ruins_door_stone_4:open()\
+\
+  -- and disable the locks, so player won't waste another key\
+  eob_ruins_statue_lock_1:setOpenedBy(\"\")\
+  eob_ruins_statue_lock_2:setOpenedBy(\"\")\
+\
+  -- todo: when trying to insert key to the second\
+  -- lock when first one was opened, yellow text\
+  -- \"The lock appears jammed\" should appear\
+end\
+\
+\
+")
+spawn("script_entity", 4,11,2, "script_entity_17")
+	:setSource("\
+function keyInserted()\
+\
+  -- open the door\
+  eob_ruins_door_stone_11:open()\
+\
+  -- and disable the locks, so player won't waste another key\
+  eob_ruins_statue_lock_3:setOpenedBy(\"\")\
+  eob_ruins_statue_lock_4:setOpenedBy(\"\")\
+\
+  -- todo: when trying to insert key to the second\
+  -- lock when first one was opened, yellow text\
+  -- \"The lock appears jammed\" should appear\
+end\
+\
+\
+")
 
 --- level 5 ---
 
