@@ -4383,12 +4383,12 @@ mapDesc([[
 ###.###.#.....#.#.#.....##.#..##
 #...###.#.....#...#.####.#.#..##
 #.##.##.#.....##.#.....#.#.#.#.#
-#.##.#..#.#.#.#..#.##..#..##.#.#
+#.##.#..#.#.#.#..#.##..#...#.#.#
 #.#..#.#..#.#..#.#.#.###.#.#...#
 #.#..#.#..#.#..#.#.#...#.#.#.#.#
 #.##.#.###...####...#.####.#.#.#
 #.#..#.###...#....#....###.#.#.#
-#.#..#.######..#######...###.#.#
+#.#..#.######..#######...#.#.#.#
 #.#..#.#...#...#.#...#.....#...#
 #.####.#...#...#.#...#...#.#.#.#
 #.#..#.#...#...#.#...#####.#.#.#
@@ -4403,7 +4403,7 @@ mapDesc([[
 #...#...#..#...........#...#...#
 ##############################.#
 ]])
-spawn("eob_ruins_net_torn", 30,0,0, "eob_ruins_net_torn_1")
+spawn("eob_ruins_net_torn", 30,2,0, "eob_ruins_net_torn_1")
 spawn("eob_ruins_door_stone_one", 14,1,3, "eob_ruins_door_stone_one_1")
 	:addPullChain()
 spawn("eob_ruins_portal_amulet", 16,1,0, "eob_ruins_portal_amulet_1")
@@ -4524,16 +4524,19 @@ spawn("eob_ruins_stairs_up", 16,19,0, "eob_ruins_stairs_up_2")
 spawn("eob_ruins_door_stone", 25,19,3, "eob_ruins_door_stone_20")
 spawn("eob_ruins_pressure_plate", 26,19,0, "eob_ruins_pressure_plate_2")
 	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
-spawn("eob_ruins_wall_text", 10,20,1, "eob_ruins_wall_text_11")
-	:setWallText("")
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "eob_ruins_door_stone_20", "close")
+spawn("eob_ruins_wall_text", 10,20,0, "eob_ruins_wall_text_11")
+	:setWallText("EMERGENCY EXIT")
 spawn("eob_ruins_wall_small_statue", 16,20,1, "eob_ruins_wall_small_statue_9")
 spawn("eob_ruins_wall_text", 20,20,1, "eob_ruins_wall_text_12")
 	:setWallText("")
 spawn("eob_ruins_button", 24,20,1, "eob_ruins_button_5")
+	:addConnector("toggle", "eob_ruins_door_stone_20", "open")
 spawn("eob_ruins_net_torn", 30,20,0, "eob_ruins_net_torn_4")
 spawn("eob_ruins_button", 16,21,3, "eob_ruins_button_6")
+	:addConnector("toggle", "eob_ruins_door_stone_22", "open")
 spawn("eob_ruins_net", 26,21,0, "eob_ruins_net_5")
 spawn("eob_ruins_door_stone", 2,22,1, "eob_ruins_door_stone_21")
 	:addPullChain()
@@ -4544,8 +4547,9 @@ spawn("eob_ruins_statue_lock", 15,23,2, "eob_ruins_statue_lock_7")
 	:addConnector("activate", "eob_ruins_door_stone_23", "open")
 spawn("eob_ruins_pressure_plate", 16,23,2, "eob_ruins_pressure_plate_3")
 	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "eob_ruins_door_stone_22", "close")
 spawn("eob_ruins_net", 23,23,0, "eob_ruins_net_6")
 spawn("eob_ruins_stairs_down", 11,24,0, "eob_ruins_stairs_down_2")
 spawn("eob_ruins_ceiling_shaft", 19,24,2, "eob_ruins_ceiling_shaft_1")
@@ -4554,6 +4558,7 @@ spawn("eob_ruins_door_stone", 8,25,2, "eob_ruins_door_stone_24")
 	:addPullChain()
 spawn("eob_ruins_wall_small_statue", 12,26,0, "eob_ruins_wall_small_statue_10")
 spawn("eob_ruins_button", 14,26,2, "eob_ruins_button_7")
+	:addConnector("toggle", "eob_ruins_door_stone_28", "open")
 spawn("eob_ruins_net_torn", 16,26,0, "eob_ruins_net_torn_5")
 spawn("eob_ruins_net", 24,26,1, "eob_ruins_net_8")
 spawn("eob_ruins_door_stone", 2,27,0, "eob_ruins_door_stone_25")
@@ -4567,11 +4572,13 @@ spawn("eob_ruins_net", 25,27,0, "eob_ruins_net_9")
 spawn("eob_ruins_net", 29,27,2, "eob_ruins_net_10")
 spawn("eob_ruins_pressure_plate", 13,28,2, "eob_ruins_pressure_plate_4")
 	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "eob_ruins_door_stone_28", "close")
 spawn("eob_ruins_net", 15,28,1, "eob_ruins_net_11")
 spawn("eob_ruins_net_torn", 17,28,3, "eob_ruins_net_torn_6")
 spawn("eob_ruins_statue_lever", 10,29,1, "eob_ruins_statue_lever_5")
+	:addConnector("activate", "script_entity_16", "spawnSpiders")
 spawn("eob_ruins_net", 27,29,1, "eob_ruins_net_12")
 spawn("eob_ruins_ceiling_shaft", 29,29,2, "eob_ruins_ceiling_shaft_2")
 spawn("eob_ruins_net", 13,30,1, "eob_ruins_net_13")
@@ -4614,13 +4621,11 @@ spawn("eob_spider", 28,2,0, "eob_spider_5")
 spawn("eob_spider", 28,8,0, "eob_spider_6")
 spawn("eob_spider", 26,24,0, "eob_spider_7")
 spawn("eob_spider", 28,10,0, "eob_spider_8")
-spawn("eob_spider", 29,30,0, "eob_spider_9")
 spawn("eob_spider", 15,2,0, "eob_spider_10")
 spawn("eob_spider", 18,21,0, "eob_spider_11")
 spawn("eob_spider", 27,2,0, "eob_spider_12")
 spawn("eob_spider", 27,1,0, "eob_spider_13")
 spawn("eob_spider", 21,15,0, "eob_spider_14")
-spawn("eob_spider", 18,25,0, "eob_spider_15")
 spawn("testpoint", 16,14,0, "testpoint_2")
 	:setSource("function activate()\
 \
@@ -4946,6 +4951,71 @@ end\
 \
 \
 ")
+spawn("script_entity", 11,29,3, "script_entity_16")
+	:setSource("-- spawn 2 spiders at locations 92 and 93 (just once,\
+-- next clicks does not do anything)y\
+\
+function spawnSpiders()\
+\9if pressed then\
+\9\9return\
+\9end\
+\9spawn(\"eob_spider\", 4, 29, 30, 0)\
+\9spawn(\"eob_spider\", 4, 18, 25, 0)\
+\9pressed = true\
+end\
+\
+pressed = false\
+")
+spawn("teleporter", 30,31,0, "teleporter_24")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(30,1,0,4)
+	:setChangeFacing(false)
+	:setSilent(true)
+	:setHideLight(true)
+spawn("teleporter", 30,0,0, "teleporter_25")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(30,30,0,4)
+	:setChangeFacing(false)
+	:setSilent(true)
+	:setHideLight(true)
+spawn("eob_dwarven_wall_cube", 26,13,3, "eob_dwarven_wall_cube_2")
+spawn("script_entity", 27,13,2, "script_entity_18")
+	:setSource("function removeWall1()\
+\9eob_dwarven_wall_cube_2:destroy()\
+end\
+\
+function removeWall2()\
+\9eob_dwarven_wall_cube_3:destroy()\
+end")
+spawn("pressure_plate_hidden", 29,23,3, "pressure_plate_hidden_20")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_18", "removeWall1")
+spawn("pressure_plate_hidden", 30,5,1, "pressure_plate_hidden_32")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_18", "removeWall2")
+spawn("eob_dwarven_wall_cube", 26,18,0, "eob_dwarven_wall_cube_3")
+spawn("eob_ruins_pit", 9,20,1, "eob_ruins_pit_6")
+	:addTrapDoor()
+	:setPitState("closed")
+spawn("pressure_plate_hidden", 8,20,1, "pressure_plate_hidden_33")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "eob_ruins_pit_6", "open")
 
 --- level 5 ---
 
