@@ -191,3 +191,22 @@ cloneObject{
 		  end
    	      end	
 }
+
+
+cloneObject{
+   name = "eob_flind1_2_museum",
+   baseObject = "eob_flind1_2",
+   --when you damage this concrete type of monster
+   --all the blockers eob_blocker_museum_xx will be removed
+   --this type of monster should be only use in museum on level 3
+   onDamage = function(self, damage, damageType)
+		for e  in allEntities(3)
+		do
+	 	  if string.find(e.name,"eob_blocker") ~= nil
+		     and (e.level == 3 and e.x >= 8 and e.x <= 13 and e.y >= 19 and e.y <= 22)
+		  then e:destroy()
+		  end
+		end	
+	     end
+}
+
