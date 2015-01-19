@@ -37,6 +37,16 @@ cloneObject{
 	baseObject = "eob_sewers_door_metal",
 }
 
+-- carlos half open only but forceable door
+cloneObject{
+	name = "eob_ruins_door_metal_force",
+	baseObject = "temple_door_metal",
+	openVelocity = 0.3,
+	closeVelocity = 0,
+	closeAcceleration = 0,
+	closeSound = "assets/samples/monsters/cube_break_free.wav",
+}
+
 cloneObject {
 	name = "eob_sewers_door_metal_one",
 	baseObject = "eob_sewers_door_metal",
@@ -108,6 +118,17 @@ cloneObject{
 	baseObject = "dungeon_pressure_plate",
 	model = "mod_assets/models/env/sewers_pressure_plate.fbx",
 }
+
+-- idea by Diarmuid copied from grimrock forum by carlos
+defineObject{
+   name = "eob_ruins_floor_destroyable",
+   class = "Decoration",
+   model = "mod_assets/models/env/eob_dwarven_floor.fbx",
+   placement = "floor",
+   replacesFloor = true,
+   editorIcon = 136
+}
+
 
 -- ======================== --
 -- =======  Ceiling  ====== --
@@ -557,6 +578,19 @@ defineObject{
 	placement = "floor",
 	editorIcon = 0,
 }
+
+-- wall "cube" to be used with alcoves (the above cube doesn't like alcoves)
+-- also must not be visible from any side except from those with alcoves (cause it looks like floor :)
+defineObject{
+	name = "eob_dwarven_wall_cube_invisible",
+	class = "Blockage",
+	model = "mod_assets/models/env/eob_dwarven_floor.fbx",
+	placement = "floor",
+	replacesFloor = true,
+	editorIcon = 0,
+}
+
+
 
 
 -- --------------------------------------------------------------------
