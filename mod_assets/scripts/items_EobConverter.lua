@@ -1812,6 +1812,7 @@ cloneObject {
 	name = "eob_egg_10_u",  -- Kenku Egg
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
