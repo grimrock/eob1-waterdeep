@@ -174,3 +174,20 @@ cloneObject {
 	name = "eob_drider2",
 	baseObject = "eob_drider"
 }
+
+cloneObject{
+   name = "eob_kuotoa1_1_museum",
+   baseObject = "eob_kuotoa1_1",
+   --when you damange this concrete type of monster
+   --all the blockers eob_blocker_museum_xx will be removed
+   --this type of monster should be only use in museum on level 3
+   onDamage = function(self, damage, damageType)
+		  blockerexists = findEntity("eob_blocker_museum_1")
+		  if blockerexists
+		  then 
+		    for i = 1, 22, 1 do
+		      findEntity("eob_blocker_museum_" .. i .. ""):destroy()
+		    end
+		  end
+   	      end	
+}
