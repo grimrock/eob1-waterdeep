@@ -37,3 +37,12 @@ defineSound{
    minDistance = 1,
    maxDistance = 5,
 }
+
+defineSound{
+   name = "portal_open",
+   filename = "mod_assets/sounds/portal_open.wav",
+   loop = false,
+   volume = 10,
+   minDistance = 1,
+   maxDistance = 10,
+}

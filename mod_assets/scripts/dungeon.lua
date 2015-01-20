@@ -4818,7 +4818,6 @@ spawn("script_entity", 10,18,2, "script_entity_30")
 -- unless you adjust their number in monster.lua\
 -- under eob_kuotoa1_1_museum\
 -- or figure out better way how to remove them")
-spawn("starting_location", 11,17,2, "starting_location_1")
 spawn("eob_flind1_2_museum", 10,19,1, "eob_flind1_2_museum_1")
 	:setAIState("guard")
 spawn("eob_flind1_2_museum", 10,20,3, "eob_flind1_2_museum_2")
@@ -5863,7 +5862,7 @@ spawn("eob_teleporter", 25,4,3, "eob_teleporter_7")
 	:setTriggeredByItem(true)
 	:setTeleportTarget(28,4,3,5)
 	:setChangeFacing(false)
-spawn("eob_ruins_portal_necklace", 10,5,0, "eob_ruins_portal_necklace_1")
+spawn("eob_ruins_portal_necklace", 9,5,0, "eob_ruins_portal_necklace_1")
 spawn("eob_ruins_illusion_wall_statue", 10,5,2, "eob_ruins_illusion_wall_statue_2")
 spawn("eob_ruins_alcove", 15,5,1, "eob_ruins_alcove_8")
 	:addItem(spawn("eob_stone_necklace_u"))
@@ -6098,7 +6097,7 @@ spawn("eob_leather_boots_u", 19,30,2, "eob_leather_boots_u_2")
 spawn("eob_rock_u", 21,11,0, "eob_rock_u_14")
 spawn("eob_dwarf1_1", 19,13,0, "eob_dwarf1_1_1")
 	:setAIState("guard")
-spawn("eob_dwarf2_1_group", 14,8,0, "eob_dwarf2_1_group_1")
+spawn("eob_dwarf2_1_group", 14,8,1, "eob_dwarf2_1_group_1")
 	:setAIState("guard")
 spawn("eob_dwarf1_2", 15,12,0, "eob_dwarf1_2_1")
 	:setAIState("guard")
@@ -6109,7 +6108,7 @@ spawn("eob_spider", 22,11,0, "eob_spider_17")
 spawn("eob_spider", 26,23,1, "eob_spider_18")
 	:setAIState("guard")
 spawn("eob_spider", 6,2,0, "eob_spider_19")
-spawn("eob_dwarf1_2", 19,10,0, "eob_dwarf1_2_3")
+spawn("eob_dwarf1_2", 19,10,3, "eob_dwarf1_2_3")
 	:setAIState("guard")
 spawn("eob_spider", 5,15,0, "eob_spider_20")
 spawn("eob_spider", 7,1,0, "eob_spider_21")
@@ -6121,7 +6120,7 @@ spawn("eob_dwarf1_2", 17,13,0, "eob_dwarf1_2_4")
 spawn("eob_spider", 3,12,0, "eob_spider_25")
 spawn("eob_dwarf4_1_group", 18,14,0, "eob_dwarf4_1_group_1")
 	:setAIState("guard")
-spawn("eob_dwarf1_1", 17,8,0, "eob_dwarf1_1_2")
+spawn("eob_dwarf1_1", 17,8,3, "eob_dwarf1_1_2")
 	:setAIState("guard")
 spawn("eob_spider", 23,14,1, "eob_spider_26")
 spawn("eob_ruins_stairs_up", 4,13,2, "eob_ruins_stairs_up_3")
@@ -6140,7 +6139,7 @@ function destroyWall()\
 \9return false\
 end")
 spawn("secret", 3,15,1, "secret_7")
-spawn("secret", 10,5,3, "secret_8")
+spawn("secret", 9,6,3, "secret_8")
 spawn("eob_ruins_secret_button_tiny", 1,12,3, "eob_ruins_secret_button_tiny_10")
 	:setActivateOnce(true)
 	:addConnector("toggle", "eob_ruins_door_stone_one_3", "open")
@@ -6695,46 +6694,61 @@ function destroyWall()\
 \9end\
 \9return false\
 end")
-spawn("timer", 8,9,3, "timer_open")
-	:setTimerInterval(0)
-	:addConnector("activate", "script_entity_55", "openDoor")
-	:addConnector("activate", "timer_open", "deactivate")
-spawn("script_entity", 7,11,1, "script_entity_55")
+spawn("script_entity", 8,11,1, "script_entity_stucked_door")
 	:setSource("-- after button is pressed open the door after random amount of seconds betwen 1 and 5\
 function openTimer()\
--- funny stuff with sounds, can be removed\
--- the doors are in original already half way opened when you approach\
--- and forceable \
---\9timer_open:setTimerInterval(math.random (2,6))\
-\9timer_open:setTimerInterval(22)\
-\9timer_open:activate()\
-\9playSoundAt(\"cube_start\",5,7,10)\
+-- funny stuff with sounds, can be removed,was just a test\
+-- the doors are in original already half way opened when you approach and forceable \
+--\9timer_open:setTimerInterval(math.random (1,1))\
+--\9playSoundAt(\"cube_start\",5,7,10)\
+\
+\9-- open the door after random amount of seconds 2 to 6\
+\9spawn(\"timer\",self.level, self.x, self.y, self.facing,\"timer_open\")\
+\9:setTimerInterval(math.random(2,6))\
+\9:addConnector(\"activate\",\"script_entity_stucked_door\",\"openDoor\")\
+\9:activate()\
+\
 end\
 \
 \
 function openDoor()\
-\9eob_ruins_door_metal_force_1:open()\
-\9timer_close:activate()\
+\9-- start opening door\
+\9timer_open:destroy()\
+\9eob_ruins_door_stone_stacked_1:open()\
+\9spawn(\"timer\",self.level, self.x, self.y, self.facing,\"timer_close\")\
+\9:setTimerInterval(2.5)\
+\9:addConnector(\"activate\",\"script_entity_stucked_door\",\"closeDoor\")\
+\9:activate()\
+\9\
 end\
 \
 \
 function closeDoor()\9\
 \9-- close the door \
-\9-- but because they are defined with closeVelocity 0 and closeAcceleration 0\
-\9-- the door stay stuck half way\
+\9-- with sound simulationg its broken\
+\9timer_close:destroy()\
+\9eob_ruins_door_stone_stacked_1:close()\
 \9playSound(\"cube_break_free\")\
-\9eob_ruins_door_metal_force_1:close()\
+\9spawn(\"timer\",self.level, self.x, self.y, self.facing,\"timer_replace\")\
+\9:setTimerInterval(2.5)\
+\9:addConnector(\"activate\",\"script_entity_stucked_door\",\"replaceDoor\")\
+\9:activate()\
+\
+end\
+\
+function replaceDoor()\
+\
+\9-- replace the door with forceable version\
+\9timer_replace:destroy()\
+\9eob_ruins_door_stone_stacked_1:destroy()\
+\9spawn(\"eob_ruins_door_metal_force\",5,9,10,3)\
+\9\
 end")
-spawn("timer", 8,11,3, "timer_close")
-	:setTimerInterval(2.5)
-	:addConnector("activate", "script_entity_55", "closeDoor")
-	:addConnector("activate", "timer_close", "deactivate")
 spawn("eob_ruins_button", 9,9,3, "eob_ruins_button_12")
 	:setActivateOnce(true)
-	:addConnector("toggle", "script_entity_55", "openTimer")
-spawn("eob_ruins_door_metal_force", 9,10,3, "eob_ruins_door_metal_force_1")
+	:addConnector("toggle", "script_entity_stucked_door", "openTimer")
 spawn("eob_blocker", 18,13,1, "eob_blocker_24")
-spawn("gw_event", 15,10,3, "gw_event_dwarven_camp")
+spawn("gw_event", 16,10,3, "gw_event_dwarven_camp")
 	:setSource("-- is this event enabled?\
 --enabled = true\
 \
@@ -6977,7 +6991,7 @@ actions = {\
 \
 -- optionaly we could make Dohrum joinable during later visits\
 ")
-spawn("script_entity", 13,9,2, "dohrum_join")
+spawn("script_entity", 17,10,2, "dohrum_join")
 	:setSource("function dohrumJoin()\
 \9newguy = {\
 \9\9name = \"Dohrum\",    -- just a name\
@@ -7046,26 +7060,6 @@ spawn("counter", 14,13,3, "counter_dwarf_camp_attacked")
 spawn("counter", 14,12,1, "counter_dwarf_camp_helped")
 spawn("altar", 18,13,2, "altar_1")
 	:addItem(spawn("skull"))
-spawn("gw_event", 19,6,2, "gw_event_dwarven_cleric")
-	:setSource("-- here should be dwarven cleric\
--- if you go away and back to this level he will rest meanwhile\
-\
-\
--- first screeen\
--- 'A weary dwarven cleric greets you. \"Yes, how can I help you?\"'\
--- choices \"Heal party\" or \"Leave\"\
--- heal party, heals up to 100dmg from 1st char to last char , and cure poison from all poisoned\
-\
--- if you have any bones with there is middle option (between heal party and leave\
--- 'Ressurect dead'\
--- next screen shows\
--- 'Which should be ressurected?'\
--- with a joice of all the names to resurrect\
-\
--- if tired\
--- 'An exhausted dwarven cleric rubs his eyes and tells you to come back after he has rested.'\
-\
-")
 spawn("eob_blocker", 15,8,0, "eob_blocker_dwarfcamp_1")
 spawn("eob_blocker", 16,8,2, "eob_blocker_dwarfcamp_2")
 spawn("eob_blocker", 17,9,3, "eob_blocker_dwarfcamp_3")
@@ -7078,7 +7072,244 @@ spawn("eob_blocker", 19,14,3, "eob_blocker_dwarfcamp_23")
 spawn("eob_blocker", 18,10,0, "eob_blocker_dwarfcamp_25")
 spawn("eob_blocker", 19,9,2, "eob_blocker_dwarfcamp_26")
 spawn("eob_blocker", 15,11,1, "eob_blocker_dwarfcamp_27")
-spawn("starting_location", 10,10,1, "starting_location_1")
+spawn("eob_ruins_door_stone_stacked", 9,10,3, "eob_ruins_door_stone_stacked_1")
+spawn("eob_teleporter", 19,7,0, "eob_teleporter_dwarven_camp_cleric")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(19,7,0,5)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("gw_event", 19,7,0, "gw_event_dvarven_cleric")
+	:setSource("-- here should be dwarven cleric\
+-- if you go away and back to this level he will rest meanwhile\
+\
+-- name of the image to show\
+image = \"mod_assets/textures/events/eob1-dwarf-camp-cleric-cut.dds\"\
+image_width = 172\
+image_hieght = 190\
+\
+\
+\
+-- Defines states. Each entry must have exactly two columns:\
+-- first is state, the second is description shown.\
+-- Event will start from the first state on the list.\
+-- There is also one special state called \"end\". Once moved\
+-- to state \"end\", the whole event ends.\
+\
+\
+states = {\
+{ \"init\", \"You've met a dwarven cleiric.\"},\
+\
+\
+{ \"nothelped\",\
+--\9\"---------------------------------------------\"\9\9\
+\9\"A wary dwarven cleric eyes you and says,\9\\n\" ..\
+\9\"\\\"I would offer my help to anyone who is \9\\n\" ..\
+\9\"injured, but my people require immediate \9\\n\" ..\
+\9\"attention.\\n \9\9\9\9\9\9\9\9\\n\" ..\
+\9\"Of course, if you were helping us in our \9\\n\" ..\
+\9\"efforts to find the prince...\\\"\9\9\9\\n\"\
+--\9\"-----------------------------------------------------------------\"\
+\9},\
+{ \"helped\",\
+--\9\"---------------------------------------------\"\9\9\
+\9\"A weary dwarven cleric greets you.\\n\9\9\\n\" ..\
+\9\"\\\"Yes, how can I help you?\\\"\9\9\9\9\\n\"\
+--\9\"-----------------------------------------------------------------\"\
+\9},\
+{ \"heal\",\
+\9\"Believe in Bob and yar shall be healed! \9\\n\"\
+\9},\
+{ \"tired\",\
+--\9\"---------------------------------------------\"\9\9\
+\9\"An exhausted dwarven cleric rubs his eyes\9\9\\n\" ..\
+\9\"and tells you to come back after he has rested.\\n\" ..\
+\9\"\\n(at least 5 minutes)\9\9\9\9\9\9\9\\n\"\
+\9},\
+{ \"resurect\",\
+\9\"Resurrection services are not yet available.\\n\"\
+\9}\
+}\
+\
+\
+\
+-- defines possible actions in each state. Each entry has\
+-- 4 values. First is a state in which you can take that action. \
+-- Second is a state name to which player will transition if that\
+-- action is taken. Third is a text printed on the action button.\
+-- Fourth defines function callback. It is optional. This function\
+-- may not return anything and the state specified in value 2 will \
+-- be used. The function may also return a name of the state, thus\
+-- overriding default transition. One of the transitions must\
+-- transit to \"end\" state (a dummy state that concludes the whole\
+-- event).\
+-- abort seems to be another key word to temporarily stop, but trigger again when stepped on\
+-- while end means never trigger again\
+\
+\
+function onVisit()\
+\9-- did we already visit and help the dwarves?\
+\9if\9\9counter_dwarf_camp_visited:getValue() == 0 \
+\9\9and\9counter_dwarf_camp_helped:getValue()  == 0\
+\9then \
+\9\9return \"nothelped\"\
+\
+\9--visited and helped, return action name for visit & helped\
+\9elseif\9counter_dwarf_camp_visited:getValue() == 1\
+\9\9and\9counter_dwarf_camp_helped:getValue()  == 1\
+\9then\
+\9\9return \"helped\"\
+\
+\9-- did we attack the dwarves?\
+\9elseif counter_dwarf_camp_attacked:getValue() == 1\
+\9then\
+\9\9return \"attacked\"\
+\9end\
+end\
+\
+-- heal party and set clerics resting time \
+-- adjust manually in the timer\
+function healParty()\
+\9\
+\9if counter_dwarven_cleric_rested:getValue() == 1\
+\9then \
+\9\9party:heal()\
+\9\9counter_dwarven_cleric_rested:setValue(0)\
+\9\9timer_dwarven_cleric_resting:activate()\
+\9else\
+\9\9return \"tired\"\
+\9end\
+end\
+\
+\
+actions = {\
+-- cant figure out how to run script BEFORE the first text screen \
+\9{ \"init\",\9\9\"nothelped\",\"More\", onVisit},\
+\9{ \"nothelped\",\9\"abort\",\9\"More\"},\
+\9{ \"helped\",\9\9\"heal\",\9\9\"Heal party\", healParty},\
+\9{ \"helped\",\9\9\"resurect\",\9\"Resurrect\"},\
+\9{ \"helped\",\9\9\"abort\",\9\"Leave\",},\
+\9{ \"heal\",\9\9\"abort\",\9\"Leave\",},\9\
+\9{ \"resurect\",\9\"abort\",\9\"Leave\",},\
+\9{ \"tired\",\9\9\"abort\",\9\"Leave\",},\
+\9{ \"attacked\",\9\"abort\",\9\"Leave\",},\
+\9{ \"dummy\",\9\9\"end\",\9\9\"No, you will never leave this conversation!\"}\
+}\9\
+\9\
+\9\
+\9\
+")
+spawn("eob_dwarf", 19,6,2, "eob_dwarf_dwarven_cleric")
+	:setAIState("guard")
+spawn("eob_blocker", 19,7,1, "eob_blocker_dwarfcamp_24")
+spawn("timer", 18,6,2, "timer_dwarven_cleric_resting")
+	:setTimerInterval(10)
+	:activate()
+	:addConnector("activate", "counter_dwarven_cleric_rested", "increment")
+	:addConnector("activate", "timer_dwarven_cleric_resting", "deactivate")
+spawn("counter", 18,5,1, "counter_dwarven_cleric_rested")
+spawn("script_entity", 14,9,0, "script_entity_dwarven_camp_attacked")
+	:setSource("-- if you ever attack any of the dwarves in camp\
+-- yes even by accident\
+-- they are all gonna kick your ass (remove blockers)\
+-- and no longer provide healing services\
+-- and no longer bother with the entrance message \
+-- (so yes it might be worth it)\
+\
+\
+-- cant figure out how to call this from monsters.lua\
+-- so all functions are called directly there\
+-- from eob_dwarf\
+--[[\
+function attackDwarves()\
+\9counter_dwarf_camp_attacked:increment()\
+\9gw_event_dwarven_camp:destroy()\
+\9gw_event_dwarven_camp_cleric:destroy()\
+end\
+]]")
+spawn("eob_ruins_alcove", 10,5,0, "eob_ruins_alcove_portal_5_necklace")
+	:addConnector("activate", "script_entity_portal_lvl5", "checkPortal")
+spawn("script_entity", 10,4,3, "script_entity_portal_lvl5")
+	:setSource("-- portal system \
+-- necklace\
+--[[\
+\9\9\9spawn(\"eob_teleporter\",party.level,party.x, party.y, party.facing)\
+\9\9\9:setTriggeredByParty(false)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(12, 28, 2, 7)\
+\9\9\9:setChangeFacing(true)\
+\9\9\9:setInvisible(false)\
+\9\9\9:setHideLight(false)\
+\9\9\9:setSilent(false)\
+\9\9\9:setScreenFlash(true)\
+\9\9\9:activate()\
+\9\9\9:destroy() \
+]]\
+\
+\
+\
+function checkPortal(alcove)\
+\
+\9for item in alcove:containedItems()\
+\9do\
+\9\9if item.name == \"eob_stone_necklace_u\"\
+\9\9then\
+\9\9\9item:destroy()\
+\9\9\9eob_teleporter_portal_5_fake:activate()\
+\9\9\9timer_portal_5_on:activate()\
+\9\9\9playSoundAt(\"portal_open\",5,10,5)\
+\9\9\9\
+\9\9end\
+\9end\
+end\
+\
+\
+function activatePortal()\9\9\9\
+-- can spawn on concrete square or on party ( so once activated you cannot escape )\
+-- cant use already existing portal placed by editor, cause that one would be ignored when party is not moving\
+\9\9\9spawn(\"eob_teleporter\",party.level,party.x, party.y, party.facing, \"eob_teleporter_portal_5_real\")\
+\9\9\9:setTriggeredByParty(true)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(12, 28, 2, 7)\
+\9\9\9:setChangeFacing(true)\
+\9\9\9:setInvisible(true)\
+\9\9\9:setHideLight(true)\
+\9\9\9:setSilent(true)\
+\9\9\9:setScreenFlash(false)\
+\9\9\9:activate()\
+\
+\9setMouseItem(spawn(\"eob_stone_necklace_u\"))\
+end\
+\
+\
+function cleanPortal()\
+\9-- this one is spawned by script, must be deleted \
+\9eob_teleporter_portal_5_real:destroy()\
+\9-- this one is placed by editor, can be just turned off/on\
+\9eob_teleporter_portal_5_fake:deactivate()\
+\
+end")
+spawn("eob_stone_necklace_u", 10,5,0, "eob_stone_necklace_u_1")
+spawn("timer", 11,4,3, "timer_portal_5_on")
+	:setTimerInterval(2)
+	:addConnector("activate", "script_entity_portal_lvl5", "activatePortal")
+	:addConnector("activate", "timer_portal_5_on", "deactivate")
+	:addConnector("activate", "timer_5", "activate")
+spawn("eob_teleporter", 10,5,2, "eob_teleporter_portal_5_fake")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(12,28,2,7)
+	:deactivate()
+spawn("timer", 9,4,0, "timer_portal_5_off")
+	:setTimerInterval(1)
+	:addConnector("activate", "script_entity_portal_lvl5", "cleanPortal")
+	:addConnector("activate", "timer_portal_5_off", "deactivate")
 
 --- level 6 ---
 
@@ -7324,6 +7555,8 @@ spawn("script_entity", 26,3,3, "script_entity_41")
 	:setSource("-- open door if there is at least one melee weapon on each pressure plate\
 -- cant figure out how to do the 'melee' part\
 -- so for now its fixed on eob_axe (which are provided)\
+-- maybe we can use this instead\
+--attackMethod: the method to be called when the item is used. Must be one of the following: meleeAttack, throwAttack, rangedAttack, castWandSpell or castRuneSpell.\
 function openOnWeapon()\
 \
 \9northplate = 0\
@@ -8221,14 +8454,18 @@ states = {\
 -- create an invisible wall so that player cant run away right the way \
 -- trying to simulate first unavoidable ice storm hit from original\
 -- after given time by timer, remove the wall\
+\
 function attackParty()\
 \9eob_blocker_darkmage:destroy()\
-\9spawn(\"eob_dwarven_wall_cube_invisible\",6,26,14,0,\"eob_dwarven_wall_cube_invisible_darkmage\")\
-\9spawn(\"timer\",6,26,14,0):setTimerInterval(1):addConnector(\"activate\",\"gw_event_darkmage\",\"removeWall\"):activate()\
+\9eob_teleporter_darkmage:destroy()\
+--\9spawn(\"eob_dwarven_wall_cube_invisible\",6,26,14,0,\"eob_dwarven_wall_cube_invisible_darkmage\")\
+--\9spawn(\"timer\",6,26,14,0):setTimerInterval(1):addConnector(\"activate\",\"script_entity_darkmage_clear\",\"removeWall\"):activate()\
 \
 end\
 \
+\
 -- clear the timer and invisibile wall \
+--[[\
 function removeWall()\
 \9for e in entitiesAt(6,26,14)\
 \9do\
@@ -8238,6 +8475,8 @@ function removeWall()\
 \9\9end\
 \9end\
 end\
+]]\
+\
 \
 -- defines possible actions in each state. Each entry has\
 -- 4 values. First is a state in which you can take that action. \
@@ -8266,6 +8505,8 @@ actions = {\
 \9\
 \
 ")
+spawn("script_entity", 25,15,1, "script_entity_darkmage_clear")
+	:setSource("")
 
 --- level 7 ---
 
@@ -8437,7 +8678,6 @@ spawn("eob_drow_door_one", 10,27,2, "eob_drow_door_one_6")
 spawn("eob_drow_fireball_firing_pad", 4,28,1, "eob_drow_fireball_firing_pad_8")
 spawn("eob_drow_fireball_firing_pad", 4,28,3, "eob_drow_fireball_firing_pad_7")
 spawn("eob_drow_stairs_down", 8,28,3, "eob_drow_stairs_down_6")
-spawn("eob_drow_portal_necklace", 12,28,0, "eob_drow_portal_necklace_1")
 spawn("eob_drow_portal_cross", 12,28,3, "eob_drow_portal_cross_1")
 spawn("eob_drow_portal_dagger", 13,28,0, "eob_drow_portal_dagger_1")
 spawn("eob_drow_portal_amulet", 14,28,0, "eob_drow_portal_amulet_1")
@@ -8518,6 +8758,105 @@ spawn("eob_drowelf1_1", 17,4,0, "eob_drowelf1_1_7")
 spawn("eob_skelwar1_1", 26,18,0, "eob_skelwar1_1_5")
 spawn("eob_skelwar1_1", 25,23,0, "eob_skelwar1_1_6")
 spawn("eob_skelwar1_1", 14,25,0, "eob_skelwar1_1_7")
+spawn("eob_teleporter", 15,30,0, "eob_teleporter_38")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(12,5,0,5)
+spawn("script_entity", 13,27,3, "script_entity_portal_lvl7")
+	:setSource("-- portal system \
+-- necklace\
+--[[\
+\9\9\9spawn(\"eob_teleporter\",party.level,party.x, party.y, party.facing)\
+\9\9\9:setTriggeredByParty(false)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(12, 28, 2, 7)\
+\9\9\9:setChangeFacing(true)\
+\9\9\9:setInvisible(false)\
+\9\9\9:setHideLight(false)\
+\9\9\9:setSilent(false)\
+\9\9\9:setScreenFlash(true)\
+\9\9\9:activate()\
+\9\9\9:destroy() \
+]]\
+\
+\
+\
+function checkPortal(alcove)\
+\
+\9for item in alcove:containedItems()\
+\9do\
+\9\9if item.name == \"eob_stone_necklace_u\"\
+\9\9then\
+\9\9\9local l = party.level\
+\9\9\9local x = party.x\
+\9\9\9local y = party.y\
+\9\9\9item:destroy()\
+\
+\
+\9\9\9spawn(\"eob_teleporter\",l,x,y,0, \"eob_teleporter_portal_7_fake\")\
+\9\9\9:setTriggeredByParty(false)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(10, 5, 2, 5)\
+\9\9\9:setChangeFacing(true)\
+\9\9\9:setInvisible(false)\
+\9\9\9:setHideLight(false)\
+\9\9\9:setSilent(false)\
+\9\9\9:setScreenFlash(true)\
+\9\9\9:activate()\
+\9\9\9\
+\9\9\9timer_portal_7_on:activate()\
+\9\9\9playSoundAt(\"portal_open\",x,y,l,0)\
+\9\9\9\
+\9\9end\
+\9end\
+end\
+\
+\
+function activatePortal()\9\9\9\
+-- can spawn on concrete square or on party ( so once activated you cannot escape )\
+-- cant use already existing portal placed by editor, cause that one would be ignored when party is not moving\
+\
+\9\9\9local l = party.level\
+\9\9\9local x = party.x\
+\9\9\9local y = party.y\
+\9\9\9\
+\9\9\9spawn(\"eob_teleporter\",l, x, y, 0, \"eob_teleporter_portal_7_real\")\
+\9\9\9:setTriggeredByParty(true)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(10, 5, 2, 5)\
+\9\9\9:setChangeFacing(true)\
+\9\9\9:setInvisible(true)\
+\9\9\9:setHideLight(true)\
+\9\9\9:setSilent(true)\
+\9\9\9:setScreenFlash(false)\
+\9\9\9:activate()\
+\
+\9setMouseItem(spawn(\"eob_stone_necklace_u\"))\
+end\
+\
+\
+function cleanPortal()\
+\9-- this one is spawned by script, must be deleted \
+\9eob_teleporter_portal_5_real:destroy()\
+\9-- this one is placed by editor, can be just turned off/on\
+\9eob_teleporter_portal_5_fake:deactivate()\
+\
+end")
+spawn("timer", 14,27,3, "timer_portal_7_on")
+	:setTimerInterval(2)
+	:addConnector("activate", "script_entity_portal_lvl7", "activatePortal")
+	:addConnector("activate", "timer_portal_7_off", "activate")
+	:addConnector("activate", "timer_portal_7_on", "deactivate")
+spawn("timer", 12,27,0, "timer_portal_7_off")
+	:setTimerInterval(1)
+	:addConnector("activate", "script_entity_portal_lvl7", "cleanPortal")
+	:addConnector("activate", "timer_portal_7_off", "deactivate")
+spawn("eob_ruins_alcove", 12,28,0, "eob_ruins_alcove_portal_7_necklace")
+	:addConnector("activate", "script_entity_portal_lvl7", "checkPortal")
 
 --- level 8 ---
 

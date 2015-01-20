@@ -285,6 +285,10 @@ cloneObject {
 cloneObject {
 	name = "eob_ruins_door_stone_stacked",
 	baseObject = "temple_door_metal",
+	openVelocity = 0.3,
+	closeVelocity = 3,
+--	closeAcceleration = 1,
+--	closeSound = "assets/samples/monsters/cube_break_free.wav",
 }
 
 cloneObject {

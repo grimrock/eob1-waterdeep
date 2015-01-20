@@ -42,8 +42,10 @@ cloneObject{
 	name = "eob_ruins_door_metal_force",
 	baseObject = "temple_door_metal",
 	openVelocity = 0.3,
-	closeVelocity = 0,
-	closeAcceleration = 0,
+-- if we want the door appear to be stucked in middle of open sequence
+-- set close velocity to 0 and then call close() when door in the middle of opening 
+--	closeVelocity = 0,
+--	closeAcceleration = 0,
 	closeSound = "assets/samples/monsters/cube_break_free.wav",
 }
 
@@ -400,6 +402,100 @@ cloneObject{
    baseObject = "rock",
    model = "mod_assets/models/env/eob_sewers_drainage_eyes.fbx",
 }
+
+
+defineObject{
+	-- atempt on portal
+	name = "eob_ruins_alcove_portal",
+	class = "Alcove",
+--	baseObject = "temple_alcove",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_carving.fbx",
+	anchorPos = vec(-0.8, 1.8, -0.1),
+	anchorRotation = vec(90, 0, 0),
+	targetPos = vec(-0.8, 1.8, 0),
+	targetSize = vec(0.2, 0.2, 0.1),
+--[[	onInsertItem = function(self, item)
+		local allowed = {"eob_dagger"}
+		for i = 1, #allowed do
+			if item.name == allowed[i] then
+				return self:getItemCount() == 0
+			end
+		end
+	end,]]
+	placement = "wall",
+	replacesWall = false,
+	editorIcon = 8,
+}
+
+defineObject{
+	-- atempt on portal
+	name = "eob_ruins_alcove_portal_2",
+	class = "Alcove",
+--	baseObject = "temple_alcove",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_carving.fbx",
+	anchorPos = vec(-0.8, 1.2, -0.1),
+	anchorRotation = vec(90, 0, 0),
+	targetPos = vec(-0.8, 1.4, 0),
+	targetSize = vec(0.2, 0.2, 0.1),
+--[[	onInsertItem = function(self, item)
+		local allowed = {"eob_dagger"}
+		for i = 1, #allowed do
+			if item.name == allowed[i] then
+				return self:getItemCount() == 0
+			end
+		end
+	end,]]
+	placement = "wall",
+	replacesWall = false,
+	editorIcon = 8,
+}
+
+defineObject{
+	-- atempt on portal
+	name = "eob_ruins_alcove_portal_3",
+	class = "Alcove",
+--	baseObject = "temple_alcove",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_carving.fbx",
+	anchorPos = vec(-0.8, 0.8, -0.1),
+	anchorRotation = vec(90, 0, 0),
+	targetPos = vec(-0.8, 0.8, 0),
+	targetSize = vec(0.2, 0.2, 0.1),
+--[[	onInsertItem = function(self, item)
+		local allowed = {"eob_dagger"}
+		for i = 1, #allowed do
+			if item.name == allowed[i] then
+				return self:getItemCount() == 0
+			end
+		end
+	end,]]
+	placement = "wall",
+	replacesWall = false,
+	editorIcon = 8,
+}
+
+defineObject{
+	-- atempt on portal
+	name = "eob_ruins_alcove_portal_4",
+	class = "Alcove",
+--	baseObject = "temple_alcove",
+	model = "mod_assets/models/env/eob_sewers_wallbrick_carving.fbx",
+	anchorPos = vec(-0.8, 0.2, -0.1),
+	anchorRotation = vec(90, 0, 0),
+	targetPos = vec(-0.8, 0.2, 0),
+	targetSize = vec(0.2, 0.2, 0.1),
+--[[	onInsertItem = function(self, item)
+		local allowed = {"eob_dagger"}
+		for i = 1, #allowed do
+			if item.name == allowed[i] then
+				return self:getItemCount() == 0
+			end
+		end
+	end,]]
+	placement = "wall",
+	replacesWall = false,
+	editorIcon = 8,
+}
+
 
 -- ======================== --
 -- ======  Locks  ======= --
