@@ -2847,6 +2847,208 @@ function _turnPage(self)\
 \9self.spellDescr:activate()\
 end\
 ")
+spawn("script_entity", 29,4,0, "script_entity_portal_system")
+	:setSource("-- all the portal scripts are on level 1  around x29, y4\
+\
+-- portal system \
+-- so far only as standard alcove \
+-- name of alcove matters, must contain the word that describes which item activates it\
+-- target teleport coordinates are hardcoded below\
+\
+\
+function checkPortal(alcove,keyitem)\
+\9key = \"no key\"\9--type of item put to teleport\
+\9pl = 0\9--activated portal level\
+\9px = 0\9--activated portal x (in fact the square in front of it)\
+\9py = 0\9--activated portal y (in fact the square in front of it)\
+\9tl = 0\9--target level (where to teleport the party)\
+\9tx = 0\9--target x\
+\9ty = 0\9--target y\
+\9tf = 0 \9--target facing (as the portals are not always facing the same direction)\
+\9ritem=\"\"\
+\9delayon=10\
+\9delayoff=1\
+\
+\9-- if user turns around and jumps back into teleporter, its best to clean the mess first\
+\9if findEntity(\"eob_teleporter_portal_real\") ~= nil then eob_teleporter_portal_real:destroy() end\
+\9if findEntity(\"eob_teleporter_portal_fake\") ~= nil then eob_teleporter_portal_fake:destroy() end\
+\9if findEntity(\"timer_portal_on\")  ~= nil then timer_portal_on:destroy() end\
+\9if findEntity(\"timer_portal_off\") ~= nil then timer_portal_off:destroy() end\
+\
+\9-- name of alcove matters, must contain the word that describes which item activates it\
+\9-- based on that proper coordinates are chosen\
+\9\
+\9-- between 4 and 7 level\
+\9if alcove.id == \"eob_ruins_alcove_portal_4_medallion\"\
+\9then \
+\9\9key=\"eob_stone_medallion\"\
+\9\9pl=4 px=16 py=1 tl=7 tx=14 ty=28 tf=2\
+\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_7_medallion\"\
+\9then \
+\9\9key=\"eob_stone_medallion\"\
+\9\9pl=7 px=14 py=28 tl=4 tx=16 ty=1 tf=2\
+\
+\
+\9-- between 5 and 7 level\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_5_necklace\"\
+\9then \
+\9\9key=\"eob_stone_necklace\"\
+\9\9pl=5 px=10 py=5 tl=7 tx=12 ty=28 tf=2\
+\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_7_necklace\"\
+\9then \
+\9\9key=\"eob_stone_necklace\"\
+\9\9pl=7 px=12 py=28 tl=5 tx=10 ty=5 tf=2\
+\9\9\
+\
+\9-- between 6 and 10 level\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_6_ring\"\
+\9then \
+\9\9key=\"eob_stone_ring\"\
+\9\9pl=6 px=12 py=10 tl=10 tx=23 ty=27 tf=3\
+\9\9\9\9\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_10_ring\"\
+\9then \
+\9\9key=\"eob_stone_ring\"\
+\9\9pl=10 px=23 py=27 tl=6 tx=12 ty=10 tf=3\
+\9\9\9\9\
+\
+\9-- between 7 and 9 level\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_7_dagger\"\
+\9then \
+\9\9key=\"eob_stone_dagger\"\
+\9\9pl=7 px=13 py=28 tl=9 tx=28 ty=20 tf=3\
+\9\9\9\9\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_9_dagger\"\
+\9then \
+\9\9key=\"eob_stone_dagger\"\
+\9\9pl=9 px=28 py=20 tl=7 tx=13 ty=28 tf=2\
+\9\9\9\9\
+\
+\9-- between 7 and 11 level\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_7_holy_symbol\"\
+\9then \
+\9\9key=\"eob_stone_holy_symbol\"\
+\9\9pl=7 px=12 py=28 tl=11 tx=15 ty=11 tf=1\
+\9\9\9\9\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_11_holy_symbol\"\
+\9then \
+\9\9key=\"eob_stone_holy_symbol\"\
+\9\9pl=11 px=15 py=11 tl=7 tx=12 ty=28 tf=2\
+\9\9\9\9\
+\
+\9-- between 8 and 10 level\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_8_scepter\"\
+\9then \
+\9\9key=\"eob_stone_scepter\"\
+\9\9pl=8 px=6 py=15 tl=10 tx=19 ty=27 tf=3\
+\9\9\9\9\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_10_scepter\"\
+\9then \
+\9\9key=\"eob_stone_scepter\"\
+\9\9pl=10 px=19 py=27 tl=8 tx=29 ty=20 tf=2\
+\
+\9-- eob_ruins_alcove_portal_8_scepter_exit is exit only portal\
+\
+\9end\
+\9hudPrint(\"alcove recognized: \" .. alcove.id ..\"\")\
+\
+\
+\9for item in alcove:containedItems()\
+\9do\
+\9\9hudPrint(\"searching for \" .. key .. \" in \" .. item.name .. \"\")\
+\9\9if string.find(item.name,key) ~= nil\
+\9\9then\
+\
+\9\9\9-- just to have some graphical effect \9\
+\9\9\9-- hopefully will be replaced later by better effect\9\
+\9\9\9spawn(\"eob_teleporter\",pl,px,py,0, \"eob_teleporter_portal_fake\")\
+\9\9\9:setTriggeredByParty(false)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(px, py, 0, pl) -- fake teleport wont bring party anywhere, cause its not triggered by party, even so coordinates leads back to the same squeare\
+\9\9\9:setChangeFacing(false)\
+\9\9\9:setInvisible(false)\
+\9\9\9:setHideLight(false)\
+\9\9\9:setSilent(false)\
+\9\9\9:setScreenFlash(true)\
+\9\9\9:activate()\
+\9\9\9\
+\
+\9\9\9-- timer spawned on the same level as party is not slowing down\
+\9\9\9spawn(\"timer\",party.level, party.x, party.y, 0,\"timer_portal_on\")\
+\9\9\9:addConnector(\"activate\",\"script_entity_portal_system\",\"activatePortal\")\
+\9\9\9:setTimerInterval(delayon)\
+\9\9\9:activate()\
+\
+\
+\9\9\9\
+\9\9\9--playSoundAt(\"portal_open\",pl,px,py)\
+\9\9\9playSound(\"portal_open\")\
+\9\9\9hudPrint(\"\".. item.name .. \" accepted, teleporting to level: \" .. tl .. \" x: \" .. tx .. \" y: \" .. ty ..\" in \" .. delayon ..\" seconds\")\
+\
+\9\9\9-- save the name so that we can return the item to cursor once teleported\
+\9\9\9-- destory the item so that player cannot take it and put right back\
+\9\9\9-- when portal object is ready, item will be unremovable (similar to daggers on lvl 2)\
+\9\9\9ritem = item.name\
+\9\9\9item:destroy()\
+\9\9\9\9\9\9\
+\9\9else \
+\9\9\9hudPrint(\"this item seems to do nothing\")\9\9\
+\9\9end\
+\9end\
+\9\
+\
+end\
+\
+\
+function activatePortal()\9\9\9\
+-- can spawn on concrete square or on party ( so once activated you cannot escape )\
+-- cant use already existing portal placed by editor, cause that one would be ignored when party is not moved in\
+\
+\9\9\9\
+\9\9\9spawn(\"eob_teleporter\",pl, px, py, 0, \"eob_teleporter_portal_real\")\
+\9\9\9:setTriggeredByParty(true)\
+\9\9\9:setTriggeredByMonster(false)\
+\9\9\9:setTriggeredByItem(false)\
+\9\9\9:setTeleportTarget(tx, ty, tf, tl)   --this destination matters, target x,y,facing,level\
+\9\9\9:setChangeFacing(true)\
+\9\9\9:setInvisible(true)\
+\9\9\9:setHideLight(true)\
+\9\9\9:setSilent(true)\
+\9\9\9:setScreenFlash(false)\
+\9\9\9:activate()\
+\
+\9-- after teleport return the key that activated portal to cursor\
+\9hudPrint(\"returning \" .. ritem .. \" to cursor\")\
+\9setMouseItem(spawn(ritem))\
+\9\
+\
+\9-- timer spawned on the same level as party is not slowing down\
+\9spawn(\"timer\",tl, tx, ty, 0,\"timer_portal_off\")\
+\9:addConnector(\"activate\",\"script_entity_portal_system\",\"closePortal\")\
+\9:setTimerInterval(delayoff)\9\
+\9:activate()\
+\
+\9-- can call it directly or no teleportation happens\
+\9-- must allow for some time difference using timer\
+\9timer_portal_off:activate()\
+\9--script_entity_portal_lvl7:cleanPortal()\
+\9\
+end\
+\
+\
+function closePortal()\
+\9-- portals are spawned by script, must be deleted \
+\9-- or we get duplicate error by next portal activation\
+\9hudPrint(\"destroying fake and real teleporters\")\
+\9if findEntity(\"eob_teleporter_portal_real\") ~= nil then eob_teleporter_portal_real:destroy() end\
+\9if findEntity(\"eob_teleporter_portal_fake\") ~= nil then eob_teleporter_portal_fake:destroy() end\
+\9if findEntity(\"timer_portal_on\")  ~= nil then timer_portal_on:destroy() end\
+\9if findEntity(\"timer_portal_off\") ~= nil then timer_portal_off:destroy() end\
+\
+end")
 
 --- level 2 ---
 
@@ -4869,7 +5071,7 @@ mapDesc([[
 ]])
 spawn("eob_ruins_door_stone_one", 15,1,3, "eob_ruins_door_stone_one_1")
 	:addPullChain()
-spawn("eob_ruins_portal_amulet", 16,1,0, "eob_ruins_portal_amulet_1")
+spawn("eob_ruins_portal_amulet", 15,1,0, "eob_ruins_portal_amulet_1")
 spawn("eob_ruins_wall_text", 17,1,0, "eob_ruins_wall_text_1")
 	:setWallText("There is Evil that lies beyond this room.")
 spawn("eob_ruins_door_stone", 18,1,3, "eob_ruins_door_stone_1")
@@ -5109,7 +5311,7 @@ spawn("eob_spider", 25,29,0, "eob_spider_4")
 spawn("eob_spider", 28,2,0, "eob_spider_5")
 spawn("eob_spider", 28,8,0, "eob_spider_6")
 spawn("eob_spider", 26,24,0, "eob_spider_7")
-spawn("eob_spider", 15,2,0, "eob_spider_10")
+spawn("eob_spider", 19,3,0, "eob_spider_10")
 spawn("eob_spider", 18,21,3, "eob_spider_11")
 	:setAIState("guard")
 spawn("eob_spider", 27,2,0, "eob_spider_12")
@@ -5788,6 +5990,9 @@ spawn("script_entity", 25,4,2, "script_entity_54")
 -- activate secret\
 -- and identify all other items in alcove")
 spawn("secret", 24,13,1, "secret_13")
+spawn("eob_ruins_alcove", 16,1,0, "eob_ruins_alcove_portal_4_medallion")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_medallion_u", 16,1,0, "eob_stone_medallion_u_1")
 
 --- level 5 ---
 
@@ -7231,85 +7436,8 @@ function attackDwarves()\
 end\
 ]]")
 spawn("eob_ruins_alcove", 10,5,0, "eob_ruins_alcove_portal_5_necklace")
-	:addConnector("activate", "script_entity_portal_lvl5", "checkPortal")
-spawn("script_entity", 10,4,3, "script_entity_portal_lvl5")
-	:setSource("-- portal system \
--- necklace\
---[[\
-\9\9\9spawn(\"eob_teleporter\",party.level,party.x, party.y, party.facing)\
-\9\9\9:setTriggeredByParty(false)\
-\9\9\9:setTriggeredByMonster(false)\
-\9\9\9:setTriggeredByItem(false)\
-\9\9\9:setTeleportTarget(12, 28, 2, 7)\
-\9\9\9:setChangeFacing(true)\
-\9\9\9:setInvisible(false)\
-\9\9\9:setHideLight(false)\
-\9\9\9:setSilent(false)\
-\9\9\9:setScreenFlash(true)\
-\9\9\9:activate()\
-\9\9\9:destroy() \
-]]\
-\
-\
-\
-function checkPortal(alcove)\
-\
-\9for item in alcove:containedItems()\
-\9do\
-\9\9if item.name == \"eob_stone_necklace_u\"\
-\9\9then\
-\9\9\9item:destroy()\
-\9\9\9eob_teleporter_portal_5_fake:activate()\
-\9\9\9timer_portal_5_on:activate()\
-\9\9\9playSoundAt(\"portal_open\",5,10,5)\
-\9\9\9\
-\9\9end\
-\9end\
-end\
-\
-\
-function activatePortal()\9\9\9\
--- can spawn on concrete square or on party ( so once activated you cannot escape )\
--- cant use already existing portal placed by editor, cause that one would be ignored when party is not moving\
-\9\9\9spawn(\"eob_teleporter\",party.level,party.x, party.y, party.facing, \"eob_teleporter_portal_5_real\")\
-\9\9\9:setTriggeredByParty(true)\
-\9\9\9:setTriggeredByMonster(false)\
-\9\9\9:setTriggeredByItem(false)\
-\9\9\9:setTeleportTarget(12, 28, 2, 7)\
-\9\9\9:setChangeFacing(true)\
-\9\9\9:setInvisible(true)\
-\9\9\9:setHideLight(true)\
-\9\9\9:setSilent(true)\
-\9\9\9:setScreenFlash(false)\
-\9\9\9:activate()\
-\
-\9setMouseItem(spawn(\"eob_stone_necklace_u\"))\
-end\
-\
-\
-function cleanPortal()\
-\9-- this one is spawned by script, must be deleted \
-\9eob_teleporter_portal_5_real:destroy()\
-\9-- this one is placed by editor, can be just turned off/on\
-\9eob_teleporter_portal_5_fake:deactivate()\
-\
-end")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_necklace_u", 10,5,0, "eob_stone_necklace_u_1")
-spawn("timer", 11,4,3, "timer_portal_5_on")
-	:setTimerInterval(2)
-	:addConnector("activate", "script_entity_portal_lvl5", "activatePortal")
-	:addConnector("activate", "timer_portal_5_on", "deactivate")
-	:addConnector("activate", "timer_5", "activate")
-spawn("eob_teleporter", 10,5,2, "eob_teleporter_portal_5_fake")
-	:setTriggeredByParty(false)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(false)
-	:setTeleportTarget(12,28,2,7)
-	:deactivate()
-spawn("timer", 9,4,0, "timer_portal_5_off")
-	:setTimerInterval(1)
-	:addConnector("activate", "script_entity_portal_lvl5", "cleanPortal")
-	:addConnector("activate", "timer_portal_5_off", "deactivate")
 
 --- level 6 ---
 
@@ -7383,7 +7511,7 @@ spawn("eob_ruins_door_stone", 5,9,2, "eob_ruins_door_stone_51")
 	:addPullChain()
 spawn("eob_ruins_dart_firing_pad", 4,10,3, "eob_ruins_dart_firing_pad_1")
 spawn("eob_ruins_dart_firing_pad", 6,10,1, "eob_ruins_dart_firing_pad_2")
-spawn("eob_ruins_portal_scepter", 12,10,1, "eob_ruins_portal_scepter_1")
+spawn("eob_ruins_portal_scepter", 12,11,1, "eob_ruins_portal_scepter_1")
 spawn("eob_ruins_stairs_down", 14,10,3, "eob_ruins_stairs_down_6")
 spawn("eob_ruins_dart_firing_pad", 4,11,3, "eob_ruins_dart_firing_pad_3")
 spawn("eob_ruins_pressure_plate", 5,11,2, "eob_ruins_pressure_plate_8")
@@ -8507,6 +8635,9 @@ actions = {\
 ")
 spawn("script_entity", 25,15,1, "script_entity_darkmage_clear")
 	:setSource("")
+spawn("eob_ruins_alcove", 12,10,1, "eob_ruins_alcove_portal_6_ring")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_ring", 12,10,1, "eob_stone_ring_1")
 
 --- level 7 ---
 
@@ -8678,9 +8809,6 @@ spawn("eob_drow_door_one", 10,27,2, "eob_drow_door_one_6")
 spawn("eob_drow_fireball_firing_pad", 4,28,1, "eob_drow_fireball_firing_pad_8")
 spawn("eob_drow_fireball_firing_pad", 4,28,3, "eob_drow_fireball_firing_pad_7")
 spawn("eob_drow_stairs_down", 8,28,3, "eob_drow_stairs_down_6")
-spawn("eob_drow_portal_cross", 12,28,3, "eob_drow_portal_cross_1")
-spawn("eob_drow_portal_dagger", 13,28,0, "eob_drow_portal_dagger_1")
-spawn("eob_drow_portal_amulet", 14,28,0, "eob_drow_portal_amulet_1")
 spawn("eob_drow_portal_gem", 14,28,1, "eob_drow_portal_gem_1")
 spawn("eob_drow_door", 4,29,2, "eob_drow_door_25")
 	:addPullChain()
@@ -8758,105 +8886,23 @@ spawn("eob_drowelf1_1", 17,4,0, "eob_drowelf1_1_7")
 spawn("eob_skelwar1_1", 26,18,0, "eob_skelwar1_1_5")
 spawn("eob_skelwar1_1", 25,23,0, "eob_skelwar1_1_6")
 spawn("eob_skelwar1_1", 14,25,0, "eob_skelwar1_1_7")
-spawn("eob_teleporter", 15,30,0, "eob_teleporter_38")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
-	:setTeleportTarget(12,5,0,5)
-spawn("script_entity", 13,27,3, "script_entity_portal_lvl7")
-	:setSource("-- portal system \
--- necklace\
---[[\
-\9\9\9spawn(\"eob_teleporter\",party.level,party.x, party.y, party.facing)\
-\9\9\9:setTriggeredByParty(false)\
-\9\9\9:setTriggeredByMonster(false)\
-\9\9\9:setTriggeredByItem(false)\
-\9\9\9:setTeleportTarget(12, 28, 2, 7)\
-\9\9\9:setChangeFacing(true)\
-\9\9\9:setInvisible(false)\
-\9\9\9:setHideLight(false)\
-\9\9\9:setSilent(false)\
-\9\9\9:setScreenFlash(true)\
-\9\9\9:activate()\
-\9\9\9:destroy() \
-]]\
-\
-\
-\
-function checkPortal(alcove)\
-\
-\9for item in alcove:containedItems()\
-\9do\
-\9\9if item.name == \"eob_stone_necklace_u\"\
-\9\9then\
-\9\9\9local l = party.level\
-\9\9\9local x = party.x\
-\9\9\9local y = party.y\
-\9\9\9item:destroy()\
-\
-\
-\9\9\9spawn(\"eob_teleporter\",l,x,y,0, \"eob_teleporter_portal_7_fake\")\
-\9\9\9:setTriggeredByParty(false)\
-\9\9\9:setTriggeredByMonster(false)\
-\9\9\9:setTriggeredByItem(false)\
-\9\9\9:setTeleportTarget(10, 5, 2, 5)\
-\9\9\9:setChangeFacing(true)\
-\9\9\9:setInvisible(false)\
-\9\9\9:setHideLight(false)\
-\9\9\9:setSilent(false)\
-\9\9\9:setScreenFlash(true)\
-\9\9\9:activate()\
-\9\9\9\
-\9\9\9timer_portal_7_on:activate()\
-\9\9\9playSoundAt(\"portal_open\",x,y,l,0)\
-\9\9\9\
-\9\9end\
-\9end\
-end\
-\
-\
-function activatePortal()\9\9\9\
--- can spawn on concrete square or on party ( so once activated you cannot escape )\
--- cant use already existing portal placed by editor, cause that one would be ignored when party is not moving\
-\
-\9\9\9local l = party.level\
-\9\9\9local x = party.x\
-\9\9\9local y = party.y\
-\9\9\9\
-\9\9\9spawn(\"eob_teleporter\",l, x, y, 0, \"eob_teleporter_portal_7_real\")\
-\9\9\9:setTriggeredByParty(true)\
-\9\9\9:setTriggeredByMonster(false)\
-\9\9\9:setTriggeredByItem(false)\
-\9\9\9:setTeleportTarget(10, 5, 2, 5)\
-\9\9\9:setChangeFacing(true)\
-\9\9\9:setInvisible(true)\
-\9\9\9:setHideLight(true)\
-\9\9\9:setSilent(true)\
-\9\9\9:setScreenFlash(false)\
-\9\9\9:activate()\
-\
-\9setMouseItem(spawn(\"eob_stone_necklace_u\"))\
-end\
-\
-\
-function cleanPortal()\
-\9-- this one is spawned by script, must be deleted \
-\9eob_teleporter_portal_5_real:destroy()\
-\9-- this one is placed by editor, can be just turned off/on\
-\9eob_teleporter_portal_5_fake:deactivate()\
-\
-end")
-spawn("timer", 14,27,3, "timer_portal_7_on")
-	:setTimerInterval(2)
-	:addConnector("activate", "script_entity_portal_lvl7", "activatePortal")
-	:addConnector("activate", "timer_portal_7_off", "activate")
-	:addConnector("activate", "timer_portal_7_on", "deactivate")
-spawn("timer", 12,27,0, "timer_portal_7_off")
-	:setTimerInterval(1)
-	:addConnector("activate", "script_entity_portal_lvl7", "cleanPortal")
-	:addConnector("activate", "timer_portal_7_off", "deactivate")
 spawn("eob_ruins_alcove", 12,28,0, "eob_ruins_alcove_portal_7_necklace")
-	:addConnector("activate", "script_entity_portal_lvl7", "checkPortal")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_ruins_alcove", 14,28,0, "eob_ruins_alcove_portal_7_medallion")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("gw_event", 1,19,1, "gw_event_1")
+	:setSource("-- meeting the drow party\
+-- you can either turn back = discontinue the game\
+-- or attack")
+spawn("eob_stone_medallion_u", 14,28,0, "eob_stone_medallion_u_3")
+spawn("eob_stone_necklace_u", 12,28,0, "eob_stone_necklace_u_2")
+spawn("eob_ruins_alcove", 13,28,0, "eob_ruins_alcove_portal_7_dagger")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_dagger", 13,28,0, "eob_stone_dagger_2")
+spawn("eob_ruins_alcove", 12,28,3, "eob_ruins_alcove_portal_7_holy_symbol")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_holy_symbol", 12,28,3, "eob_stone_holy_symbol_2")
+spawn("starting_location", 13,29,3, "starting_location_1")
 
 --- level 8 ---
 
@@ -8985,7 +9031,6 @@ spawn("eob_drow_button", 30,14,1, "eob_drow_button_19")
 spawn("eob_blocker", 1,15,2, "eob_blocker_9")
 spawn("eob_drow_fireball_firing_pad", 2,15,0, "eob_drow_fireball_firing_pad_9")
 spawn("eob_blocker", 3,15,2, "eob_blocker_10")
-spawn("eob_drow_portal_scepter", 6,15,0, "eob_drow_portal_scepter_1")
 spawn("eob_drow_door", 13,15,0, "eob_drow_door_39")
 spawn("eob_drow_ceiling_shaft", 16,15,3, "eob_drow_ceiling_shaft_3")
 spawn("eob_drow_wall_text", 17,15,1, "eob_drow_wall_text_15")
@@ -9016,7 +9061,6 @@ spawn("eob_drow_door", 6,20,0, "eob_drow_door_42")
 	:addPullChain()
 spawn("eob_drow_stairs_up", 14,20,2, "eob_drow_stairs_up_6")
 spawn("eob_drow_stairs_up", 16,20,0, "eob_drow_stairs_up_7")
-spawn("eob_drow_portal_scepter", 29,20,3, "eob_drow_portal_scepter_2")
 spawn("eob_drow_pit", 3,21,2, "eob_drow_pit_9")
 spawn("eob_drow_alcove", 29,21,2, "eob_drow_alcove_7")
 	:addItem(spawn("eob_wand_lightning_bolt_10_u"))
@@ -9073,7 +9117,8 @@ spawn("eob_key_ruby_u", 15,13,1, "eob_key_ruby_u_2")
 spawn("eob_mage_scroll_invisibility 10'", 9,14,3, "eob_mage_scroll_invisibility 10'_2")
 spawn("eob_bow_u", 15,14,3, "eob_bow_u_2")
 spawn("eob_key_drow_u", 20,14,3, "eob_key_drow_u_3")
-spawn("eob_cleric_scroll_protect_evil", 5,15,0, "eob_cleric_scroll_protect_evil_1")
+spawn("eob_cleric_scroll_protect_evil", 5,16,0, "eob_cleric_scroll_protect_evil_1")
+	:setScrollText("")
 spawn("eob_leather_boots_u", 7,15,1, "eob_leather_boots_u_3")
 spawn("eob_potion_extra_healing", 21,15,0, "eob_potion_extra_healing_4")
 spawn("eob_cleric_scroll_raise_dead", 21,15,0, "eob_cleric_scroll_raise_dead_1")
@@ -9117,6 +9162,12 @@ spawn("eob_hellhnd", 8,13,0, "eob_hellhnd_14")
 spawn("eob_hellhnd", 8,19,0, "eob_hellhnd_15")
 spawn("eob_hellhnd", 26,7,0, "eob_hellhnd_16")
 spawn("eob_drider1_1", 10,26,0, "eob_drider1_1_10")
+spawn("eob_ruins_alcove", 29,20,3, "eob_ruins_alcove_portal_8_scepter_exit")
+spawn("eob_ruins_alcove", 6,15,0, "eob_ruins_alcove_portal_8_scepter")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_scepter", 6,15,0, "eob_stone_scepter_3")
+spawn("eob_stone_scepter_u", 6,15,1, "eob_stone_scepter_u_2")
+spawn("eob_stone_scepter_u", 6,15,0, "eob_stone_scepter_u_3")
 
 --- level 9 ---
 
@@ -9350,7 +9401,6 @@ spawn("eob_drow_door_one", 15,20,1, "eob_drow_door_one_15")
 spawn("eob_drow_lock_spider", 22,20,1, "eob_drow_lock_spider_10")
 spawn("eob_drow_wall_illusion", 24,20,1, "eob_drow_wall_illusion_26")
 spawn("eob_drow_wall_illusion", 26,20,3, "eob_drow_wall_illusion_25")
-spawn("eob_drow_portal_dagger", 28,20,1, "eob_drow_portal_dagger_2")
 spawn("eob_drow_wall_illusion", 30,20,0, "eob_drow_wall_illusion_23")
 spawn("eob_drow_ceiling_shaft", 3,21,3, "eob_drow_ceiling_shaft_9")
 spawn("eob_drow_stairs_up", 20,21,0, "eob_drow_stairs_up_12")
@@ -9445,6 +9495,9 @@ spawn("eob_disbeast", 10,2,0, "eob_disbeast_14")
 spawn("eob_disbeast", 9,2,0, "eob_disbeast_15")
 spawn("eob_disbeast", 9,1,0, "eob_disbeast_16")
 spawn("eob_disbeast", 12,6,0, "eob_disbeast_17")
+spawn("eob_stone_dagger", 28,20,1, "eob_stone_dagger_3")
+spawn("eob_ruins_alcove", 28,20,1, "eob_ruins_alcove_portal_9_dagger")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 
 --- level 10 ---
 
@@ -9582,8 +9635,8 @@ spawn("eob_hive_stairs_up", 6,26,1, "eob_hive_stairs_up_2")
 spawn("eob_hive_wall_rift", 19,26,3, "eob_hive_wall_rift_15")
 spawn("eob_blocker", 26,26,2, "eob_blocker_15")
 spawn("eob_hive_wall_rift", 14,27,3, "eob_hive_wall_rift_16")
-spawn("eob_hive_portal_scepter", 19,27,3, "eob_hive_portal_scepter_1")
-spawn("eob_hive_portal_ring", 23,27,1, "eob_hive_portal_ring_1")
+spawn("eob_hive_portal_scepter", 18,27,3, "eob_hive_portal_scepter_1")
+spawn("eob_hive_portal_ring", 23,26,1, "eob_hive_portal_ring_1")
 spawn("eob_hive_alcove", 26,27,1, "eob_hive_alcove_4")
 	:addItem(spawn("eob_wand_cone_of_cold_10_u"))
 spawn("eob_hive_stairs_up", 6,28,1, "eob_hive_stairs_up_3")
@@ -9669,6 +9722,12 @@ spawn("eob_mantis1_1", 10,14,0, "eob_mantis1_1_5")
 spawn("eob_mantis1_1", 16,19,0, "eob_mantis1_1_6")
 spawn("eob_mantis1_1", 8,27,0, "eob_mantis1_1_7")
 spawn("eob_mantis1_2", 8,16,0, "eob_mantis1_2_7")
+spawn("eob_ruins_alcove", 23,27,1, "eob_ruins_alcove_portal_10_ring")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_ruins_alcove", 19,27,3, "eob_ruins_alcove_portal_10_scepter")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_ring", 23,27,1, "eob_stone_ring_2")
+spawn("eob_stone_scepter", 19,27,3, "eob_stone_scepter_2")
 
 --- level 11 ---
 
@@ -9742,7 +9801,6 @@ spawn("eob_hive_wall_star", 11,11,3, "eob_hive_wall_star_1")
 spawn("eob_hive_wall_rift", 13,11,1, "eob_hive_wall_rift_26")
 spawn("eob_hive_wall_text", 13,11,3, "eob_hive_wall_text_13")
 	:setWallText("")
-spawn("eob_hive_portal_cross", 15,11,3, "eob_hive_portal_cross_1")
 spawn("eob_hive_button", 15,11,1, "eob_hive_button_2")
 spawn("eob_hive_wall_star", 19,11,1, "eob_hive_wall_star_2")
 spawn("eob_hive_door", 21,11,1, "eob_hive_door_23")
@@ -9808,7 +9866,6 @@ spawn("eob_hive_door", 13,26,1, "eob_hive_door_38")
 	:addPullChain()
 spawn("eob_hive_door", 22,26,0, "eob_hive_door_39")
 	:addPullChain()
-spawn("eob_hive_portal_orb", 4,27,2, "eob_hive_portal_orb_1")
 spawn("eob_hive_wall_rift", 6,27,3, "eob_hive_wall_rift_33")
 spawn("eob_hive_secret_button_tiny", 9,27,3, "eob_hive_secret_button_tiny_5")
 spawn("eob_hive_door", 14,28,2, "eob_hive_door_40")
@@ -9863,6 +9920,12 @@ spawn("eob_xorn", 25,8,0, "eob_xorn_10")
 spawn("eob_xorn", 7,30,0, "eob_xorn_11")
 spawn("eob_xorn", 24,1,0, "eob_xorn_12")
 spawn("eob_xorn", 26,12,0, "eob_xorn_13")
+spawn("eob_ruins_alcove", 15,11,3, "eob_ruins_alcove_portal_11_holy_symbol")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_ruins_alcove", 4,27,2, "eob_ruins_alcove_portal_11_orb")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_orb", 4,27,2, "eob_stone_orb_1")
+spawn("eob_stone_holy_symbol", 15,11,3, "eob_stone_holy_symbol_1")
 
 --- level 12 ---
 
@@ -10013,7 +10076,6 @@ spawn("eob_sanctum_door", 8,11,1, "eob_sanctum_door_15")
 spawn("eob_sanctum_text", 11,11,3, "eob_sanctum_text_6")
 	:setWallText("")
 spawn("eob_sanctum_wall_lamp", 13,11,3, "eob_sanctum_wall_lamp_5")
-spawn("eob_sanctum_portal_orb", 15,11,3, "eob_sanctum_portal_orb_1")
 spawn("eob_sanctum_pressure_plate", 19,11,2, "eob_sanctum_pressure_plate_7")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -10108,3 +10170,6 @@ spawn("eob_golem", 10,24,0, "eob_golem_4")
 spawn("eob_golem", 10,23,0, "eob_golem_5")
 spawn("eob_golem", 1,10,0, "eob_golem_6")
 spawn("eob_golem", 1,12,0, "eob_golem_7")
+spawn("eob_ruins_alcove", 15,11,3, "eob_ruins_alcove_portal_12_orb")
+	:addConnector("activate", "script_entity_portal_system", "checkPortal")
+spawn("eob_stone_orb", 15,11,3, "eob_stone_orb_2")
