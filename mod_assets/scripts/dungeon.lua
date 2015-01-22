@@ -5088,7 +5088,6 @@ spawn("eob_ruins_statue_lock", 1,3,1, "eob_ruins_statue_lock_1")
 spawn("eob_ruins_statue_lever", 3,3,0, "eob_ruins_statue_lever_1")
 	:addConnector("activate", "script_entity_34", "destroyWall")
 	:addConnector("deactivate", "script_entity_34", "createWall")
-spawn("eob_ruins_illusion_wall", 5,3,2, "eob_ruins_illusion_wall_2")
 spawn("eob_ruins_pressure_plate", 9,3,3, "eob_ruins_pressure_plate_1")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
@@ -5112,7 +5111,7 @@ spawn("eob_ruins_wall_small_statue", 17,3,1, "eob_ruins_wall_small_statue_2")
 spawn("eob_ruins_alcove", 20,3,1, "eob_ruins_alcove_1")
 	:addItem(spawn("eob_potion_cure_poison"))
 	:addItem(spawn("eob_potion_cure_poison"))
-spawn("eob_ruins_net", 28,3,0, "eob_ruins_net_1")
+spawn("eob_ruins_net", 28,3,0, "eob_ruins_net_nest_1")
 spawn("eob_ruins_door_stone", 1,4,0, "eob_ruins_door_stone_4")
 spawn("eob_ruins_statue_lever", 13,4,3, "eob_ruins_statue_lever_2")
 	:addConnector("any", "eob_ruins_pit_3", "toggle")
@@ -5132,7 +5131,6 @@ spawn("eob_ruins_button", 4,5,2, "eob_ruins_button_2")
 	:addConnector("toggle", "eob_ruins_door_stone_5", "toggle")
 	:addConnector("toggle", "script_entity_33", "onClosed")
 	:addConnector("toggle", "script_entity_33", "onOpen")
-spawn("eob_ruins_illusion_wall", 5,5,0, "eob_ruins_illusion_wall_1")
 spawn("eob_ruins_button", 1,6,1, "eob_ruins_button_1")
 	:addConnector("toggle", "eob_ruins_door_stone_7", "toggle")
 	:addConnector("toggle", "script_entity_33", "onClosed")
@@ -5146,7 +5144,7 @@ spawn("eob_ruins_door_stone", 20,6,3, "eob_ruins_door_stone_6")
 	:addPullChain()
 spawn("eob_ruins_door_stone", 2,7,3, "eob_ruins_door_stone_7")
 spawn("eob_ruins_door_stone", 4,7,1, "eob_ruins_door_stone_8")
-spawn("eob_ruins_net", 25,7,1, "eob_ruins_net_3")
+spawn("eob_ruins_net", 25,7,1, "eob_ruins_net_nest_3")
 spawn("eob_ruins_door_stone", 3,8,2, "eob_ruins_door_stone_9")
 spawn("eob_ruins_button", 5,8,3, "eob_ruins_button_4")
 	:addConnector("toggle", "eob_ruins_door_stone_8", "toggle")
@@ -5186,7 +5184,7 @@ spawn("eob_ruins_statue_lock", 12,12,2, "eob_ruins_statue_lock_5")
 	:addConnector("activate", "eob_ruins_door_stone_15", "open")
 spawn("eob_ruins_door_stone", 21,12,3, "eob_ruins_door_stone_13")
 	:addPullChain()
-spawn("eob_ruins_net", 28,12,0, "eob_ruins_net_4")
+spawn("eob_ruins_net", 28,12,0, "eob_ruins_net_nest_2")
 spawn("eob_ruins_wall_small_statue", 6,13,3, "eob_ruins_wall_small_statue_5")
 spawn("eob_ruins_door_stone", 9,13,0, "eob_ruins_door_stone_14")
 	:addPullChain()
@@ -5214,7 +5212,7 @@ spawn("eob_ruins_chain_lever", 11,18,2, "eob_ruins_chain_lever_2")
 	:addConnector("activate", "script_entity_32", "destroyWall")
 	:addConnector("deactivate", "script_entity_32", "createWall")
 spawn("eob_ruins_door_stone", 25,19,3, "eob_ruins_door_stone_20")
-spawn("eob_ruins_pressure_plate", 26,19,0, "eob_ruins_pressure_plate_2")
+spawn("eob_ruins_pressure_plate", 25,19,0, "eob_ruins_pressure_plate_2")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
@@ -5281,7 +5279,7 @@ spawn("eob_arrow_u", 26,4,0, "eob_arrow_u_10")
 spawn("eob_mace_u", 22,6,3, "eob_mace_u_1")
 spawn("eob_ring_protection3_u", 24,6,0, "eob_ring_protection3_u_1")
 spawn("eob_arrow_u", 29,10,1, "eob_arrow_u_11")
-spawn("eob_ring2_u", 29,11,3, "eob_ring2_u_1")
+spawn("eob_ring2_u", 29,11,1, "eob_ring2_u_1")
 spawn("eob_rock_u", 30,12,0, "eob_rock_u_10")
 spawn("eob_potion_healing", 3,14,0, "eob_potion_healing_5")
 spawn("eob_mace_u", 21,13,2, "eob_mace_u_2")
@@ -5311,11 +5309,10 @@ spawn("eob_spider", 25,29,0, "eob_spider_4")
 spawn("eob_spider", 28,2,0, "eob_spider_5")
 spawn("eob_spider", 28,8,0, "eob_spider_6")
 spawn("eob_spider", 26,24,0, "eob_spider_7")
-spawn("eob_spider", 19,3,0, "eob_spider_10")
+spawn("eob_spider", 15,1,3, "eob_spider_10")
 spawn("eob_spider", 18,21,3, "eob_spider_11")
 	:setAIState("guard")
 spawn("eob_spider", 27,2,0, "eob_spider_12")
-spawn("eob_spider", 27,1,0, "eob_spider_13")
 spawn("eob_spider", 21,15,0, "eob_spider_14")
 spawn("testpoint", 16,14,0, "testpoint_2")
 	:setSource("function activate()\
@@ -5704,12 +5701,14 @@ spawn("pressure_plate_hidden", 29,23,3, "pressure_plate_hidden_20")
 	:setTriggeredByItem(false)
 	:setSilent(true)
 	:addConnector("activate", "timer_3", "activate")
+	:addConnector("activate", "timer_spider_spawner", "activate")
 spawn("pressure_plate_hidden", 30,5,1, "pressure_plate_hidden_32")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
 	:setSilent(true)
 	:addConnector("activate", "timer_4", "activate")
+	:addConnector("activate", "timer_spider_spawner", "activate")
 spawn("eob_ruins_pit", 9,20,1, "eob_ruins_pit_6")
 	:addTrapDoor()
 	:setPitState("closed")
@@ -5908,7 +5907,7 @@ spawn("counter", 4,6,3, "counter_doors_1")
 	:setValue(3)
 spawn("eob_potion_healing", 3,7,2, "eob_potion_healing_8")
 spawn("eob_key_dwarven_u", 3,7,0, "eob_key_dwarven_u_1")
-spawn("eob_spider", 25,25,0, "eob_spider_15")
+spawn("eob_spider", 25,25,2, "eob_spider_15")
 spawn("eob_dwarven_wall_cube", 16,4,2, "eob_dwarven_wall_cube_9")
 spawn("script_entity", 16,4,3, "script_entity_34")
 	:setSource("-- function tries to destroy a wall at position specified \
@@ -5962,7 +5961,7 @@ spawn("eob_dwarven_wall_cube", 27,17,0, "eob_dwarven_wall_cube_3")
 spawn("eob_ruins_net", 30,0,0, "eob_ruins_net_17")
 spawn("eob_ruins_net", 28,18,0, "eob_ruins_net_16")
 spawn("eob_spider", 30,5,0, "eob_spider_29")
-spawn("eob_spider", 24,13,0, "eob_spider_30")
+spawn("eob_spider", 24,13,1, "eob_spider_30")
 spawn("eob_spider", 28,10,0, "eob_spider_32")
 spawn("eob_spider", 28,25,3, "eob_spider_9")
 spawn("eob_spider", 29,28,0, "eob_spider_31")
@@ -5975,24 +5974,354 @@ spawn("timer", 31,5,1, "timer_4")
 	:addConnector("activate", "counter_3", "decrement")
 	:addConnector("activate", "timer_4", "deactivate")
 spawn("counter", 29,21,2, "counter_2")
-	:setInitialValue(2)
-	:setValue(2)
+	:setInitialValue(3)
+	:setValue(3)
 	:addConnector("activate", "script_entity_18", "removeWall2")
 spawn("counter", 31,6,1, "counter_3")
-	:setInitialValue(2)
-	:setValue(2)
+	:setInitialValue(3)
+	:setValue(3)
 	:addConnector("activate", "script_entity_18", "removeWall3")
 spawn("torch_holder", 9,3,2, "torch_holder_13")
 spawn("secret", 5,3,1, "secret_6")
-spawn("secret", 25,5,2, "secret_12")
-spawn("script_entity", 25,4,2, "script_entity_54")
-	:setSource("-- if put to alcove orb of power \
+spawn("secret", 22,4,2, "secret_12")
+spawn("script_entity", 22,3,2, "script_entity_54")
+	:setSource("-- if orb of power is put to alcove\
 -- activate secret\
 -- and identify all other items in alcove")
-spawn("secret", 24,13,1, "secret_13")
+spawn("secret", 24,15,1, "secret_13")
 spawn("eob_ruins_alcove", 16,1,0, "eob_ruins_alcove_portal_4_medallion")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_medallion_u", 16,1,0, "eob_stone_medallion_u_1")
+spawn("eob_ruins_illusion_wall_fake", 5,3,2, "eob_ruins_illusion_wall_fake_1")
+spawn("eob_ruins_illusion_wall_rune_fake", 5,5,0, "eob_ruins_illusion_wall_rune_fake_1")
+spawn("eob_ruins_illusion_wall_rune_fake", 30,1,3, "eob_ruins_illusion_wall_rune_fake_2")
+spawn("eob_ruins_illusion_wall_rune_fake", 30,0,1, "eob_ruins_illusion_wall_rune_fake_3")
+spawn("spider_eggs", 27,1,2, "spider_eggs_1")
+spawn("starting_location", 13,23,1, "starting_location_1")
+spawn("spider_eggs", 29,11,3, "spider_eggs_2")
+spawn("spider_eggs", 24,15,2, "spider_eggs_4")
+spawn("timer", 30,25,1, "timer_spider_spawner")
+	:setTimerInterval(15)
+	:addConnector("activate", "script_entity_spider_spawner", "spawnSpider")
+spawn("script_entity", 30,26,0, "script_entity_spider_spawner")
+	:setSource("-- spider spawner\
+-- spider webs are repaired by hidden plates activated by monstes \
+-- which on lvl 4 are only spiders\
+-- number of spiders to spawn are defined by above counter counter_spider_spawner\
+-- interval of spawning is defined by above timer timer_spider_spawner\
+\
+function spawnSpider()\
+\9local x=26\
+\9local y=25\
+\
+\9local spidercount = 0\
+\9for s in allEntities(4)\
+\9do\
+\9\9if s.name == \"eob_spider\" then spidercount = spidercount + 1 end\
+\9end\
+\
+\
+\9-- start spawning spiders if the spider population was decimated \
+\9if counter_spider_spawner:getValue() > 0  and spidercount < 30 \
+\9\9then\
+\9\9\
+\9\9-- chose which location to spawn a spider on at random \
+\9\9local lairs = {}\
+\9\9local laircounter = 1\
+\9\9\
+\9\9--lairs = {\"spider_eggs_1\" \"spider_eggs_2\" \"spider_eggs_3\" \"spider_eggs_4\" }\
+\9\9-- find all still existing lairs (spider eggs)\
+\9\9for e in allEntities(4)\
+\9\9do\
+\9\9\9if e.name == \"spider_eggs\" \
+\9\9\9then \
+\9\9\9\9lairs[laircounter]=e.id  -- save the id of the found spider_egg_x into array lairs under key laircount (expected are keys from 1 to 4)\
+\9\9\9\9--hudPrint(e.id .. \"-\" .. lairs[laircounter] .. \"\")\
+\9\9\9\9laircounter=laircounter + 1\
+\9\9\9\9\
+\9\9\9end \
+\9\9end\
+\
+\9\9-- now choose a value from array based on random key value from 1 to number of keys (1 - 4) \
+\9\9-- if you destroyed 1 spider_eggs - then there could be only 3 in the array thus 1 - 3\
+\9\9location = lairs[math.random(1,#lairs)]\
+\
+\9\9if \9\9location == \"spider_eggs_1\" then x=28 y=1\
+\9\9elseif \9location == \"spider_eggs_2\" then x=29 y=10\
+\9\9elseif \9location == \"spider_eggs_3\" then x=24 y=7\
+\9\9elseif \9location == \"spider_eggs_4\" then x=24 y=14\
+\9\9end\
+\
+\9\9spawn(\"eob_spider\",4,x,y,0)\
+\9\9hudPrint(\"spawning spider at \".. location .. \" x:\" .. x .. \" y:\" .. y ..\" remaining spiders:\" .. counter_spider_spawner:getValue() .. \"\")\
+\9\9counter_spider_spawner:decrement()\
+\9\
+\9else\
+\9\9-- predefined number of spiders already spawned\
+\9\9-- or there is enough spiders around\
+\
+\9\9-- reset the couner and timer\
+\9\9-- respawn eggs and nest spider webs\
+\9\9\
+\9\9timer_spider_spawner:deactivate()\
+\9\9counter_spider_spawner:setValue(6)\
+\9\9hudPrint(\"no more spiders for now\")\
+\9end\9\
+\
+\
+end\
+\
+\
+\
+-- when leaving the are via pressure plate at 14,23 reset the lair\
+function resetSpiderLair()\
+\
+\9\9hudPrint(\"Reseting the spider lair!\")\9\9\9\
+\
+\
+\9\9-- first destory all spider eggs in level\
+\9\9for e in allEntities(4)\
+\9\9do\
+\9\9\9if e.name == \"spider_eggs\"\
+\9\9\9then e:destroy()\
+\9\9\9end\
+\9\9end\
+\9\9\
+\9\9-- then recreate them on the right places, with right IDs\
+\9\9spawn(\"spider_eggs\",4,27, 1,0,\"spider_eggs_1\")\
+\9\9spawn(\"spider_eggs\",4,29,11,0,\"spider_eggs_2\")\
+\9\9spawn(\"spider_eggs\",4,24, 6,0,\"spider_eggs_3\")\
+\9\9spawn(\"spider_eggs\",4,24,15,0,\"spider_eggs_4\")\
+\
+\
+\9\9--find,destroy,recreate spider nests webs (to renew the webbing)\9\
+\9\9-- finding just in case somebody renames them or deletes them from map\9\
+\9\9if findEntity(\"eob_ruins_net_nest_1\") ~= nil then eob_ruins_net_nest_1:destroy() spawn(\"eob_ruins_net\",4,28,12,0,\"eob_ruins_net_nest_1\") end\
+\9\9if findEntity(\"eob_ruins_net_nest_2\") ~= nil then eob_ruins_net_nest_2:destroy() spawn(\"eob_ruins_net\",4,28, 3,0,\"eob_ruins_net_nest_2\")  end\
+\9\9if findEntity(\"eob_ruins_net_nest_3\") ~= nil then eob_ruins_net_nest_3:destroy() spawn(\"eob_ruins_net\",4,25, 7,0,\"eob_ruins_net_nest_3\")  end\
+\9\9\
+\9\9\
+\
+end\
+------------------------------------------------------------------------------------------------------------------------\
+\
+\
+-- prepare to renew the spider web\
+-- unfortunatelly direct calling stucks the game\
+-- have to work around that with delayed called via spawned timer\
+function triggerSpiderWebEggs(plate)\
+\
+\9hudPrint(\"spider stepped on plate level: \" .. plate.level .. \" x: \" .. plate.x .. \" y: \" ..  plate.y .. \" facing:\" .. plate.facing .. \"\") \9\
+\
+\9-- cant find any mechanism how to add health back to blockage\
+\9-- delete the old and probably destroyed (if spider was able to walk accros it) \
+\9-- spider web and make a new one\
+\9for e in entitiesAt(plate.level,plate.x,plate.y)\
+\9do\
+\9\9if e.name == \"eob_ruins_net\"\
+\9\9then\
+\
+\9\9-- direct spawning makes the game stuck\
+\9\9--spawn(\"eob_ruins_net\", e.level,e.x,e.y,e.facing)\
+\9\9--e:destroy()\
+\
+\9\9-- have to use delayed web spawning\
+\9\9spawn(\"timer\",e.level, e.x, e.y, e.facing)\
+\9\9:addConnector(\"activate\",\"script_entity_spider_spawner\",\"fixSpiderWeb\") \
+\9\9:setTimerInterval(1)\9\
+\9\9:activate()\9\9\
+\
+\9 \9elseif e.name == \"spider_eggs\"\
+\9\9then\
+\9\
+\9\9-- have to use delayed web spawning\
+\9\9spawn(\"timer\",e.level, e.x, e.y, e.facing)\
+\9\9:addConnector(\"activate\",\"script_entity_spider_spawner\",\"fixSpiderEggs\") \
+\9\9:setTimerInterval(1)\9\
+\9\9:activate()\9\9\
+\9\
+\9\9end\
+\9\
+\9\
+\9end\
+end\
+\
+\
+\
+\
+\
+-- renew web that a spider passed \
+function fixSpiderWeb(timer)\
+\9\9\
+\9hudPrint(\"weawing net on level:\" .. timer.level .. \" x: \" .. timer.x .. \" y: \" .. timer.y ..\" facing: \" .. timer.facing .. \"\")\
+\
+\9local l=timer.level\
+\9local x=timer.x\
+\9local y=timer.y\
+\9local f=timer.facing\9\
+\9\
+\9--clean the timer and old spider web\
+\9for e in entitiesAt(l,x,y)\
+\9do\
+\9\9if e.name == \"eob_ruins_net\" or e.name == \"timer\" \
+\9\9then e:destroy()\
+\9\9end\
+\9end\
+\9-- and create fresh new spider web\
+\9spawn(\"eob_ruins_net\", l,x,y,f)\9\
+\
+\
+end\
+\
+\
+-- renew eggs that a spider passed \
+function fixSpiderEggs(timer)\
+\9\9\
+\9hudPrint(\"laying eggs on level:\" .. timer.level .. \" x: \" .. timer.x .. \" y: \" .. timer.y ..\" facing: \" .. timer.facing .. \"\")\
+\
+\9local l=timer.level\
+\9local x=timer.x\
+\9local y=timer.y\
+\9local f=timer.facing\9\
+\9\
+\9--clean the timer \
+\9for e in entitiesAt(l,x,y)\
+\9do\
+\9\9if e.name == \"timer\"\
+\9\9then e:destroy()\9\9\
+\9\9end\
+\9end\
+\
+\9-- once eggs are destroyed they disappear as object\
+\9-- so we just create new ones\
+\9spawn(\"spider_eggs\",l,x,y,f)\
+\
+end\
+\
+\
+\
+\
+\
+")
+spawn("counter", 30,24,1, "counter_spider_spawner")
+	:setInitialValue(6)
+	:setValue(6)
+spawn("pressure_plate_hidden", 25,27,0, "pressure_plate_hidden_40")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 14,23,2, "pressure_plate_hidden_spider_spawner_start")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "timer_spider_spawner", "activate")
+	:addConnector("activate", "script_entity_spider_spawner", "resetSpiderLair")
+spawn("pressure_plate_hidden", 24,26,0, "pressure_plate_hidden_94")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWeb")
+spawn("pressure_plate_hidden", 21,24,0, "pressure_plate_hidden_96")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 26,21,0, "pressure_plate_hidden_101")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 23,23,0, "pressure_plate_hidden_102")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 28,18,0, "pressure_plate_hidden_103")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 30,4,0, "pressure_plate_hidden_106")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 15,28,0, "pressure_plate_hidden_49")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 17,30,0, "pressure_plate_hidden_108")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 13,30,0, "pressure_plate_hidden_109")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 27,29,0, "pressure_plate_hidden_104")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("spider_eggs", 24,6,2, "spider_eggs_3")
+spawn("pressure_plate_hidden", 29,27,0, "pressure_plate_hidden_105")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 30,31,0, "pressure_plate_hidden_107")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 30,0,0, "pressure_plate_hidden_110")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 27,1,0, "pressure_plate_hidden_111")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 24,6,0, "pressure_plate_hidden_112")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 24,15,0, "pressure_plate_hidden_113")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("pressure_plate_hidden", 29,11,0, "pressure_plate_hidden_114")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
 
 --- level 5 ---
 
@@ -6068,7 +6397,6 @@ spawn("eob_teleporter", 25,4,3, "eob_teleporter_7")
 	:setTeleportTarget(28,4,3,5)
 	:setChangeFacing(false)
 spawn("eob_ruins_portal_necklace", 9,5,0, "eob_ruins_portal_necklace_1")
-spawn("eob_ruins_illusion_wall_statue", 10,5,2, "eob_ruins_illusion_wall_statue_2")
 spawn("eob_ruins_alcove", 15,5,1, "eob_ruins_alcove_8")
 	:addItem(spawn("eob_stone_necklace_u"))
 spawn("eob_ruins_door_stone", 17,5,0, "eob_ruins_door_stone_31")
@@ -6111,7 +6439,6 @@ spawn("eob_teleporter", 26,6,2, "eob_teleporter_12")
 	:setTeleportTarget(21,7,2,5)
 	:setChangeFacing(false)
 spawn("eob_ruins_door_stone", 29,6,1, "eob_ruins_door_stone_34")
-spawn("eob_ruins_illusion_wall_statue", 10,7,0, "eob_ruins_illusion_wall_statue_1")
 spawn("eob_teleporter", 22,7,2, "eob_teleporter_13")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -6172,14 +6499,9 @@ spawn("eob_teleporter", 25,9,2, "eob_teleporter_20")
 	:setTeleportTarget(28,9,2,5)
 	:setChangeFacing(false)
 spawn("eob_blocker", 30,9,0, "eob_blocker_8")
-spawn("eob_ruins_illusion_wall", 2,10,1, "eob_ruins_illusion_wall_5")
-spawn("eob_ruins_illusion_wall_rune", 4,10,3, "eob_ruins_illusion_wall_rune_5")
 spawn("eob_ruins_door_stone_one", 6,10,3, "eob_ruins_door_stone_one_2")
 spawn("eob_ruins_door_stone", 14,10,1, "eob_ruins_door_stone_37")
 	:addPullChain()
-spawn("eob_ruins_illusion_wall_rune", 24,12,1, "eob_ruins_illusion_wall_rune_7")
-spawn("eob_ruins_illusion_wall_rune", 26,12,3, "eob_ruins_illusion_wall_rune_6")
-spawn("eob_ruins_illusion_wall", 30,12,2, "eob_ruins_illusion_wall_6")
 spawn("eob_ruins_door_stone_one", 1,13,0, "eob_ruins_door_stone_one_3")
 spawn("eob_ruins_wall_text", 10,13,1, "eob_ruins_wall_text_15")
 	:setWallText("Pantry")
@@ -6192,22 +6514,12 @@ spawn("eob_ruins_pressure_plate", 22,14,2, "eob_ruins_pressure_plate_5")
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
 	:addConnector("activate", "script_entity_42", "openPit")
-spawn("eob_ruins_illusion_wall_rune", 23,14,1, "eob_ruins_illusion_wall_rune_9")
-spawn("eob_ruins_illusion_wall", 25,14,3, "eob_ruins_illusion_wall_7")
-spawn("eob_ruins_illusion_wall_rune", 27,14,2, "eob_ruins_illusion_wall_rune_10")
-spawn("eob_ruins_illusion_wall_rune", 30,14,0, "eob_ruins_illusion_wall_rune_8")
 spawn("eob_ruins_secret_button_tiny", 2,15,1, "eob_ruins_secret_button_tiny_4")
 	:setActivateOnce(true)
 	:addConnector("toggle", "script_entity_36", "destroyWall")
 spawn("eob_ruins_button", 20,16,2, "eob_ruins_button_8")
 	:setActivateOnce(true)
 	:addConnector("toggle", "script_entity_37", "destroyWall")
-spawn("eob_ruins_illusion_wall", 23,16,1, "eob_ruins_illusion_wall_10")
-spawn("eob_ruins_illusion_wall", 25,16,1, "eob_ruins_illusion_wall_12")
-spawn("eob_ruins_illusion_wall", 25,16,3, "eob_ruins_illusion_wall_9")
-spawn("eob_ruins_illusion_wall", 27,16,0, "eob_ruins_illusion_wall_8")
-spawn("eob_ruins_illusion_wall", 27,16,3, "eob_ruins_illusion_wall_11")
-spawn("eob_ruins_illusion_wall", 1,17,2, "eob_ruins_illusion_wall_14")
 spawn("eob_ruins_door_stone", 7,18,2, "eob_ruins_door_stone_38")
 spawn("eob_ruins_door_stone", 10,18,2, "eob_ruins_door_stone_39")
 spawn("eob_ruins_door_stone", 13,18,2, "eob_ruins_door_stone_40")
@@ -6215,7 +6527,6 @@ spawn("eob_ruins_wall_text", 18,18,0, "eob_ruins_wall_text_16")
 	:setWallText("Please reset drain holes when finished.")
 spawn("eob_ruins_statue_lever", 19,18,0, "eob_ruins_statue_lever_6")
 	:addConnector("any", "script_entity_40", "cleanPits")
-spawn("eob_ruins_illusion_wall", 1,19,0, "eob_ruins_illusion_wall_13")
 spawn("eob_ruins_statue_lock", 6,19,0, "eob_ruins_statue_lock_8")
 	:setOpenedBy("eob_key_dwarven_u")
 	:addConnector("activate", "eob_ruins_door_stone_38", "open")
@@ -6232,15 +6543,10 @@ spawn("eob_ruins_wall_text", 20,20,2, "eob_ruins_wall_text_17")
 	:setWallText("Greed will be your downfall.")
 spawn("eob_ruins_illusion_wall_rune", 4,21,1, "eob_ruins_illusion_wall_rune_12")
 spawn("eob_ruins_illusion_wall_rune", 6,21,3, "eob_ruins_illusion_wall_rune_11")
-spawn("eob_ruins_illusion_wall", 8,22,2, "eob_ruins_illusion_wall_17")
-spawn("eob_ruins_illusion_wall_rune", 9,22,2, "eob_ruins_illusion_wall_rune_14")
 spawn("eob_ruins_stairs_down", 16,22,2, "eob_ruins_stairs_down_4")
 spawn("eob_ruins_lever", 19,22,3, "eob_ruins_lever_5")
 	:addConnector("any", "eob_ruins_door_stone_42", "toggle")
-spawn("eob_ruins_illusion_wall", 9,23,3, "eob_ruins_illusion_wall_15")
 spawn("eob_ruins_door_stone", 19,23,0, "eob_ruins_door_stone_42")
-spawn("eob_ruins_illusion_wall", 8,24,0, "eob_ruins_illusion_wall_16")
-spawn("eob_ruins_illusion_wall_rune", 9,24,0, "eob_ruins_illusion_wall_rune_13")
 spawn("eob_ruins_stairs_up", 11,25,2, "eob_ruins_stairs_up_4")
 spawn("eob_ruins_door_stone", 25,25,1, "eob_ruins_door_stone_43")
 	:addPullChain()
@@ -6266,8 +6572,6 @@ spawn("eob_ruins_door_stone", 17,29,3, "eob_ruins_door_stone_46")
 	:addPullChain()
 spawn("eob_ruins_door_stone", 25,29,1, "eob_ruins_door_stone_47")
 	:addPullChain()
-spawn("eob_ruins_illusion_wall_rune", 6,30,1, "eob_ruins_illusion_wall_rune_16")
-spawn("eob_ruins_illusion_wall_rune", 8,30,3, "eob_ruins_illusion_wall_rune_15")
 spawn("eob_wand_cone_of_cold_2_u", 27,16,2, "eob_wand_cone_of_cold_2_u_1")
 spawn("eob_cleric_scroll_hold_person", 1,1,1, "eob_cleric_scroll_hold_person_1")
 	:setScrollText("")
@@ -6344,7 +6648,7 @@ function destroyWall()\
 \9return false\
 end")
 spawn("secret", 3,15,1, "secret_7")
-spawn("secret", 9,6,3, "secret_8")
+spawn("secret", 10,5,3, "secret_8")
 spawn("eob_ruins_secret_button_tiny", 1,12,3, "eob_ruins_secret_button_tiny_10")
 	:setActivateOnce(true)
 	:addConnector("toggle", "eob_ruins_door_stone_one_3", "open")
@@ -7438,6 +7742,42 @@ end\
 spawn("eob_ruins_alcove", 10,5,0, "eob_ruins_alcove_portal_5_necklace")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_necklace_u", 10,5,0, "eob_stone_necklace_u_1")
+spawn("eob_ruins_illusion_wall_rune_fake", 30,12,2, "eob_ruins_illusion_wall_rune_fake_4")
+spawn("eob_ruins_illusion_wall_rune_fake", 30,14,0, "eob_ruins_illusion_wall_rune_fake_5")
+spawn("eob_ruins_illusion_wall_rune_fake", 24,12,1, "eob_ruins_illusion_wall_rune_fake_7")
+spawn("eob_ruins_illusion_wall_rune_fake", 26,12,3, "eob_ruins_illusion_wall_rune_fake_6")
+spawn("eob_ruins_illusion_wall_rune_fake", 27,15,2, "eob_ruins_illusion_wall_rune_fake_8")
+spawn("eob_ruins_illusion_wall_rune_fake", 27,15,0, "eob_ruins_illusion_wall_rune_fake_9")
+spawn("eob_ruins_illusion_wall_rune_fake", 26,16,3, "eob_ruins_illusion_wall_rune_fake_10")
+spawn("eob_ruins_illusion_wall_rune_fake", 26,16,1, "eob_ruins_illusion_wall_rune_fake_11")
+spawn("eob_ruins_illusion_wall_rune_fake", 24,16,1, "eob_ruins_illusion_wall_rune_fake_12")
+spawn("eob_ruins_illusion_wall_rune_fake", 24,16,3, "eob_ruins_illusion_wall_rune_fake_13")
+spawn("eob_ruins_illusion_wall_rune_fake", 24,14,3, "eob_ruins_illusion_wall_rune_fake_14")
+spawn("eob_ruins_illusion_wall_rune_fake", 24,14,1, "eob_ruins_illusion_wall_rune_fake_15")
+spawn("eob_blocker", 25,12,1, "eob_blocker_1")
+spawn("eob_blocker", 30,13,2, "eob_blocker_2")
+spawn("eob_blocker", 24,14,2, "eob_blocker_3")
+spawn("eob_blocker", 24,16,1, "eob_blocker_4")
+spawn("eob_blocker", 26,16,3, "eob_blocker_5")
+spawn("eob_blocker", 27,15,2, "eob_blocker_6")
+spawn("eob_ruins_illusion_wall_rune_fake", 9,23,0, "eob_ruins_illusion_wall_rune_fake_16")
+spawn("eob_ruins_illusion_wall_rune_fake", 9,23,2, "eob_ruins_illusion_wall_rune_fake_17")
+spawn("eob_ruins_illusion_wall_rune_fake", 8,23,0, "eob_ruins_illusion_wall_rune_fake_20")
+spawn("eob_ruins_illusion_wall_rune_fake", 8,23,2, "eob_ruins_illusion_wall_rune_fake_18")
+spawn("eob_ruins_illusion_wall_rune_fake", 9,23,3, "eob_ruins_illusion_wall_rune_fake_21")
+spawn("temple_pillar", 9,23,2, "temple_pillar_1")
+spawn("temple_pillar", 9,24,2, "temple_pillar_2")
+spawn("eob_ruins_illusion_wall_rune_fake", 7,30,3, "eob_ruins_illusion_wall_rune_fake_19")
+spawn("eob_ruins_illusion_wall_rune_fake", 7,30,1, "eob_ruins_illusion_wall_rune_fake_22")
+spawn("eob_ruins_illusion_wall_rune_fake", 1,18,0, "eob_ruins_illusion_wall_rune_fake_25")
+spawn("eob_ruins_illusion_wall_rune_fake", 1,18,2, "eob_ruins_illusion_wall_rune_fake_23")
+spawn("eob_blocker", 1,18,3, "eob_blocker_7")
+spawn("eob_ruins_illusion_wall_rune_fake", 3,10,3, "eob_ruins_illusion_wall_rune_fake_27")
+spawn("eob_ruins_illusion_wall_rune_fake", 3,10,1, "eob_ruins_illusion_wall_rune_fake_24")
+spawn("eob_blocker", 3,10,2, "eob_blocker_22")
+spawn("eob_ruins_illusion_wall_rune_fake", 10,6,0, "eob_ruins_illusion_wall_rune_fake_29")
+spawn("eob_ruins_illusion_wall_rune_fake", 10,6,2, "eob_ruins_illusion_wall_rune_fake_26")
+spawn("eob_blocker", 10,6,3, "eob_blocker_25")
 
 --- level 6 ---
 
@@ -8390,10 +8730,10 @@ function specialQuest6()\
 \9-- how many eggs are there in the room ?\
 \9for e in entitiesAt(6,13,17)\
 \9do\
-\9\9if e.name == \"eob_egg_10_u\" \
+\9\9if string.find(e.name, \"eob_egg\" ) ~= nil\
 \9\9then\
 \9\9eggcount = eggcount + 1 \
-\9\9\9hudPrint(\"\".. e.id ..\" \" .. eggcount .. \"\")\
+\9\9\9--hudPrint(\"\".. e.id ..\" \" .. eggcount .. \"\")\
 \9\9end\
 \9end\
 \
@@ -8902,7 +9242,6 @@ spawn("eob_stone_dagger", 13,28,0, "eob_stone_dagger_2")
 spawn("eob_ruins_alcove", 12,28,3, "eob_ruins_alcove_portal_7_holy_symbol")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_holy_symbol", 12,28,3, "eob_stone_holy_symbol_2")
-spawn("starting_location", 13,29,3, "starting_location_1")
 
 --- level 8 ---
 
@@ -9453,6 +9792,7 @@ spawn("eob_potion_extra_healing", 3,22,2, "eob_potion_extra_healing_5")
 spawn("eob_spear_u", 14,23,0, "eob_spear_u_3")
 spawn("eob_wand_fireball_10_u", 20,26,3, "eob_wand_fireball_10_u_1")
 spawn("eob_cleric_scroll_raise_dead", 8,28,1, "eob_cleric_scroll_raise_dead_3")
+	:setScrollText("")
 spawn("eob_chain_mail_u", 30,29,1, "eob_chain_mail_u_2")
 spawn("eob_bones_human_beohram_u", 11,11,1, "eob_bones_human_beohram_u_1")
 spawn("eob_plate_mail_u", 11,11,1, "eob_plate_mail_u_2")
