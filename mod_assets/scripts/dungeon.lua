@@ -78,6 +78,7 @@ this fifth day of Marpenoth in the year of Shadows.\
 \
 setT(\"carving_to_place\", \"What an odd Carving to place here.\")\
 setT(\"character_can_translate_rune\", \" can translate this text.\\nIt is the Kobold rune for Entrance.\")\
+-- if you have gnome in party the next rune says: \"Kobold rune for 'entrance'\"\
 setT(\"character_cannot_translate_rune\", \" This Rune is unrecognized.\\nNo one in the party can translate it.\")\
 setT(\"dagger_fits\", \"The Dagger fits.\")\
 setT(\"dagger_undetachable\", \"The dagger is undetachable!\")\
@@ -98,7 +99,7 @@ setT(\"feels_no_longer_hungry\", \"feels no longer hungry!\")\
 setT(\"goind_down\",\"Going down...\")\
 setT(\"goind_up\",\"Going up...\")\
 setT(\"hollow_laughter\",\"A hollow laughter echoes faintly.\")\
-setT(\"look_like_travel_marker\", \"This looks like a Travel marker.\")\
+setT(\"look_like_travel_marker\", \"This looks like a 'Travel' marker.\")\
 setT(\"not_all_is_as_it_appears\", \"Not all is as it appears\")\
 setT(\"only_the_strong\",\"Only the Strong shall pass.\")\
 setT(\"room_move\",\"The Room seems to move.\")\
@@ -348,7 +349,7 @@ end\
 \
 function autoexec()\
 \
-\9EOBlevelUp()\
+\9--EOBlevelUp() -- also playes annoying beep every time you start editor game\
 \9-- EOBsetDefaultParty()\
 \9EOBsetDefaultItems()\
 \9\
@@ -525,7 +526,7 @@ spawn("script_entity", 1,11,3, "illusion_pits")
 \9\9end\
 \9end\
 \
-\9fw.debugPrint(\"Illusionary pit and Teleporter at \"..pit.x..\",\"..pit.y..\" deactivated\")\
+\9fw.debugPrint(\"Illusionary pit and Teleporter at \"..pit.x..\",\"..pit.y..\" activated\")\
 end\
 \
 function deactivate(pit)\
@@ -544,7 +545,7 @@ function deactivate(pit)\
 \9\9end\
 \9end\
 \9\
-\9fw.debugPrint(\"Illusionary pit and Teleporter at \"..pit.x..\",\"..pit.y..\" activated\")\
+\9fw.debugPrint(\"Illusionary pit and Teleporter at \"..pit.x..\",\"..pit.y..\" deactivated\")\
 end\
 \
 function toggle(pit)\
@@ -2306,7 +2307,6 @@ so we forgot to hide our secret lair and it's open\
 now. Be a nice player and don't use any of those.\
 \
                         Your friendly developers")
-spawn("eob_sewers_door_metal_force", 9,15,3, "eob_sewers_door_metal_force_5")
 spawn("teleporter", 2,18,0, "teleporter_12")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -2951,6 +2951,19 @@ function checkPortal(alcove,keyitem)\
 \
 \9-- eob_ruins_alcove_portal_8_scepter_exit is exit only portal\
 \
+\
+\9-- between 11 and 12 level\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_11_orb\"\
+\9then \
+\9\9key=\"eob_stone_orb\"\
+\9\9pl=11 px=4 py=27 tl=12 tx=15 ty=11 tf=2\
+\9\9\9\9\
+\9elseif alcove.id == \"eob_ruins_alcove_portal_12_orb\"\
+\9then \
+\9\9key=\"eob_stone_orb\"\
+\9\9pl=12 px=15 py=11 tl=11 tx=4 ty=27 tf=0\
+\
+\
 \9end\
 \9hudPrint(\"alcove recognized: \" .. alcove.id ..\"\")\
 \
@@ -3049,6 +3062,9 @@ function closePortal()\
 \9if findEntity(\"timer_portal_off\") ~= nil then timer_portal_off:destroy() end\
 \
 end")
+spawn("eob_sewers_secret_door", 9,15,3, "eob_sewers_secret_door_2")
+spawn("eob_sewers_secret_button_large", 9,15,0, "eob_sewers_secret_button_large_2")
+	:addConnector("toggle", "eob_sewers_secret_door_2", "toggle")
 
 --- level 2 ---
 
@@ -3498,21 +3514,21 @@ spawn("eob_teleporter_rats", 8,24,1, "eob_teleporter_rats_1")
 	:setTriggeredByItem(true)
 	:setTeleportTarget(28,9,1,2)
 spawn("eob_sewers_wall_drainage", 12,23,1, "eob_sewers_wall_drainage_1")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 26,24,2, "eob_sewers_wall_drainage_10")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 26,26,0, "eob_sewers_wall_drainage_11")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 14,23,3, "eob_sewers_wall_drainage_12")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 15,27,0, "eob_sewers_wall_drainage_13")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 15,25,2, "eob_sewers_wall_drainage_14")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 11,17,0, "eob_sewers_wall_drainage_15")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 11,15,2, "eob_sewers_wall_drainage_16")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_leather_boots", 19,10,0, "eob_leather_boots_1")
 spawn("eob_rations", 19,10,3, "eob_rations_7")
 spawn("eob_sewers_door_metal", 20,12,0, "eob_sewers_door_metal_2")
@@ -3761,9 +3777,9 @@ spawn("eob_sewers_secret_door", 10,5,1, "eob_sewers_secret_door_22")
 spawn("eob_sewers_secret_door", 12,5,3, "eob_sewers_secret_door_23")
 spawn("eob_sewers_secret_door", 12,4,0, "eob_sewers_secret_door_24")
 spawn("eob_sewers_wall_drainage", 12,8,0, "eob_sewers_wall_drainage_17")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 12,6,2, "eob_sewers_wall_drainage_18")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_secret_door", 18,2,3, "eob_sewers_secret_door_25")
 spawn("eob_sewers_secret_door", 16,2,1, "eob_sewers_secret_door_26")
 spawn("eob_sewers_secret_door", 22,4,2, "eob_sewers_secret_door_27")
@@ -3979,7 +3995,31 @@ spawn("eob_sewers_wall_pipe", 25,27,2, "eob_sewers_wall_pipe_17")
 spawn("eob_sewers_wall_pipe", 25,29,0, "eob_sewers_wall_pipe_18")
 	:setWallText("This slimy, smelly drainpipe reveals nothing.")
 spawn("eob_sewers_walltext_rune_transport", 17,27,3, "eob_sewers_walltext_rune_transport_1")
-	:setWallText("")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 15,27,1, "eob_sewers_walltext_rune_transport_3")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 15,27,2, "eob_sewers_walltext_rune_transport_4")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 22,28,1, "eob_sewers_walltext_rune_transport_5")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 24,28,3, "eob_sewers_walltext_rune_transport_6")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 23,29,0, "eob_sewers_walltext_rune_transport_7")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 24,27,1, "eob_sewers_walltext_rune_transport_8")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 26,27,3, "eob_sewers_walltext_rune_transport_9")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 25,26,2, "eob_sewers_walltext_rune_transport_10")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 28,28,1, "eob_sewers_walltext_rune_transport_11")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 30,28,3, "eob_sewers_walltext_rune_transport_12")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 30,28,0, "eob_sewers_walltext_rune_transport_13")
+	:setWallText("This looks like a 'Travel' marker.")
+spawn("eob_sewers_walltext_rune_transport", 30,26,2, "eob_sewers_walltext_rune_transport_14")
+	:setWallText("This looks like a 'Travel' marker.")
 spawn("eob_sewers_wall_cube", 23,28,0, "eob_sewers_wall_cube_1")
 spawn("eob_illusion_wall_door", 23,28,3, "eob_illusion_wall_door_1")
 spawn("eob_illusion_wall_door", 23,29,0, "eob_illusion_wall_door_2")
@@ -3996,30 +4036,6 @@ spawn("eob_sewers_wall_cube", 16,27,0, "eob_sewers_wall_cube_6")
 spawn("eob_sewers_wall_cube", 15,28,0, "eob_sewers_wall_cube_7")
 spawn("eob_illusion_wall_door", 17,27,3, "eob_illusion_wall_door_9")
 spawn("eob_illusion_wall_door", 15,27,2, "eob_illusion_wall_door_10")
-spawn("eob_sewers_walltext_rune_transport", 15,27,1, "eob_sewers_walltext_rune_transport_3")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 15,27,2, "eob_sewers_walltext_rune_transport_4")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 22,28,1, "eob_sewers_walltext_rune_transport_5")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 24,28,3, "eob_sewers_walltext_rune_transport_6")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 23,29,0, "eob_sewers_walltext_rune_transport_7")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 24,27,1, "eob_sewers_walltext_rune_transport_8")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 26,27,3, "eob_sewers_walltext_rune_transport_9")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 25,26,2, "eob_sewers_walltext_rune_transport_10")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 28,28,1, "eob_sewers_walltext_rune_transport_11")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 30,28,3, "eob_sewers_walltext_rune_transport_12")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 30,28,0, "eob_sewers_walltext_rune_transport_13")
-	:setWallText("")
-spawn("eob_sewers_walltext_rune_transport", 30,26,2, "eob_sewers_walltext_rune_transport_14")
-	:setWallText("")
 spawn("eob_sewers_secret_door_cube", 3,27,0, "eob_sewers_secret_door_cube_2")
 spawn("eob_secret_door_empty", 3,27,2, "eob_secret_door_empty_3")
 spawn("eob_secret_door_empty", 3,27,1, "eob_secret_door_empty_4")
@@ -4192,9 +4208,9 @@ spawn("eob_kuotoa1_1", 21,25,0, "eob_kuotoa1_1_14")
 spawn("torch_holder", 26,3,1, "torch_holder_11")
 	:addTorch()
 spawn("eob_sewers_wall_drainage", 19,4,1, "eob_sewers_wall_drainage_19")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 21,4,3, "eob_sewers_wall_drainage_20")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("torch_holder", 27,25,0, "torch_holder_12")
 	:addTorch()
 spawn("eob_teleporter_rats", 21,2,2, "eob_teleporter_rats_2")
@@ -4299,9 +4315,9 @@ spawn("eob_sewers_wall_pipe", 22,10,2, "eob_sewers_wall_pipe_19")
 spawn("eob_sewers_wall_pipe", 21,11,1, "eob_sewers_wall_pipe_20")
 	:setWallText("")
 spawn("eob_sewers_wall_drainage", 25,20,0, "eob_sewers_wall_drainage_21")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("eob_sewers_wall_drainage", 25,18,2, "eob_sewers_wall_drainage_22")
-	:setWallText("")
+	:setWallText("There seems to be movement inside this floor drain.")
 spawn("blocker", 19,9,2, "blocker_7")
 spawn("blocker", 1,20,1, "blocker_10")
 spawn("eob_teleporter_rats", 3,19,0, "eob_teleporter_rats_5")
@@ -5029,6 +5045,28 @@ spawn("eob_flind1_2_museum", 11,22,0, "eob_flind1_2_museum_3")
 spawn("eob_kuotoa1_1_museum", 12,19,3, "eob_kuotoa1_1_museum_1")
 	:setAIState("guard")
 spawn("eob_blocker", 10,19,2, "eob_blocker_museum_3")
+spawn("eob_teleporter", 1,11,1, "eob_teleporter_38")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(1,19,1,3)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("pressure_plate_hidden", 1,10,2, "pressure_plate_hidden_41")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "eob_teleporter_38", "activate")
+spawn("pressure_plate_hidden", 1,12,2, "pressure_plate_hidden_115")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "eob_teleporter_38", "deactivate")
 
 --- level 4 ---
 
@@ -5121,6 +5159,8 @@ spawn("eob_ruins_alcove", 20,4,1, "eob_ruins_alcove_2")
 spawn("eob_ruins_wall_text", 23,4,2, "eob_ruins_wall_text_3")
 	:setWallText("Oracle of Knowledge.")
 spawn("eob_ruins_alcove", 24,4,2, "eob_ruins_alcove_3")
+	:setActivateAlways(true)
+	:addConnector("activate", "script_entity_54", "identifyItems")
 spawn("eob_ruins_net", 30,4,2, "eob_ruins_net_2")
 spawn("eob_ruins_statue_lock", 1,5,3, "eob_ruins_statue_lock_2")
 	:setOpenedBy("eob_key_dwarven_u")
@@ -5716,7 +5756,6 @@ spawn("pressure_plate_hidden", 8,20,1, "pressure_plate_hidden_33")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
-	:setActivateOnce(true)
 	:setSilent(true)
 	:addConnector("activate", "eob_ruins_pit_6", "toggle")
 spawn("eob_ruins_stairs_down", 4,12,0, "eob_ruins_stairs_down_1")
@@ -5983,11 +6022,54 @@ spawn("counter", 31,6,1, "counter_3")
 	:addConnector("activate", "script_entity_18", "removeWall3")
 spawn("torch_holder", 9,3,2, "torch_holder_13")
 spawn("secret", 5,3,1, "secret_6")
-spawn("secret", 22,4,2, "secret_12")
+spawn("secret", 22,4,2, "secret_oracle_of_knowedge")
 spawn("script_entity", 22,3,2, "script_entity_54")
 	:setSource("-- if orb of power is put to alcove\
 -- activate secret\
--- and identify all other items in alcove")
+-- and identify all other items in alcove\
+-- in fact it looks for orb of power and item with \"_u\" in name\
+-- if both found, destroy the \"_u\" item,\
+-- and replace it with version without \"_u\" in name\
+-- i just hope nobody will create some \"eob_unbelievable_item\"\
+\
+function identifyItems(alcove)\
+\9local power=0\
+\9local newitem=\"eob_rations\"\
+\
+\9-- check if orb of power is present\
+\9for i in alcove:containedItems()\
+\9do\
+\9\9if string.find(i.name,\"eob_orb_of_power\") ~= nil\
+\9\9then\9\
+\9\9\9power=1\
+\9\9\9-- secret activates only the first time \
+\9\9\9secret_oracle_of_knowedge:activate()\
+\9\9end\
+\9end\
+\
+\9-- is orb of power present?\
+\9if \9power == 1 \9then\
+\9\9for i in alcove:containedItems()\
+\9\9do\9\
+\9\9\9-- search for \"_u_\" in the item id\
+\9\9\9if string.find(i.id,\"_u_\") ~= nil\
+\9\9\9then \
+\9\9\9 \9newitem = string.gsub(i.name,\"_u\",\"\")\
+\9\9\9\9-- remove the unidentified original\
+\9\9\9\9hudPrint(\"Identified: \" .. i.id .. \" into \" .. newitem)\
+\9\9\9\9i:destroy()\
+\9\9\9\9-- either spawn the identified version of item in the alcove\
+\9\9\9\9-- but this version throws error, probably it cant destory the original quick enough\
+\9\9\9\9-- and messes with duplicates\
+\9\9\9\9--alcove:addItem(spawn(newitem))\
+\9\9\9\9\
+\9\9\9\9-- or throw it out on the ground , no errors find wiht this version\
+\9\9\9\9spawn(newitem,party.level,party.x,party.y,party.facing)\
+\9\9\9end\
+\9\9end\
+\9end\
+\
+end")
 spawn("secret", 24,15,1, "secret_13")
 spawn("eob_ruins_alcove", 16,1,0, "eob_ruins_alcove_portal_4_medallion")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
@@ -5997,7 +6079,6 @@ spawn("eob_ruins_illusion_wall_rune_fake", 5,5,0, "eob_ruins_illusion_wall_rune_
 spawn("eob_ruins_illusion_wall_rune_fake", 30,1,3, "eob_ruins_illusion_wall_rune_fake_2")
 spawn("eob_ruins_illusion_wall_rune_fake", 30,0,1, "eob_ruins_illusion_wall_rune_fake_3")
 spawn("spider_eggs", 27,1,2, "spider_eggs_1")
-spawn("starting_location", 13,23,1, "starting_location_1")
 spawn("spider_eggs", 29,11,3, "spider_eggs_2")
 spawn("spider_eggs", 24,15,2, "spider_eggs_4")
 spawn("timer", 30,25,1, "timer_spider_spawner")
@@ -6022,7 +6103,7 @@ function spawnSpider()\
 \
 \
 \9-- start spawning spiders if the spider population was decimated \
-\9if counter_spider_spawner:getValue() > 0  and spidercount < 30 \
+\9if counter_spider_spawner:getValue() > 0  and spidercount < 8 \
 \9\9then\
 \9\9\
 \9\9-- chose which location to spawn a spider on at random \
@@ -6322,6 +6403,12 @@ spawn("pressure_plate_hidden", 29,11,0, "pressure_plate_hidden_114")
 	:setTriggeredByItem(false)
 	:setSilent(true)
 	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
+spawn("secret", 4,16,3, "secret_12")
+spawn("eob_potion_giant_strength_u", 23,4,2, "eob_potion_giant_strength_u_1")
+spawn("eob_orb_of_power", 24,4,2, "eob_orb_of_power_1")
+spawn("eob_wand_magic_missile_20_u", 23,4,0, "eob_wand_magic_missile_20_u_2")
+spawn("eob_sling_cursed3_u", 23,4,3, "eob_sling_cursed3_u_2")
+spawn("eob_plate_mail_cursed3_u", 23,4,1, "eob_plate_mail_cursed3_u_2")
 
 --- level 5 ---
 
@@ -6366,7 +6453,6 @@ spawn("eob_ruins_alcove", 6,1,0, "eob_ruins_alcove_4")
 spawn("eob_ruins_alcove", 7,1,0, "eob_ruins_alcove_5")
 spawn("eob_ruins_illusion_wall_rune", 12,1,1, "eob_ruins_illusion_wall_rune_2")
 spawn("eob_ruins_illusion_wall_rune", 14,1,3, "eob_ruins_illusion_wall_rune_1")
-spawn("eob_ruins_illusion_wall", 23,1,2, "eob_ruins_illusion_wall_3")
 spawn("eob_ruins_stairs_down", 25,1,3, "eob_ruins_stairs_down_3")
 spawn("eob_ruins_door_stone", 2,2,1, "eob_ruins_door_stone_29")
 	:addPullChain()
@@ -6379,11 +6465,8 @@ spawn("eob_ruins_alcove", 7,3,2, "eob_ruins_alcove_7")
 spawn("eob_ruins_ceiling_shaft", 10,3,3, "eob_ruins_ceiling_shaft_3")
 spawn("eob_ruins_ceiling_shaft", 11,3,3, "eob_ruins_ceiling_shaft_4")
 spawn("eob_ruins_ceiling_shaft", 12,3,2, "eob_ruins_ceiling_shaft_5")
-spawn("eob_ruins_illusion_wall_rune", 23,3,0, "eob_ruins_illusion_wall_rune_3")
 spawn("eob_ruins_wall_text", 23,3,3, "eob_ruins_wall_text_13")
 	:setWallText("You've made it this far. Good luck.")
-spawn("eob_ruins_illusion_wall_rune", 19,4,1, "eob_ruins_illusion_wall_rune_4")
-spawn("eob_ruins_illusion_wall", 21,4,3, "eob_ruins_illusion_wall_4")
 spawn("eob_teleporter", 24,4,3, "eob_teleporter_6")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -6513,6 +6596,7 @@ spawn("eob_ruins_pressure_plate", 22,14,2, "eob_ruins_pressure_plate_5")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
+	:setActivateOnce(true)
 	:addConnector("activate", "script_entity_42", "openPit")
 spawn("eob_ruins_secret_button_tiny", 2,15,1, "eob_ruins_secret_button_tiny_4")
 	:setActivateOnce(true)
@@ -6541,8 +6625,6 @@ spawn("eob_ruins_door_stone", 23,19,2, "eob_ruins_door_stone_41")
 spawn("eob_ruins_ceiling_shaft", 9,20,2, "eob_ruins_ceiling_shaft_7")
 spawn("eob_ruins_wall_text", 20,20,2, "eob_ruins_wall_text_17")
 	:setWallText("Greed will be your downfall.")
-spawn("eob_ruins_illusion_wall_rune", 4,21,1, "eob_ruins_illusion_wall_rune_12")
-spawn("eob_ruins_illusion_wall_rune", 6,21,3, "eob_ruins_illusion_wall_rune_11")
 spawn("eob_ruins_stairs_down", 16,22,2, "eob_ruins_stairs_down_4")
 spawn("eob_ruins_lever", 19,22,3, "eob_ruins_lever_5")
 	:addConnector("any", "eob_ruins_door_stone_42", "toggle")
@@ -6572,11 +6654,11 @@ spawn("eob_ruins_door_stone", 17,29,3, "eob_ruins_door_stone_46")
 	:addPullChain()
 spawn("eob_ruins_door_stone", 25,29,1, "eob_ruins_door_stone_47")
 	:addPullChain()
-spawn("eob_wand_cone_of_cold_2_u", 27,16,2, "eob_wand_cone_of_cold_2_u_1")
+spawn("eob_wand_cone_of_cold_2_u", 27,16,3, "eob_wand_cone_of_cold_2_u_1")
 spawn("eob_cleric_scroll_hold_person", 1,1,1, "eob_cleric_scroll_hold_person_1")
 	:setScrollText("")
-spawn("eob_rations_iron_u", 21,2,3, "eob_rations_iron_u_4")
-spawn("eob_spear_u", 21,2,3, "eob_spear_u_2")
+spawn("eob_rations_iron_u", 21,2,1, "eob_rations_iron_u_4")
+spawn("eob_spear_u", 21,2,2, "eob_spear_u_2")
 spawn("eob_cleric_scroll_aid", 5,6,3, "eob_cleric_scroll_aid_1")
 	:setScrollText("")
 spawn("scroll_haste", 6,6,1, "eob_mage_scroll_haste_1")
@@ -6617,10 +6699,12 @@ spawn("eob_spider", 22,11,0, "eob_spider_17")
 spawn("eob_spider", 26,23,1, "eob_spider_18")
 	:setAIState("guard")
 spawn("eob_spider", 6,2,0, "eob_spider_19")
+	:setAIState("guard")
 spawn("eob_dwarf1_2", 19,10,3, "eob_dwarf1_2_3")
 	:setAIState("guard")
 spawn("eob_spider", 5,15,0, "eob_spider_20")
 spawn("eob_spider", 7,1,0, "eob_spider_21")
+	:setAIState("guard")
 spawn("eob_spider", 2,16,0, "eob_spider_22")
 spawn("eob_spider", 1,2,0, "eob_spider_23")
 spawn("eob_spider", 1,5,0, "eob_spider_24")
@@ -6722,12 +6806,13 @@ spawn("eob_teleporter", 26,27,3, "eob_teleporter_4")
 	:deactivate()
 spawn("script_entity", 20,26,2, "script_entity_40")
 	:setSource("-- not using simple ruin_pits because it looks much differently then the original\
+-- mainly you see that there are closed pits, in original you have no idea the first time\
 -- decoration that looks exactly like dwarven floor on every step\
 -- because this fake decoration can be later destroyed by script\
--- default floor cannot and it messes with the trap doors\
+-- default floor cannot be destroyed and it messes with the trap doors when not destroyed\
 -- hidden plate at every step calls scripts\
 -- save party possition into global variable\
--- opens pit at last posstion\
+-- summons open pit at last posstion (also destroyes the floor/decoration)\
 -- update possition to new one\
 \
 function openPitAtLast()\
@@ -6767,6 +6852,7 @@ function cleanPits()\
 \
 -- one possible version\
 \9for e in allEntities(5) do\
+\9\9-- 2nd condition to keep the pit at 22,13\
 \9\9if e.name == \"eob_ruins_pit\" and e.id ~= \"eob_ruins_pit_no_remove\" then\
 \9\9\9-- first spawn to use the e.x and e.y coordinates, then destory e entity\
 \9\9\9spawn(\"eob_ruins_floor_destroyable\",5,e.x,e.y,0)\
@@ -7169,15 +7255,22 @@ function openPit()\
 \9\9end\9\
 \9end\9\
 end")
-spawn("secret", 28,16,1, "secret_9")
-spawn("eob_dwarven_wall_cube_invisible", 3,15,1, "eob_dwarven_wall_cube_invisible_1")
+spawn("secret", 27,16,1, "secret_9")
 spawn("script_entity", 3,15,1, "script_entity_36")
 	:setSource("-- function tries to destroy a wall at position specified \
 -- function returns true if destruction was successful or false,\
 -- if there was no eob_dwarven_wall_cube there\
 function destroyWall()\
+\
+\9eob_dwarven_wall_cube_invisible_1:destroy()\
+\9playSound(\"pressure_plate_released\")\
+\9eob_ruins_secret_button_tiny_4:destroy()\
+\
+-- obviously invisible dwarven cube is not recognized as 'entity'\
+--[[\
 \9for x in entitiesAt(self.level,self.x,self.y) \
 \9do\
+\9\9hudPrint(x.name)\
 \9\9if string.find(x.name,\"eob_dwarven_wall_cube\") ~= nil\
 \9\9then\
 \9\9\9x:destroy()\
@@ -7187,6 +7280,7 @@ function destroyWall()\
 \9\9return true\
 \9end\
 \9return false\
+]]\
 end")
 spawn("eob_dwarven_wall_cube", 19,16,2, "eob_dwarven_wall_cube_2")
 spawn("script_entity", 19,16,2, "script_entity_37")
@@ -7591,7 +7685,7 @@ spawn("eob_teleporter", 19,7,0, "eob_teleporter_dwarven_camp_cleric")
 	:setSilent(true)
 	:setHideLight(true)
 	:setScreenFlash(false)
-spawn("gw_event", 19,7,0, "gw_event_dvarven_cleric")
+spawn("gw_event", 19,7,0, "gw_event_dvarven_camp_cleric")
 	:setSource("-- here should be dwarven cleric\
 -- if you go away and back to this level he will rest meanwhile\
 \
@@ -7715,30 +7809,49 @@ spawn("eob_dwarf", 19,6,2, "eob_dwarf_dwarven_cleric")
 	:setAIState("guard")
 spawn("eob_blocker", 19,7,1, "eob_blocker_dwarfcamp_24")
 spawn("timer", 18,6,2, "timer_dwarven_cleric_resting")
-	:setTimerInterval(10)
+	:setTimerInterval(300)
 	:activate()
 	:addConnector("activate", "counter_dwarven_cleric_rested", "increment")
 	:addConnector("activate", "timer_dwarven_cleric_resting", "deactivate")
 spawn("counter", 18,5,1, "counter_dwarven_cleric_rested")
 spawn("script_entity", 14,9,0, "script_entity_dwarven_camp_attacked")
 	:setSource("-- if you ever attack any of the dwarves in camp\
--- yes even by accident\
+-- yes even by accident (like throwing rations)\
 -- they are all gonna kick your ass (remove blockers)\
 -- and no longer provide healing services\
 -- and no longer bother with the entrance message \
 -- (so yes it might be worth it)\
+-- for trigger check \9monsters_EobConverter.lua - name = \"eob_dwarf\",\
 \
-\
--- cant figure out how to call this from monsters.lua\
--- so all functions are called directly there\
--- from eob_dwarf\
---[[\
+-- check \
 function attackDwarves()\
+\
 \9counter_dwarf_camp_attacked:increment()\
+\9hudPrint(\"\" .. counter_dwarf_camp_attacked:getValue() .. \"\")\
+\
+\9-- == 1 , so that it activates just after first attack (and wont throw errors)\
+\9if counter_dwarf_camp_attacked:getValue() == 1\
+\9then\
+\9\9for e  in allEntities(5)\
+\9\9do\
+\9 \9  if string.find(e.name,\"eob_blocker\") ~= nil\
+\9\9     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)\
+\9\9  then e:destroy()\
+\9\9  elseif string.find(e.name,\"eob_dwarf\") ~= nil\
+\9\9     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)\
+\9\9  then e:setAIState(\"default\")\
+\9\9  end\
+\9\9end\
+\9\9\
+\9--hudPrint(\"attacking Dwarves\")\
 \9gw_event_dwarven_camp:destroy()\
-\9gw_event_dwarven_camp_cleric:destroy()\
+\9gw_event_dvarven_camp_cleric:destroy()\
+\9eob_teleporter_dwarven_camp_cleric:destroy()\
+\9\
+\9end\
+\
 end\
-]]")
+")
 spawn("eob_ruins_alcove", 10,5,0, "eob_ruins_alcove_portal_5_necklace")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_necklace_u", 10,5,0, "eob_stone_necklace_u_1")
@@ -7746,38 +7859,50 @@ spawn("eob_ruins_illusion_wall_rune_fake", 30,12,2, "eob_ruins_illusion_wall_run
 spawn("eob_ruins_illusion_wall_rune_fake", 30,14,0, "eob_ruins_illusion_wall_rune_fake_5")
 spawn("eob_ruins_illusion_wall_rune_fake", 24,12,1, "eob_ruins_illusion_wall_rune_fake_7")
 spawn("eob_ruins_illusion_wall_rune_fake", 26,12,3, "eob_ruins_illusion_wall_rune_fake_6")
-spawn("eob_ruins_illusion_wall_rune_fake", 27,15,2, "eob_ruins_illusion_wall_rune_fake_8")
-spawn("eob_ruins_illusion_wall_rune_fake", 27,15,0, "eob_ruins_illusion_wall_rune_fake_9")
-spawn("eob_ruins_illusion_wall_rune_fake", 26,16,3, "eob_ruins_illusion_wall_rune_fake_10")
-spawn("eob_ruins_illusion_wall_rune_fake", 26,16,1, "eob_ruins_illusion_wall_rune_fake_11")
-spawn("eob_ruins_illusion_wall_rune_fake", 24,16,1, "eob_ruins_illusion_wall_rune_fake_12")
-spawn("eob_ruins_illusion_wall_rune_fake", 24,16,3, "eob_ruins_illusion_wall_rune_fake_13")
-spawn("eob_ruins_illusion_wall_rune_fake", 24,14,3, "eob_ruins_illusion_wall_rune_fake_14")
-spawn("eob_ruins_illusion_wall_rune_fake", 24,14,1, "eob_ruins_illusion_wall_rune_fake_15")
+spawn("eob_ruins_illusion_wall_rune_fake", 27,16,0, "eob_ruins_illusion_wall_rune_fake_8")
+spawn("eob_ruins_illusion_wall_rune_fake", 27,14,2, "eob_ruins_illusion_wall_rune_fake_9")
+spawn("eob_ruins_illusion_wall_rune_fake", 25,16,1, "eob_ruins_illusion_wall_rune_fake_10")
+spawn("eob_ruins_illusion_wall_rune_fake", 27,16,3, "eob_ruins_illusion_wall_rune_fake_11")
+spawn("eob_ruins_illusion_wall_rune_fake", 25,16,3, "eob_ruins_illusion_wall_rune_fake_12")
+spawn("eob_ruins_illusion_wall_rune_fake", 23,16,1, "eob_ruins_illusion_wall_rune_fake_13")
+spawn("eob_ruins_illusion_wall_rune_fake", 23,14,1, "eob_ruins_illusion_wall_rune_fake_14")
+spawn("eob_ruins_illusion_wall_rune_fake", 25,14,3, "eob_ruins_illusion_wall_rune_fake_15")
 spawn("eob_blocker", 25,12,1, "eob_blocker_1")
 spawn("eob_blocker", 30,13,2, "eob_blocker_2")
 spawn("eob_blocker", 24,14,2, "eob_blocker_3")
 spawn("eob_blocker", 24,16,1, "eob_blocker_4")
 spawn("eob_blocker", 26,16,3, "eob_blocker_5")
 spawn("eob_blocker", 27,15,2, "eob_blocker_6")
-spawn("eob_ruins_illusion_wall_rune_fake", 9,23,0, "eob_ruins_illusion_wall_rune_fake_16")
-spawn("eob_ruins_illusion_wall_rune_fake", 9,23,2, "eob_ruins_illusion_wall_rune_fake_17")
-spawn("eob_ruins_illusion_wall_rune_fake", 8,23,0, "eob_ruins_illusion_wall_rune_fake_20")
-spawn("eob_ruins_illusion_wall_rune_fake", 8,23,2, "eob_ruins_illusion_wall_rune_fake_18")
+spawn("eob_ruins_illusion_wall_rune_fake", 9,22,2, "eob_ruins_illusion_wall_rune_fake_16")
+spawn("eob_ruins_illusion_wall_rune_fake", 9,24,0, "eob_ruins_illusion_wall_rune_fake_17")
+spawn("eob_ruins_illusion_wall_rune_fake", 8,22,2, "eob_ruins_illusion_wall_rune_fake_20")
+spawn("eob_ruins_illusion_wall_rune_fake", 8,24,0, "eob_ruins_illusion_wall_rune_fake_18")
 spawn("eob_ruins_illusion_wall_rune_fake", 9,23,3, "eob_ruins_illusion_wall_rune_fake_21")
 spawn("temple_pillar", 9,23,2, "temple_pillar_1")
 spawn("temple_pillar", 9,24,2, "temple_pillar_2")
-spawn("eob_ruins_illusion_wall_rune_fake", 7,30,3, "eob_ruins_illusion_wall_rune_fake_19")
-spawn("eob_ruins_illusion_wall_rune_fake", 7,30,1, "eob_ruins_illusion_wall_rune_fake_22")
-spawn("eob_ruins_illusion_wall_rune_fake", 1,18,0, "eob_ruins_illusion_wall_rune_fake_25")
-spawn("eob_ruins_illusion_wall_rune_fake", 1,18,2, "eob_ruins_illusion_wall_rune_fake_23")
+spawn("eob_ruins_illusion_wall_rune_fake", 6,30,1, "eob_ruins_illusion_wall_rune_fake_19")
+spawn("eob_ruins_illusion_wall_rune_fake", 8,30,3, "eob_ruins_illusion_wall_rune_fake_22")
+spawn("eob_ruins_illusion_wall_rune_fake", 1,17,2, "eob_ruins_illusion_wall_rune_fake_25")
+spawn("eob_ruins_illusion_wall_rune_fake", 1,19,0, "eob_ruins_illusion_wall_rune_fake_23")
 spawn("eob_blocker", 1,18,3, "eob_blocker_7")
-spawn("eob_ruins_illusion_wall_rune_fake", 3,10,3, "eob_ruins_illusion_wall_rune_fake_27")
-spawn("eob_ruins_illusion_wall_rune_fake", 3,10,1, "eob_ruins_illusion_wall_rune_fake_24")
+spawn("eob_ruins_illusion_wall_rune_fake", 2,10,1, "eob_ruins_illusion_wall_rune_fake_27")
+spawn("eob_ruins_illusion_wall_rune_fake", 4,10,3, "eob_ruins_illusion_wall_rune_fake_24")
 spawn("eob_blocker", 3,10,2, "eob_blocker_22")
 spawn("eob_ruins_illusion_wall_rune_fake", 10,6,0, "eob_ruins_illusion_wall_rune_fake_29")
 spawn("eob_ruins_illusion_wall_rune_fake", 10,6,2, "eob_ruins_illusion_wall_rune_fake_26")
 spawn("eob_blocker", 10,6,3, "eob_blocker_25")
+spawn("eob_dwarven_wall_cube_invisible", 3,15,2, "eob_dwarven_wall_cube_invisible_1")
+spawn("eob_ruins_illusion_wall_rune_fake", 4,21,1, "eob_ruins_illusion_wall_rune_fake_31")
+spawn("eob_ruins_illusion_wall_rune_fake", 6,21,3, "eob_ruins_illusion_wall_rune_fake_28")
+spawn("eob_blocker", 5,21,2, "eob_blocker_26")
+spawn("eob_ruins_illusion_wall_rune_fake", 8,23,1, "eob_ruins_illusion_wall_rune_fake_32")
+spawn("eob_ruins_illusion_wall_rune_fake", 20,4,1, "eob_ruins_illusion_wall_rune_fake_34")
+spawn("eob_ruins_illusion_wall_rune_fake", 22,4,3, "eob_ruins_illusion_wall_rune_fake_30")
+spawn("eob_blocker", 21,4,1, "eob_blocker_27")
+spawn("eob_ruins_illusion_wall_rune_fake", 23,1,2, "eob_ruins_illusion_wall_rune_fake_36")
+spawn("eob_ruins_illusion_wall_rune_fake", 23,3,0, "eob_ruins_illusion_wall_rune_fake_33")
+spawn("eob_blocker", 23,2,2, "eob_blocker_28")
+spawn("secret", 6,29,1, "secret_14")
 
 --- level 6 ---
 
@@ -7846,8 +7971,7 @@ spawn("eob_ruins_ornate_lock", 27,6,3, "eob_ruins_ornate_lock_3")
 	:setOpenedBy("eob_key_u_3")
 	:addConnector("activate", "eob_ruins_door_stone_one_7", "open")
 spawn("eob_ruins_door_stone_one", 27,7,3, "eob_ruins_door_stone_one_7")
-	:addPullChain()
-spawn("eob_ruins_door_stone", 5,9,2, "eob_ruins_door_stone_51")
+spawn("eob_ruins_door_stone", 5,10,0, "eob_ruins_door_stone_51")
 	:addPullChain()
 spawn("eob_ruins_dart_firing_pad", 4,10,3, "eob_ruins_dart_firing_pad_1")
 spawn("eob_ruins_dart_firing_pad", 6,10,1, "eob_ruins_dart_firing_pad_2")
@@ -7878,7 +8002,6 @@ spawn("eob_ruins_dart_firing_pad", 30,13,1, "eob_ruins_dart_firing_pad_8")
 spawn("eob_ruins_wall_text", 14,15,2, "eob_ruins_wall_text_19")
 	:setWallText("Nest")
 spawn("eob_ruins_door_stone_one", 29,15,0, "eob_ruins_door_stone_one_8")
-	:addPullChain()
 spawn("eob_ruins_door_stone", 13,16,0, "eob_ruins_door_stone_54")
 	:addPullChain()
 spawn("eob_ruins_ornate_lock", 4,17,2, "eob_ruins_ornate_lock_4")
@@ -7889,10 +8012,8 @@ spawn("eob_ruins_wall_text", 7,19,2, "eob_ruins_wall_text_20")
 spawn("eob_ruins_stairs_down", 1,19,0, "eob_ruins_stairs_down_7")
 spawn("eob_ruins_stairs_up", 16,21,0, "eob_ruins_stairs_up_7")
 spawn("eob_ruins_door_stone_one", 18,22,1, "eob_ruins_door_stone_one_9")
-spawn("eob_ruins_door_stone_one", 22,22,2, "eob_ruins_door_stone_one_10")
-	:addPullChain()
-spawn("eob_ruins_door_stone_one", 27,22,2, "eob_ruins_door_stone_one_11")
-	:addPullChain()
+spawn("eob_ruins_door_stone_one", 22,21,2, "eob_ruins_door_stone_one_10")
+spawn("eob_ruins_door_stone_one", 27,21,2, "eob_ruins_door_stone_one_11")
 spawn("eob_ruins_dart_firing_pad", 2,23,3, "eob_ruins_dart_firing_pad_9")
 spawn("eob_ruins_pressure_plate", 2,23,3, "eob_ruins_pressure_plate_10")
 	:setTriggeredByParty(true)
@@ -7905,7 +8026,6 @@ spawn("eob_ruins_pressure_plate", 7,23,2, "eob_ruins_pressure_plate_11")
 	:setTriggeredByItem(false)
 	:addConnector("activate", "script_entity_49", "shootDarts1")
 spawn("eob_ruins_door_stone_one", 19,23,2, "eob_ruins_door_stone_one_12")
-	:addPullChain()
 spawn("eob_ruins_ceiling_shaft", 20,24,0, "eob_ruins_ceiling_shaft_11")
 spawn("eob_ruins_ceiling_shaft", 22,24,2, "eob_ruins_ceiling_shaft_12")
 spawn("eob_ruins_ceiling_shaft", 23,24,2, "eob_ruins_ceiling_shaft_13")
@@ -8003,6 +8123,7 @@ spawn("eob_kenku1_2", 30,4,0, "eob_kenku1_2_5")
 spawn("eob_kenku1_2", 21,5,0, "eob_kenku1_2_6")
 spawn("eob_kenku1_1", 13,5,0, "eob_kenku1_1_4")
 spawn("eob_kenku2_1_group", 13,17,0, "eob_kenku2_1_group_1")
+	:setAIState("guard")
 spawn("eob_kenku1_1", 19,5,0, "eob_kenku1_1_5")
 spawn("eob_kenku1_1", 16,8,0, "eob_kenku1_1_6")
 spawn("eob_kenku1_2", 16,13,0, "eob_kenku1_2_7")
@@ -8107,16 +8228,6 @@ spawn("eob_teleporter", 8,12,2, "eob_teleporter_34")
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
 	:setTeleportTarget(7,6,2,6)
-	:setChangeFacing(false)
-	:setInvisible(true)
-	:setSilent(true)
-	:setHideLight(true)
-	:setScreenFlash(false)
-spawn("eob_teleporter", 2,12,2, "eob_teleporter_35")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
-	:setTeleportTarget(1,6,2,6)
 	:setChangeFacing(false)
 	:setInvisible(true)
 	:setSilent(true)
@@ -8361,48 +8472,25 @@ function destroyWallForDart(alcove, item)\
 \9end\9\9\
 end\
 ")
-spawn("eob_dwarven_wall_cube_invisible", 9,27,1, "eob_dwarven_wall_cube_17")
-spawn("eob_dwarven_wall_cube_invisible", 9,26,2, "eob_dwarven_wall_cube_invisible3")
-spawn("eob_dwarven_wall_cube_invisible", 10,26,2, "eob_dwarven_wall_cube_invisible4")
-spawn("eob_dwarven_wall_cube_invisible", 11,26,3, "eob_dwarven_wall_cube_invisible5")
-spawn("eob_dwarven_wall_cube_invisible", 11,25,3, "eob_dwarven_wall_cube_invisible6")
-spawn("eob_dwarven_wall_cube_invisible", 11,24,3, "eob_dwarven_wall_cube_invisible7")
-spawn("eob_dwarven_wall_cube_invisible", 11,23,2, "eob_dwarven_wall_cube_invisible8")
-spawn("eob_dwarven_wall_cube_invisible", 11,22,2, "eob_dwarven_wall_cube_invisible9")
-spawn("eob_dwarven_wall_cube_invisible", 12,22,3, "eob_dwarven_wall_cube_30")
-spawn("eob_dwarven_wall_cube_invisible", 11,27,2, "eob_dwarven_wall_cube_31")
-spawn("eob_dwarven_wall_cube_invisible", 11,28,2, "eob_dwarven_wall_cube_32")
-spawn("eob_dwarven_wall_cube_invisible", 10,28,2, "eob_dwarven_wall_cube_33")
-spawn("eob_dwarven_wall_cube_invisible", 10,29,1, "eob_dwarven_wall_cube_34")
-spawn("eob_dwarven_wall_cube_invisible", 11,29,2, "eob_dwarven_wall_cube_35")
-spawn("eob_dwarven_wall_cube_invisible", 11,30,3, "eob_dwarven_wall_cube_36")
-spawn("eob_dwarven_wall_cube_invisible", 10,30,1, "eob_dwarven_wall_cube_37")
-spawn("eob_dwarven_wall_cube_invisible", 9,30,1, "eob_dwarven_wall_cube_38")
 spawn("eob_ruins_wall_text", 8,29,2, "eob_ruins_wall_text_23")
 	:setWallText("Dart rack.")
-spawn("eob_dwarven_wall_cube_invisible", 6,29,1, "eob_dwarven_wall_cube_14")
 spawn("eob_ruins_alcove", 6,29,1, "eob_ruins_alcove_12")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
-spawn("eob_dwarven_wall_cube_invisible", 7,29,1, "eob_dwarven_wall_cube_invisible0")
 spawn("eob_ruins_alcove", 7,29,1, "eob_ruins_alcove_14")
 	:addItem(spawn("eob_key_dwarven_u"))
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
-spawn("eob_dwarven_wall_cube_invisible", 8,29,1, "eob_dwarven_wall_cube_19")
 spawn("eob_ruins_alcove", 8,29,1, "eob_ruins_alcove_13")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
-spawn("eob_dwarven_wall_cube_invisible", 9,29,1, "eob_dwarven_wall_cube_invisible1")
 spawn("eob_ruins_alcove", 9,29,1, "eob_ruins_alcove_11")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
 spawn("eob_ruins_alcove", 9,29,2, "eob_ruins_alcove_15")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
-spawn("eob_dwarven_wall_cube_invisible", 10,27,1, "eob_dwarven_wall_cube_18")
 spawn("eob_ruins_alcove", 10,27,0, "eob_ruins_alcove_18")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
 spawn("eob_ruins_alcove", 10,27,2, "eob_ruins_alcove_16")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
 spawn("eob_ruins_alcove", 10,27,1, "eob_ruins_alcove_19")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
-spawn("eob_dwarven_wall_cube_invisible", 9,28,1, "eob_dwarven_wall_cube_invisible2")
 spawn("eob_ruins_alcove", 9,28,0, "eob_ruins_alcove_21")
 	:addConnector("any", "script_entity_46", "destroyWallForDart")
 spawn("eob_ruins_alcove", 9,28,2, "eob_ruins_alcove_9")
@@ -8586,7 +8674,7 @@ spawn("eob_ruins_alcove", 11,27,0, "eob_ruins_alcove_25")
 spawn("counter", 8,25,2, "counter_7")
 	:setInitialValue(1)
 	:setValue(1)
-spawn("script_entity", 4,9,2, "script_entity_50")
+spawn("script_entity", 5,11,2, "script_entity_50")
 	:setSource("-- shoot darts once (plate is on activate once)\
 -- as per original south most wont shoot any darts\
 --\9shootProjectile(projName,level,x,y,dir,speed,gravity,velocityUp,offsetX,offsetY,offsetZ,attackPower,ignoreEntity,fragile,championOrdinal)\
@@ -8618,9 +8706,6 @@ spawn("eob_ruins_button", 7,6,3, "eob_ruins_button_9")
 spawn("eob_ruins_button", 1,6,1, "eob_ruins_button_10")
 	:setActivateOnce(true)
 	:addConnector("toggle", "eob_ruins_door_stone_one_5", "open")
-spawn("eob_ruins_pit", 2,12,2, "eob_ruins_pit_4")
-	:addTrapDoor()
-	:setPitState("open")
 spawn("eob_ruins_pit", 8,12,2, "eob_ruins_pit_7")
 	:addTrapDoor()
 	:setPitState("open")
@@ -8757,27 +8842,59 @@ function specialQuest6()\
 \9then \
 \9\9counter_special_quest_6:setValue(1)\
 \9\9secret_special_quest_6:activate()\
-\9\9eob_dwarven_wall_cube_sp6_1:destroy()\
-\9\9eob_dwarven_wall_cube_sp6_2:destroy()\
-\9\9eob_dwarven_wall_cube_sp6_3:destroy()\
-\9\9eob_dwarven_wall_cube_sp6_4:destroy()\
-\9\9eob_dwarven_wall_cube_sp6_5:destroy()\
+\9\9eob_ruins_illusion_wall_sp6_1:destroy()\
+\9\9eob_ruins_illusion_wall_sp6_2:destroy()\
+\9\9eob_ruins_illusion_wall_sp6_3:destroy()\
+\9\9eob_ruins_illusion_wall_sp6_4:destroy()\
+\9\9eob_ruins_illusion_wall_sp6_5:destroy()\
 \9end\
 \
 \9end\9\9\
 end\
 ")
 spawn("counter", 15,16,1, "counter_special_quest_6")
-spawn("script_entity", 2,6,1, "script_entity_53")
-	:setSource("--damageTile(level, x, y, direction, elevation, flags, damageType, power)\
+spawn("script_entity", 4,7,1, "script_entity_pit_falls")
+	:setSource("-- fall the pits simulation\
+-- damageTile(level, x, y, direction, elevation, flags, damageType, power)\
 \
--- add damange on fall?")
+\
+function fallPit(plate)\
+\9\
+\9--dont trigger for items/monsters\
+\9if\9\9party.level == plate.level \9\
+\9\9and party.x == plate.x \
+\9\9and party.y == plate.y\
+\9then \
+\9\
+\9-- cant figure out how to make the screen go dark \
+\9-- to simulate the falling \
+\9\
+\9playSound(\"party_fall\")\
+\9spawn(\"timer\",plate.level, plate.x, plate.y, plate.facing)\
+\9:addConnector(\"activate\",\"script_entity_pit_falls\",\"landPit\") \
+\9:setTimerInterval(0.1)\9\
+\9:activate()\9\9\
+\9\
+\9end\
+end\
+\
+\
+function landPit(timer)\
+\9timer:destroy()\
+\
+\9-- we do damage to both squares no matter which pit you fell into\
+\9damageTile(6,7,6,0, 129, \"physical\", 30)\
+\9damageTile(6,1,6,0, 129, \"physical\", 30)\
+\9playSound(\"party_land\")\
+\9party:shakeCamera(0.3,0.3)\
+\
+end")
 spawn("pressure_plate_hidden", 13,16,1, "pressure_plate_hidden_95")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
 	:setSilent(true)
-	:addConnector("activate", "script_entity_52", "specialQuest6")
+	:addConnector("any", "script_entity_52", "specialQuest6")
 spawn("eob_egg_10_u", 29,8,2, "eob_egg_10_u_3")
 spawn("eob_egg_10_u", 21,5,2, "eob_egg_10_u_4")
 spawn("eob_egg_10_u", 19,5,2, "eob_egg_10_u_5")
@@ -8792,30 +8909,7 @@ spawn("pressure_plate_hidden", 13,17,1, "pressure_plate_hidden_97")
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
 	:setSilent(true)
-	:addConnector("activate", "script_entity_52", "specialQuest6")
-spawn("pressure_plate_hidden", 13,15,1, "pressure_plate_hidden_98")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(false)
-	:setSilent(true)
-	:addConnector("activate", "script_entity_52", "specialQuest6")
-spawn("pressure_plate_hidden", 13,14,1, "pressure_plate_hidden_99")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(false)
-	:setSilent(true)
-	:addConnector("activate", "script_entity_52", "specialQuest6")
-spawn("pressure_plate_hidden", 13,13,1, "pressure_plate_hidden_100")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(false)
-	:setSilent(true)
-	:addConnector("activate", "script_entity_52", "specialQuest6")
-spawn("eob_dwarven_wall_cube", 12,17,3, "eob_dwarven_wall_cube_sp6_1")
-spawn("eob_dwarven_wall_cube", 12,18,0, "eob_dwarven_wall_cube_sp6_2")
-spawn("eob_dwarven_wall_cube", 13,18,2, "eob_dwarven_wall_cube_sp6_3")
-spawn("eob_dwarven_wall_cube", 14,18,0, "eob_dwarven_wall_cube_sp6_4")
-spawn("eob_dwarven_wall_cube", 14,17,1, "eob_dwarven_wall_cube_sp6_5")
+	:addConnector("any", "script_entity_52", "specialQuest6")
 spawn("eob_teleporter", 5,6,2, "eob_teleporter_36")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -8826,11 +8920,11 @@ spawn("eob_teleporter", 4,0,2, "eob_teleporter_37")
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
 	:setTeleportTarget(5,7,2,6)
+	:deactivate()
 spawn("eob_ruins_button", 19,21,3, "eob_ruins_button_11")
 	:setActivateOnce(true)
 	:addConnector("toggle", "eob_ruins_door_stone_one_9", "open")
 spawn("secret", 9,25,1, "secret_5")
-spawn("secret", 12,22,2, "secret_10")
 spawn("secret", 15,10,2, "secret_11")
 spawn("goromorg", 27,15,3, "goromorg_darkmage")
 	:setAIState("guard")
@@ -8973,11 +9067,134 @@ actions = {\
 \9\
 \
 ")
-spawn("script_entity", 25,15,1, "script_entity_darkmage_clear")
-	:setSource("")
 spawn("eob_ruins_alcove", 12,10,1, "eob_ruins_alcove_portal_6_ring")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_ring", 12,10,1, "eob_stone_ring_1")
+spawn("pressure_plate_hidden", 8,12,1, "pressure_plate_hidden_117")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_pit_falls", "fallPit")
+spawn("pressure_plate_hidden", 2,12,1, "pressure_plate_hidden_118")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_pit_falls", "fallPit")
+spawn("eob_teleporter", 2,12,2, "eob_teleporter_39")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(1,6,2,6)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_ruins_pit", 2,12,0, "eob_ruins_pit_4")
+spawn("eob_ruins_secret_button_tiny", 4,4,2, "eob_ruins_secret_button_tiny_9")
+	:addConnector("toggle", "eob_teleporter_37", "activate")
+	:addConnector("toggle", "timer_5", "activate")
+spawn("timer", 3,5,2, "timer_5")
+	:setTimerInterval(2.1)
+	:addConnector("activate", "eob_teleporter_37", "deactivate")
+spawn("eob_dwarven_wall_cube_invisible", 6,29,2, "eob_dwarven_wall_cube_invisible_3")
+spawn("eob_dwarven_wall_cube_invisible", 7,29,2, "eob_dwarven_wall_cube_invisible_4")
+spawn("eob_dwarven_wall_cube_invisible", 8,29,3, "eob_dwarven_wall_cube_invisible_5")
+spawn("eob_dwarven_wall_cube_invisible", 9,29,2, "eob_dwarven_wall_cube_invisible_6")
+spawn("eob_dwarven_wall_cube_invisible", 9,30,2, "eob_dwarven_wall_cube_invisible_7")
+spawn("eob_dwarven_wall_cube_invisible", 10,30,3, "eob_dwarven_wall_cube_invisible_8")
+spawn("eob_dwarven_wall_cube_invisible", 11,30,3, "eob_dwarven_wall_cube_invisible_9")
+spawn("eob_dwarven_wall_cube_invisible", 11,29,2, "eob_dwarven_wall_cube_invisible_10")
+spawn("eob_dwarven_wall_cube_invisible", 10,29,1, "eob_dwarven_wall_cube_invisible_11")
+spawn("eob_dwarven_wall_cube_invisible", 9,28,2, "eob_dwarven_wall_cube_invisible_12")
+spawn("eob_dwarven_wall_cube_invisible", 10,28,3, "eob_dwarven_wall_cube_invisible_13")
+spawn("eob_dwarven_wall_cube_invisible", 11,28,3, "eob_dwarven_wall_cube_invisible_14")
+spawn("eob_dwarven_wall_cube_invisible", 9,27,2, "eob_dwarven_wall_cube_invisible_15")
+spawn("eob_dwarven_wall_cube_invisible", 10,27,3, "eob_dwarven_wall_cube_invisible_16")
+spawn("eob_dwarven_wall_cube_invisible", 11,27,3, "eob_dwarven_wall_cube_invisible_17")
+spawn("eob_dwarven_wall_cube_invisible", 9,26,1, "eob_dwarven_wall_cube_invisible_18")
+spawn("eob_dwarven_wall_cube_invisible", 10,26,3, "eob_dwarven_wall_cube_invisible_19")
+spawn("eob_dwarven_wall_cube_invisible", 11,26,3, "eob_dwarven_wall_cube_invisible_20")
+spawn("eob_dwarven_wall_cube_invisible", 11,25,3, "eob_dwarven_wall_cube_invisible_21")
+spawn("eob_dwarven_wall_cube_invisible", 11,24,3, "eob_dwarven_wall_cube_invisible_22")
+spawn("eob_dwarven_wall_cube_invisible", 11,23,2, "eob_dwarven_wall_cube_invisible_23")
+spawn("eob_dwarven_wall_cube_invisible", 11,22,3, "eob_dwarven_wall_cube_invisible_24")
+spawn("eob_dwarven_wall_cube_invisible", 12,22,2, "eob_dwarven_wall_cube_invisible_25")
+spawn("timer", 14,12,3, "timer_kenku_spawner")
+	:setTimerInterval(60)
+	:activate()
+	:addConnector("activate", "script_entity_kenku_hatchery", "spawnKenku")
+spawn("script_entity", 15,12,3, "script_entity_kenku_hatchery")
+	:setSource("-- kenku respawner\
+-- in original game they are spawning in pretty big numbers\
+-- and great source of food and experience\
+-- mostly they concentrate in central room and 29,13 room \
+-- especialy if you close the entrance doors to those areas\
+\
+\
+function spawnKenku()\
+\
+\9local kenkucount = 0\
+\9for s in allEntities(6)\
+\9do\
+\9\9if string.find(s.name,\"eob_kenku\") ~= nil \
+\9\9then kenkucount = kenkucount + 1 \
+\9\9end\
+\9end\
+\
+\9-- keep spawning if there is less then n kenku\
+\9if kenkucount < 10\
+\9then\
+\
+\9\9--multikeys didnt work \
+\9\9local lair = {}\
+\9\9lair[\"1x\"] = 24\
+\9\9lair[\"1y\"] = 17\
+\
+\9\9lair[\"2x\"] = 11\
+\9\9lair[\"2y\"] = 20\
+\9\9\
+\9\9lair[\"3x\"] = 16\
+\9\9lair[\"3y\"] = 18\
+\9\9\
+\9\9lair[\"4x\"] = 29\
+\9\9lair[\"4y\"] =  1\
+\9\9\9\
+\9\9local kenku = {}\
+\9\9kenku[1] = \"eob_kenku\"\
+\9\9kenku[2] = \"eob_kenku1_1\"\
+\9\9kenku[3] = \"eob_kenku1_2\"\
+\9\9kenku[4] = \"eob_kenku2_1\"\
+\9\9kenku[5] = \"eob_kenku2_1_group\"\
+\
+\9\9local l=math.random(1,4)\9\9\9\9\
+\9\9local k=math.random(1,5)\
+\
+\9\9spawn(kenku[k],6,lair[l..\"x\"],lair[l..\"y\"],0)\
+\9\9--hudPrint(\"spawning \" .. kenkucount .. \"th kenku \" .. kenku[k] .. \" at lair#\" .. l .. \" x:\" .. lair[l .. \"x\"] .. \" y:\" .. lair[l .. \"y\"] .. \"\")\
+\9else\9\9\
+\9\9--hudPrint(\"kenku count: \" .. kenkucount .. \" stopping hatchery\")\
+\9end\
+\
+\
+end")
+spawn("secret", 12,22,0, "secret_10")
+spawn("eob_ruins_button", 27,22,3, "eob_ruins_button_13")
+	:addConnector("toggle", "eob_ruins_door_stone_one_11", "toggle")
+spawn("eob_ruins_button", 22,22,1, "eob_ruins_button_14")
+	:addConnector("toggle", "eob_ruins_door_stone_one_10", "toggle")
+spawn("eob_ruins_button", 30,14,2, "eob_ruins_button_15")
+	:addConnector("toggle", "eob_ruins_door_stone_one_8", "toggle")
+spawn("eob_dwarven_wall_cube", 12,17,2, "eob_ruins_illusion_wall_sp6_1")
+spawn("eob_dwarven_wall_cube", 12,18,0, "eob_ruins_illusion_wall_sp6_2")
+spawn("eob_dwarven_wall_cube", 13,18,1, "eob_ruins_illusion_wall_sp6_3")
+spawn("eob_dwarven_wall_cube", 14,18,0, "eob_ruins_illusion_wall_sp6_4")
+spawn("eob_dwarven_wall_cube", 14,17,2, "eob_ruins_illusion_wall_sp6_5")
+spawn("eob_ruins_button", 18,24,0, "eob_ruins_button_16")
+	:addConnector("toggle", "eob_ruins_door_stone_one_12", "toggle")
+spawn("starting_location", 4,3,1, "starting_location_1")
 
 --- level 7 ---
 
@@ -9048,6 +9265,7 @@ spawn("eob_drow_pressure_plate", 6,9,2, "eob_drow_pressure_plate_4")
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
 spawn("eob_drow_lock_spider", 12,9,1, "eob_drow_lock_spider_1")
+	:setOpenedBy("")
 spawn("eob_drow_pit", 26,9,2, "eob_drow_pit_2")
 spawn("eob_drow_door", 29,9,3, "eob_drow_door_5")
 spawn("eob_drow_door", 13,10,3, "eob_drow_door_6")

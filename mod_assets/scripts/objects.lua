@@ -37,7 +37,7 @@ cloneObject{
 	baseObject = "eob_sewers_door_metal",
 }
 
--- carlos half open only but forceable door
+-- carlos forceable door for lvl 5 (opposite entrance to dwarf camp)
 cloneObject{
 	name = "eob_ruins_door_metal_force",
 	baseObject = "temple_door_metal",
@@ -167,7 +167,9 @@ defineObject{
 	-- this object is used in party hooks --
 	name = "eob_ruins_illusion_wall_rune_fake",
 	class = "Decoration",
-	model = "assets/models/env/temple_secret_door.fbx",
+-- carlos, lets use the recolored dwarven walls for now
+--	model = "assets/models/env/temple_secret_door.fbx",
+	model = "mod_assets/models/env/eob_dwarven_wall.fbx",
 	placement = "wall",
 	editorIcon = 92,
 }
@@ -175,7 +177,9 @@ defineObject{
 	-- this object is used in party hooks --
 	name = "eob_ruins_illusion_wall_fake",
 	class = "Decoration",
-	model = "assets/models/env/temple_secret_door.fbx",
+-- carlos, lets use the recolored dwarven walls for now
+--	model = "assets/models/env/temple_secret_door.fbx",
+	model = "mod_assets/models/env/eob_dwarven_wall.fbx",
 	placement = "wall",
 	editorIcon = 92,
 }
@@ -405,7 +409,7 @@ cloneObject{
 
 
 defineObject{
-	-- atempt on portal
+	-- carlos - atempt on portal
 	name = "eob_ruins_alcove_portal",
 	class = "Alcove",
 --	baseObject = "temple_alcove",
@@ -546,6 +550,19 @@ cloneObject{
 	model = "mod_assets/models/env/eob_button_blue.fbx",
 }
 
+
+defineObject{
+	name = "eob_ruins_secret_button_tiny",
+	class = "Button",
+-- need to recolor this to match the dwarven wall set 
+--- use settings: hue 229, saturation 21 in colorize... command in gimp
+	model = "assets/models/env/temple_secret_button_tiny.fbx",
+	pressAnim = "assets/animations/env/temple_secret_button_tiny_press.fbx",
+	replacesWall = true,
+	placement = "wall",
+	editorIcon = 12,
+}
+
 -- ======================== --
 -- ====   Blockages   ===== --
 -- ======================== --
@@ -672,16 +689,18 @@ defineObject{
 	class = "Blockage",
 	model = "mod_assets/models/env/eob_dwarven_wall_cube.fbx",
 	placement = "floor",
+	repelProjectiles = true,
 	editorIcon = 0,
 }
 
--- wall "cube" to be used with alcoves (the above cube doesn't like alcoves)
--- also must not be visible from any side except from those with alcoves (cause it looks like floor :)
+-- carlos - wall "cube" to be used with alcoves on lvl 6 south mid seciton (the above cube doesn't match with alcoves)
+-- also it is not visible (cause it looks exactly like floor :)
 defineObject{
 	name = "eob_dwarven_wall_cube_invisible",
 	class = "Blockage",
 	model = "mod_assets/models/env/eob_dwarven_floor.fbx",
 	placement = "floor",
+	repelProjectiles = true,
 	replacesFloor = true,
 	editorIcon = 0,
 }
@@ -723,6 +742,18 @@ defineObject{
 cloneObject {
 	name = "eob_ruins_net",
 	baseObject = "giant_spider_web",
+	health = 25,
+	-- spider nets are higly vulnerable to fire (burn) and cold (freeze and break)
+	-- and immune to shock and poison (guess acid would work well too, but this is poison)
+	-- physical is only partialy (half) effective against sticky spider webs
+-- not working so far
+--[[	onDamage = function  (self,damage,damagetype) 		
+			if damagetype=="fire" or damagetype=="cold"		then self:damage=(damage * 2)
+			elseif damagetype=="poison" or damagetype=="shock" 	then self:damage=0
+			elseif damagetype=="physical" 				then self:damage=(damage / 2)
+			end
+		end,
+]]
 }
 
 cloneObject {

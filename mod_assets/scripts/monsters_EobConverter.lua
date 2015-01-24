@@ -42,6 +42,12 @@ cloneObject {
 cloneObject {
 	name = "eob_dwarf",
 	baseObject = "skeleton_warrior",
+-- if you attack any of the dwarves in game
+-- then remove the dwarven camp blockers and dwarven dialogs
+   onDamage = function(self, damage, damageType)
+		--counter_dwarf_camp_attacked:increment()
+		script_entity_dwarven_camp_attacked.attackDwarves()
+	     end
 }
 
 cloneObject {
@@ -278,47 +284,13 @@ cloneObject {
 	baseObject = "eob_dwarf",
 	lootDrop = {50, "eob_dwarven_helmet_u", 100, "eob_rations_u"},
 
--- if you attack any of the dwarves in game
--- then remove the dwarven camp blockers and dwarven dialogs
-   onDamage = function(self, damage, damageType)
-		for e  in allEntities(5)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)
-		  then e:destroy()
-		  elseif string.find(e.name,"eob_dwarf") ~= nil
-		     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)
-		  then e:setAIState("default")
-		  end
-		end	
-		counter_dwarf_camp_attacked:increment()
-		--gw_event_dwarven_camp:destroy()
-		--gw_event_dwarven_camp_cleric:destroy()
-	     end
+
 }
 
 cloneObject {
 	name = "eob_dwarf2_1",
 	baseObject = "eob_dwarf",
 	lootDrop = {50, "eob_dwarven_helmet_u", 100, "eob_rations_u"},
--- if you attack any of the dwarves in game
--- then remove the dwarven camp blockers and dwarven dialogs
-   onDamage = function(self, damage, damageType)
-		for e  in allEntities(5)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)
-		  then e:destroy()
-		  elseif string.find(e.name,"eob_dwarf") ~= nil
-		     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)
-		  then e:setAIState("default")
-		  end
-		end	
-		counter_dwarf_camp_attacked:increment()
-		--gw_event_dwarven_camp:destroy()
-		--gw_event_dwarven_camp_cleric:destroy()
-	     end,
-
 }
 
 defineObject {
@@ -326,48 +298,12 @@ defineObject {
 	class = "MonsterGroup",
 	monsterType = "eob_dwarf2_1",
 	count = 2,
-
--- if you attack any of the dwarves in game
--- then remove the dwarven camp blockers and dwarven dialogs
-   onDamage = function(self, damage, damageType)
-		for e  in allEntities(5)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)
-		  then e:destroy()
-		  elseif string.find(e.name,"eob_dwarf") ~= nil
-		     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)
-		  then e:setAIState("default")
-		  end
-		end	
-		counter_dwarf_camp_attacked:increment()
-		--gw_event_dwarven_camp:destroy()
-		--gw_event_dwarven_camp_cleric:destroy()
-	     end,
 }
 
 cloneObject {
 	name = "eob_dwarf1_2",
 	baseObject = "eob_dwarf",
 	lootDrop = {50, "eob_axe_u", 100, "eob_rations_u"},
-
--- if you attack any of the dwarves in game
--- then remove the dwarven camp blockers and dwarven dialogs
-   onDamage = function(self, damage, damageType)
-		for e  in allEntities(5)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)
-		  then e:destroy()
-		  elseif string.find(e.name,"eob_dwarf") ~= nil
-		     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)
-		  then e:setAIState("default")
-		  end
-		end	
-		counter_dwarf_camp_attacked:increment()
-		--gw_event_dwarven_camp:destroy()
-		--gw_event_dwarven_camp_cleric:destroy()
-	     end,
 }
 
 cloneObject {
@@ -391,23 +327,6 @@ cloneObject {
 		end
 		eob_dwarf4_1_c:increment()
 	end,
--- if you attack any of the dwarves in game
--- then remove the dwarven camp blockers and dwarven dialogs
-   onDamage = function(self, damage, damageType)
-		for e  in allEntities(5)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)
-		  then e:destroy()
-		  elseif string.find(e.name,"eob_dwarf") ~= nil
-		     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)
-		  then e:setAIState("default")
-		  end
-		end	
-		counter_dwarf_camp_attacked:increment()
-		--gw_event_dwarven_camp:destroy()
-		--gw_event_dwarven_camp_cleric:destroy()
-	     end,
 }
 
 defineObject {
@@ -415,23 +334,6 @@ defineObject {
 	class = "MonsterGroup",
 	monsterType = "eob_dwarf4_1",
 	count = 4,
--- if you attack any of the dwarves in game
--- then remove the dwarven camp blockers and dwarven dialogs
-   onDamage = function(self, damage, damageType)
-		for e  in allEntities(5)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 5 and e.x >= 15 and e.x <= 19 and e.y >= 7 and e.y <= 14)
-		  then e:destroy()
-		  elseif string.find(e.name,"eob_dwarf") ~= nil
-		     and (e.level == 5 and e.x >= 14 and e.x <= 19 and e.y >= 6 and e.y <= 14)
-		  then e:setAIState("default")
-		  end
-		end	
-		counter_dwarf_camp_attacked:increment()
-		--gw_event_dwarven_camp:destroy()
-		--gw_event_dwarven_camp_cleric:destroy()
-	     end,
 }
 
 ----------------

@@ -398,6 +398,7 @@ cloneObject {
 	name = "eob_dart",
 	baseObject = "shuriken",
 	uiName = "Dart",
+	sharpProjectile = false,
 }
 
 cloneObject {
@@ -1776,36 +1777,42 @@ cloneObject {
 	name = "eob_egg_20_u",  -- Kenku Egg
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
 	name = "eob_egg_20",
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
 	name = "eob_egg_30_u",  -- Kenku Egg
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
 	name = "eob_egg_30",
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
 	name = "eob_egg_40_u",  -- Kenku Egg
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
 	name = "eob_egg_40",
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {
@@ -1819,6 +1826,7 @@ cloneObject {
 	name = "eob_egg_10",
 	baseObject = "slime_bell",
 	uiName = "Kenku Egg",
+	stackable = false,
 }
 
 cloneObject {

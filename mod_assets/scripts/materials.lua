@@ -424,3 +424,19 @@ defineMaterial{
 	glossiness = 30,
 	depthBias = 0,
 }
+
+
+defineMaterial{
+    name = "eob_dwarven_wall_portal",
+    -- original material: temple_wall
+--    diffuseMap = "mod_assets/textures/env/eob_dwarven_wall_dif.tga",
+--    specularMap = "mod_assets/textures/env/eob_dwarven_wall_spec.tga",
+    normalMap = "mod_assets/textures/env/eob_dwarven_wall_portal_normal.tga",
+    doubleSided = false,
+    lighting = true,
+    alphaTest = false,
+    blendMode = "Opaque",
+    textureAddressMode = "Wrap",
+    glossiness = 30,
+    depthBias = 0,
+}
