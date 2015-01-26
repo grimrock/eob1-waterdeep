@@ -40,11 +40,11 @@ function new(s_text, s_buttonText, s_npc, s_id)
 		
 			-- Create a new dialog if none exists with that id
 			local s_newDialog = { id = s_id,
-								  text = s_text,
-								  buttons = {s_buttonText},
-								  npc = s_npc,
-								  callBack = nil,
-								}
+						text = s_text,
+						buttons = {s_buttonText},
+						npc = s_npc,
+						callBack = nil,
+						}
 			table.insert(tDialog.dialogs, s_newDialog)
 		end
 		

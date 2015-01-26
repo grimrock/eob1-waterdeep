@@ -107,13 +107,13 @@ cloneObject {
 }
 
 cloneObject {
-	name = "eob_holy_symbol_u",  -- Cleric Holy symbol
+	name = "eob_holy_symbol_cleric_u",  -- Cleric Holy symbol
 	baseObject = "golden_chalice",
 	uiName = "Cleric Holy symbol",
 }
 
 cloneObject {
-	name = "eob_holy_symbol",
+	name = "eob_holy_symbol_cleric",
 	baseObject = "golden_chalice",
 	uiName = "Cleric Holy symbol",
 }
@@ -315,13 +315,13 @@ cloneObject {
 }
 
 cloneObject {
-	name = "eob_holy_symbol_u",  -- Paladin Holy Symbol
+	name = "eob_holy_symbol_paladin_u",  -- Paladin Holy Symbol
 	baseObject = "golden_chalice",
 	uiName = "Paladin Holy Symbol",
 }
 
 cloneObject {
-	name = "eob_holy_symbol",
+	name = "eob_holy_symbol_paladin",
 	baseObject = "golden_chalice",
 	uiName = "Paladin Holy Symbol",
 }
@@ -3044,13 +3044,13 @@ cloneObject {
 }
 
 cloneObject {
-	name = "eob_holy_symbol_u",  -- Paladin Holy Symbol
+	name = "eob_holy_symbol_paladin_u",  -- Paladin Holy Symbol
 	baseObject = "golden_chalice",
 	uiName = "Paladin Holy Symbol",
 }
 
 cloneObject {
-	name = "eob_holy_symbol",
+	name = "eob_holy_symbol_paladin",
 	baseObject = "golden_chalice",
 	uiName = "Paladin Holy Symbol",
 }

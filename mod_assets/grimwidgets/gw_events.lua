@@ -182,8 +182,8 @@ end
 
 function showButton(ctx, event_id, number, window, next_state, text, userCallback)
 
-	local x = 30 + 170*number
-	local y = 350 
+	local x = 40 + 170*number
+	local y = 400 
 	local width = 150
 	local height = 25
 	

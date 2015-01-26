@@ -7550,7 +7550,7 @@ function setHelped()\
 end\
 \
 function onJoin()\
-\9dohrum_join.dohrumJoin()\
+\9script_entity_valhalla.dohrumJoin()\
 end\
 \
 \
@@ -7594,7 +7594,7 @@ actions = {\
 \
 -- optionaly we could make Dohrum joinable during later visits\
 ")
-spawn("script_entity", 17,10,2, "dohrum_join")
+spawn("script_entity", 18,6,2, "script_entity_valhalla")
 	:setSource("function dohrumJoin()\
 \9newguy = {\
 \9\9name = \"Dohrum\",    -- just a name\
@@ -7657,7 +7657,202 @@ spawn("script_entity", 17,10,2, "dohrum_join")
 \9gw_party.addChampion(newguy)\
 end\
 \
-")
+\
+\
+function todJoin()\
+-- Tod Looks about wearily. \"I...I'm not quite sure how it is I'm down here. You say I was dead. The last thing I remember was falling down into one of the sewage drains.\
+-- \"Hey, it's not funny! I am a serious adventurer. I have been charged to complete many important quests. Perhaps you could find a use for a skilled rogue in your party?\"\
+\
+\9newguy = {\
+\9\9name = \"Tod Uphill\",    -- just a name\
+\9\9race = \"Human\", \9-- must be one of: Human, Minotaur, Lizardman, Insectoid  (in EOB Halfling)\
+\9\9class = \"Rogue\",    -- must be one of: Figther, Rogue, Mage or Ranger (in Eob Todd is 'Thief')\
+\9\9sex = \"male\", \9\9-- must be one of: male, female\
+\9\9level = 5,          -- character's level (EOB level 5)\
+\9\9portrait = \"mod_assets/textures/portraits/eob1-toduphill.dds\", -- must be 128x128 dds file\
+\9\9\
+\9\9-- allowed skills: air_magic, armors, assassination, athletics, axes, daggers, \
+\9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
+\9\9-- staves, swords, throwing_weapons and unarmed_combat\
+\9\9skills = { assassination = 0, daggers = 5, dodge = 5, missile_weapons = 0, throwing_weapons = 5, unarmed_combat = 0 },\
+\9\9\9\9\
+\9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
+\9\9-- fire_resistant, fist_fighter, head_hunter, healthy, lightning_speed,\
+\9\9-- natural_armor, poison_resistant, skilled, strong_mind, tough\
+\9\9-- Traits must be specified in quotes.\
+\9\9-- Typically each character has 2 traits, but you can specify more or less.\
+\9\9traits = { \"agile\",\"evasive\"},\
+\9\9\
+\9\9health = 65, \9\9 -- Maximum health (orig EOB1 health 32 (copared to Taghorn who has 45))\
+\9\9current_health = 65,  -- Current health\
+\9\9\
+\9\9energy = 75,         -- Maximum energy\
+\9\9current_energy = 75, -- Current energy\
+\
+\9\9strength = 17,        -- Strength (EOB strength 17)\
+\9\9dexterity = 19,       -- Dexterity(EOB dexterity 19)\
+\9\9vitality = 18,        -- Vitality (EOB constituion 18)\
+\9\9willpower = 14,       -- Willpower(EOB wisdom 14, inteligence 11)\
+\9\9\
+\9\9protection = 50,      -- protection\
+\9\9evasion = 4, \9\9  -- evasion (bonus from dex)\
+\9\9\9\9\
+\9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
+\9\9-- from fire, cold, poison or shock magic\
+\9\9resist_fire = 0,\
+\9\9resist_cold = 0,\
+\9\9resist_poison = 0,\
+\9\9resist_shock = 0,\
+\9\9\
+\9\9-- items: Notation item_name = slot. Slots numbering: 1 (head), 2 (torso), 3 (legs), 4 (feet), \
+\9\9-- 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), 9 (gaunlets), 10 (bracers), 11-31 (backpack\
+\9\9-- slots) or 0 (any empty slot in backpack)\
+\9\9-- Make sure you put things in the right slot. Wrong slot (e.g. attempt to try boots on head)\
+\9\9-- will make the item spawn to fail.\
+\
+\9\9items = { },\
+\9\9-- in EOB Tod Uphill has absolutely nothing on or at him when resurrected\
+\9\9\
+\9\9-- food: 0 (starving) to 1000 (just ate the whole cow)\
+\9\9food = 1000\
+\9\9\
+\9}\
+\
+\9-- Call addChampion method. It will add new guy to the party if there are suitable slots and will\
+\9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
+\9gw_party.addChampion(newguy)\
+end\
+\
+\
+\
+\
+function anyaJoin()\
+-- Anya looks about in confusion. \"My companion and I died fighting the minions of Xanathar. I expected to awaken in the afterlife, not in the dungeons where I had fallen.\"\
+-- \"I do not like thi splace, but I am a fighter. I would join you in your hunt for Xanathar so that I may avenge the deaths of my companions.\"\
+\
+\9newguy = {\
+\9\9name = \"Anya\",    -- just a name\
+\9\9race = \"Human\", \9-- must be one of: Human, Minotaur, Lizardman, Insectoid (in EOB human)\
+\9\9class = \"Fighter\",  -- must be one of: Figther, Rogue, Mage or Ranger (in EOB fighter)\
+\9\9sex = \"female\", \9\9-- must be one of: male, female\
+\9\9level = 4,          -- character's level (EOB level 4)\
+\9\9portrait = \"mod_assets/textures/portraits/eob1-anya.dds\", -- must be 128x128 dds file\
+\9\9\
+\9\9-- allowed skills: air_magic, armors, assassination, athletics, axes, daggers, \
+\9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
+\9\9-- staves, swords, throwing_weapons and unarmed_combat\
+\9\9skills = { athletics = 7, armors = 0 , axes = 0, maces = 0, swords = 5, unarme_combat = 0  },\
+\9\9\9\9\
+\9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
+\9\9-- fire_resistant, fist_fighter, head_hunter, healthy, lightning_speed,\
+\9\9-- natural_armor, poison_resistant, skilled, strong_mind, tough\
+\9\9-- Traits must be specified in quotes.\
+\9\9-- Typically each character has 2 traits, but you can specify more or less.\
+\9\9traits = { \"athletic\",\"aggressive\"},\
+\9\9\
+\9\9health = 110, \9\9 -- Maximum health (orig EOB1 health 45 (copared to Taghorn who has 45))\
+\9\9current_health = 110,  -- Current health\
+\9\9\
+\9\9energy = 100,         -- Maximum energy\
+\9\9current_energy = 100, -- Current energy\
+\
+\9\9strength = 22,        -- Strength (EOB strength 18/59)\
+\9\9dexterity = 14,       -- Dexterity(EOB dexterity 14)\
+\9\9vitality = 16,        -- Vitality (EOB constituion 16)\
+\9\9willpower = 11,       -- Willpower(EOB wisdom 11, inteligence 5)\
+\9\9\
+\9\9protection = 0,      -- protection\
+\9\9evasion = 0, \9\9  -- evasion\
+\9\9\9\9\
+\9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
+\9\9-- from fire, cold, poison or shock magic\
+\9\9resist_fire = 0,\
+\9\9resist_cold = 0,\
+\9\9resist_poison = 0,\
+\9\9resist_shock = 0,\
+\9\9\
+\9\9-- items: Notation item_name = slot. Slots numbering: 1 (head), 2 (torso), 3 (legs), 4 (feet), \
+\9\9-- 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), 9 (gaunlets), 10 (bracers), 11-31 (backpack\
+\9\9-- slots) or 0 (any empty slot in backpack)\
+\9\9-- Make sure you put things in the right slot. Wrong slot (e.g. attempt to try boots on head)\
+\9\9-- will make the item spawn to fail.\
+\
+\9\9items = { },\
+\9\9-- in EOB Anya has absolutely nothing on or at her when resurrected\
+\9\9\
+\9\9-- food: 0 (starving) to 1000 (just ate the whole cow)\
+\9\9food = 1000\
+\9\9\
+\9}\
+\
+\9-- Call addChampion method. It will add new guy to the party if there are suitable slots and will\
+\9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
+\9gw_party.addChampion(newguy)\
+end\
+\
+\
+function ileriaJoin()\
+\9newguy = {\
+\9\9name = \"Ileria\",    -- just a name\
+\9\9race = \"Human\", \9-- must be one of: Human, Minotaur, Lizardman, Insectoid (in EOB human)\
+\9\9class = \"Mage\",\9\9-- must be one of: Figther, Rogue, Mage or Ranger (in EOB cleric)\
+\9\9sex = \"female\", \9-- must be one of: male, female\
+\9\9level = 6,          -- character's level (EOB level 6)\
+\9\9portrait = \"mod_assets/textures/portraits/eob1-ileria.dds\", -- must be 128x128 dds file\
+\9\9\
+\9\9-- allowed skills: air_magic, armors, assassination, athletics, axes, daggers, \
+\9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
+\9\9-- staves, swords, throwing_weapons and unarmed_combat\
+\9\9-- random picked skills wont work, must follow the group of mage\
+\9\9--skills = { air_magic = 0, earth_magic = 3 , armors = 5 , maces = 4, spellcraft = 6 },\
+\9\9skills = { air_magic = 4, earth_magic = 6, fire_magic = 0, ice_magic = 0, spellcraft = 6, staves = 2 },\
+\9\9\9\9\
+\9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
+\9\9-- fire_resistant, fist_fighter, head_hunter, healthy, lightning_speed,\
+\9\9-- natural_armor, poison_resistant, skilled, strong_mind, tough\
+\9\9-- Traits must be specified in quotes.\
+\9\9-- Typically each character has 2 traits, but you can specify more or less.\
+\9\9traits = { \"healthy\",\"aura\"},\
+\9\9\
+\9\9health = 120, \9\9 -- Maximum health (orig EOB1 health 45 (copared to Taghorn who has 45))\
+\9\9current_health = 120,  -- Current health\
+\9\9\
+\9\9energy = 80,         -- Maximum energy\
+\9\9current_energy = 80, -- Current energy\
+\
+\9\9strength = 10,        -- Strength (EOB strength 10)\
+\9\9dexterity = 15,       -- Dexterity(EOB dexterity 15)\
+\9\9vitality = 17,        -- Vitality (EOB constituion 17)\
+\9\9willpower = 12,       -- Willpower(EOB wisdom 9, inteligence 12, charisma 17)\
+\9\9\
+\9\9protection = 0,      -- protection\
+\9\9evasion = 0, \9\9  -- evasion\
+\9\9\9\9\
+\9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
+\9\9-- from fire, cold, poison or shock magic\
+\9\9resist_fire = 0,\
+\9\9resist_cold = 0,\
+\9\9resist_poison = 0,\
+\9\9resist_shock = 0,\
+\9\9\
+\9\9-- items: Notation item_name = slot. Slots numbering: 1 (head), 2 (torso), 3 (legs), 4 (feet), \
+\9\9-- 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), 9 (gaunlets), 10 (bracers), 11-31 (backpack\
+\9\9-- slots) or 0 (any empty slot in backpack)\
+\9\9-- Make sure you put things in the right slot. Wrong slot (e.g. attempt to try boots on head)\
+\9\9-- will make the item spawn to fail.\
+\
+\9\9items = { },\
+\9\9-- in EOB Ileria has absolutely nothing on or at her when resurrected\
+\9\9\
+\9\9-- food: 0 (starving) to 1000 (just ate the whole cow)\
+\9\9food = 1000\
+\9\9\
+\9}\
+\
+\9-- Call addChampion method. It will add new guy to the party if there are suitable slots and will\
+\9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
+\9gw_party.addChampion(newguy)\
+end")
 spawn("counter", 14,11,3, "counter_dwarf_camp_visited")
 spawn("counter", 14,13,3, "counter_dwarf_camp_attacked")
 spawn("counter", 14,12,1, "counter_dwarf_camp_helped")
@@ -7693,6 +7888,7 @@ spawn("gw_event", 19,7,0, "gw_event_dvarven_camp_cleric")
 image = \"mod_assets/textures/events/eob1-dwarf-camp-cleric-cut.dds\"\
 image_width = 172\
 image_hieght = 190\
+\
 \
 \
 \
@@ -7732,25 +7928,104 @@ states = {\
 \9\"and tells you to come back after he has rested.\\n\" ..\
 \9\"\\n(at least 5 minutes)\9\9\9\9\9\9\9\\n\"\
 \9},\
-{ \"resurect\",\
-\9\"Resurrection services are not yet available.\\n\"\
+{ \"nobones\",\
+\9\"Bring the bones of falled champion \\n and place them into the alcove.\"\
+\9},\
+{ \"somebones\",\
+\9\"Which should be resurrected?\"\
+\9},\
+{ \"tod\",\
+\9\"Which should be resurrected?\"\
+\9},\
+{ \"restod\",\
+--\9\"-----------------------------------\"\
+\9\"Tod looks about wearily. \9\9\9\9\\n\" ..\
+\9\"\\\"I ... I\\'m not quite sure how it is \9\\n\" ..\
+\9\"I\\'m down here. You say I was dead. \9\\n\" ..\
+\9\"The last thing I remember was \9\9\9\\n\" ..\
+\9\"falling down into one of the sewage \9\\n\" ..\
+\9\"drains.\9\9\9\9\9\9\9\9\\n\" ..\
+\9\"\\n\\\"Hey, it\\'s not funny! I am  \9\9\\n\" ..\
+\9\"a serious adventurer. I have been charged to complete many \\n\" ..\
+\9\"important quests. Perhaps you could find a use of a skilled\\n\" ..\
+\9\"rogue in your party?\\\"\\n\"\
+--\9\"------------------------------------------------------------\"\
+\9},\
+{ \"jointod\",\
+\9\"Tod Uphill joins the party.\"\
+\9},\9\
+{ \"nojointod\",\
+\9\"The Halfling shrugs. \\n\" ..\
+\9\"As he wanders, off he mutters \\n\\n \\\"Your loss ... fools.\\\"\"\
+\9},\
+\
+\
+{ \"anya\",\
+\9\"Which should be resurreted?\"\
+\9},\
+{ \"resanya\",\
+--\9\"-----------------------------------\"\
+\9\"Anya looks about in confusion.\\n \9\\n\" ..\
+\9\"\\\"My companion and I died fighting \\n\" ..\
+\9\"the minions of Xanathar. I expected\\n\" ..\
+\9\"to awaken in the afterlife, not in \\n\" ..\
+\9\"the dungeons where I had fallen.\\\" \\n\" ..\
+\9\"\\n\\\"I do not like this place, but \9\\n\" ..\
+\9\"I am a fighter. I would join you your hunt for Xanathar \\n\" ..\
+\9\"so that I may avenge the deaths of my companions.\\\"\\n\"\
+\9},\
+{ \"joinanya\",\
+\9\"Anya joins the party.\"\
+\9},\9\
+{ \"nojoinanya\",\
+--\9\"-----------------------------------\"\
+\9\"\\\"Then, our paths must separate.\9\\n\" ..\
+\9\"I will exact my own revenge upon\9\\n\" ..\
+\9\"Xanathar.\9\9\9\9\9\9\9\\n\" ..\
+\9\"May the luck of the hunter \9\9\\n\" ..\
+\9\"guide you.\\\"\\n\"\
+\9},\
+\
+{ \"ileria\",\
+\9\"Which should be resurreted?\"\
+\9},\
+{ \"resileria\",\
+--\9\"-----------------------------------\"\
+\9\"Ileira looks about, jubilant.\9\9\\n\" ..\
+\9\"\\\"May the Gods be praised!\9\9\9\\n\" ..\
+\9\"I am sister Ileira. I journeyed\9\\n\" ..\
+\9\"with my combrades into these \9\9\\n\" ..\
+\9\"dungeons to fight evil and bring \9\\n\" ..\
+\9\"good. But we were overwhelmed, \9\\n\" ..\
+\9\"and most of us were killed.\\n\9\9\\n\" ..\
+\9\"I see that because of my faith, I have been given another \9\\n\" ..\
+\9\"chance to carry on my mision of good. May I accompany you?\9\\n\" ..\
+\9\"My abilities to heal the wounded could be of great help.\\\"\9\\n\" \
+--\9\"------------------------------------------------------------\"\
+\9},\
+{ \"joinileria\",\
+\9\"Ileira joins the party.\"\
+\9},\9\
+{ \"nojoinileria\",\
+--\9\"-----------------------------------\"\
+\9\"\\\"Then, I must seek a path of my \9\\n\"..\
+\9\"own. \9\9\9\9\9\9\9\9\\n\"..\
+\9\"Farethee well, and may the light \9\\n\"..\
+\9\"guide you.\\\"\"\
+\9},\
+\
+{ \"beohram\",\
+\9\"beohram\"\
+\9},\
+{ \"tyrra\",\
+\9\"tyrra\"\
+\9},\
+{ \"kirath\",\
+\9\"kirath\"\
 \9}\
 }\
 \
 \
-\
--- defines possible actions in each state. Each entry has\
--- 4 values. First is a state in which you can take that action. \
--- Second is a state name to which player will transition if that\
--- action is taken. Third is a text printed on the action button.\
--- Fourth defines function callback. It is optional. This function\
--- may not return anything and the state specified in value 2 will \
--- be used. The function may also return a name of the state, thus\
--- overriding default transition. One of the transitions must\
--- transit to \"end\" state (a dummy state that concludes the whole\
--- event).\
--- abort seems to be another key word to temporarily stop, but trigger again when stepped on\
--- while end means never trigger again\
 \
 \
 function onVisit()\
@@ -7788,32 +8063,177 @@ function healParty()\
 end\
 \
 \
+\
+-- valhalla resurrection services\
+function onResurrect()\
+\
+\9if counter_dwarven_cleric_rested:getValue() == 1\
+\9then \
+\
+\9for e in eob_ruins_alcove_valhalla:containedItems()\
+\9do\
+\9\9if string.find(e.name,\"eob_bones\") \
+\9\9then\
+\9\9\9if \9\9e.name == \"eob_bones_halfling_tod\" \9then return \"tod\"\
+\9\9\9elseif\9e.name == \"eob_bones_human_anya\" \9then return \"anya\"\
+\9\9\9elseif\9e.name == \"eob_bones_human_ileria\" \9then return \"ileria\"\
+\9\9\9elseif\9e.name == \"eob_bones_human_beohram\" then return \"beohram\"\
+\9\9\9elseif\9e.name == \"eob_bones_human_kirath\" \9then return \"kirath\"\
+\9\9\9elseif\9e.name == \"eob_bones_elf_tyrra\" \9then return \"tyrra\"\
+\9\9\9end\9\9\
+\9\9end\
+\9end\
+\9else\
+\9return \"tired\"\
+\9end\
+end\
+\
+\
+\
+function resTod()\
+\9-- set new image with Tod Uphill\
+\9image = \"mod_assets/textures/events/eob1-resurrect-tod.dds\"\
+\9image_width = 256\
+\9image_hieght = 192\
+\
+\9counter_dwarven_cleric_rested:setValue(0)\
+\9timer_dwarven_cleric_resting:activate()\
+\9gw_event_dvarven_camp_cleric.destroyBones()\
+end\
+\
+\
+function resAnya()\
+\9-- set new image with Anya\
+\9image = \"mod_assets/textures/events/eob1-resurrect-anya.dds\"\
+\9image_width = 256\
+\9image_hieght = 192\
+\
+\9counter_dwarven_cleric_rested:setValue(0)\
+\9timer_dwarven_cleric_resting:activate()\
+\9gw_event_dvarven_camp_cleric.destroyBones()\
+\
+end\
+\
+function resIleria()\
+\9-- set new image with Ileria\
+\9image = \"mod_assets/textures/events/eob1-resurrect-ileria.dds\"\
+\9image_width = 256\
+\9image_hieght = 192\
+\
+\9counter_dwarven_cleric_rested:setValue(0)\
+\9timer_dwarven_cleric_resting:activate()\
+\9gw_event_dvarven_camp_cleric.destroyBones()\
+\
+end\
+\
+function onJoinTod()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.todJoin()\
+end\
+\
+\
+function onJoinAnya()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.anyaJoin()\
+end\
+\
+function onJoinIleria()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.ileriaJoin()\
+end\
+\
+\
+function resetPic()\
+\9-- put back the cleric picture\
+\9image = \"mod_assets/textures/events/eob1-dwarf-camp-cleric-cut.dds\"\
+\9image_width = 172\
+\9image_hieght = 190\
+end\
+\
+function destroyBones()\
+\9-- destory the bones in alcove\
+\9for e in eob_ruins_alcove_valhalla:containedItems()\
+\9do\
+\9\9if string.find(e.name,\"eob_bones\") \
+\9\9then\
+\9\9\9e:destroy()\
+\9\9end\
+\9end\
+end\
+\
+-- defines possible actions in each state. Each entry has\
+-- 4 values. First is a state in which you can take that action. \
+-- Second is a state name to which player will transition if that\
+-- action is taken. Third is a text printed on the action button.\
+-- Fourth defines function callback. It is optional. This function\
+-- may not return anything and the state specified in value 2 will \
+-- be used. The function may also return a name of the state, thus\
+-- overriding default transition. One of the transitions must\
+-- transit to \"end\" state (a dummy state that concludes the whole\
+-- event).\
+-- \"abort\" seems to be another key word to temporarily stop, but trigger again when stepped on\
+-- while end means never trigger again\
+\
+\
 actions = {\
 -- cant figure out how to run script BEFORE the first text screen \
 \9{ \"init\",\9\9\"nothelped\",\"More\", onVisit},\
 \9{ \"nothelped\",\9\"abort\",\9\"More\"},\
 \9{ \"helped\",\9\9\"heal\",\9\9\"Heal party\", healParty},\
-\9{ \"helped\",\9\9\"resurect\",\9\"Resurrect\"},\
-\9{ \"helped\",\9\9\"abort\",\9\"Leave\",},\
-\9{ \"heal\",\9\9\"abort\",\9\"Leave\",},\9\
-\9{ \"resurect\",\9\"abort\",\9\"Leave\",},\
-\9{ \"tired\",\9\9\"abort\",\9\"Leave\",},\
-\9{ \"attacked\",\9\"abort\",\9\"Leave\",},\
+\9{ \"helped\",\9\9\"nobones\",\9\"Resurrect\", onResurrect},\
+\9{ \"helped\",\9\9\"abort\",\9\"Leave\"},\
+\9{ \"heal\",\9\9\"abort\",\9\"Leave\"},\9\
+\9{ \"nobones\",\9\"abort\",\9\"Leave\"},\
+\
+\9{ \"tod\",\9\9\"restod\",\9\"Tod\", resTod},\
+\9{ \"tod\",\9\9\"abort\",\9\"Leave\", resetPic},\
+\9{ \"restod\",\9\9\"jointod\",\9\"Yes\"},\
+\9{ \"restod\",\9\9\"nojointod\",\"No\"},\
+\9{ \"jointod\",\9\"abort\",\9\"More\", onJoinTod},\
+\9{ \"nojointod\",\9\"abort\",\9\"More\", resetPic},\
+\
+\9{ \"anya\",\9\9\"resanya\",\9\"Anya\", resAnya},\
+\9{ \"anya\",\9\9\"abort\",\9\"Leave\", resetPic},\
+\9{ \"resanya\",\9\"joinanya\",\9\"Yes\"},\
+\9{ \"resanya\",\9\"nojoinanya\",\"No\"},\
+\9{ \"joinanya\",\9\"abort\",\9\"More\", onJoinAnya},\
+\9{ \"nojoinanya\",\9\"abort\",\9\"More\", resetPic},\
+\9\
+\9{ \"ileria\",\9\9\"resileria\",\9\"Ileria\", resIleria},\
+\9{ \"ileria\",\9\9\"abort\",\9\9\"Leave\", resetPic},\
+\9{ \"resileria\",\9\"joinileria\",\9\"Yes\"},\
+\9{ \"resileria\",\9\"nojoinileria\",\9\"No\"},\
+\9{ \"joinileria\",\9\"abort\",\9\9\"More\", onJoinIleria},\
+\9{ \"nojoinileria\",\"abort\",\9\9\"More\", resetPic},\
+\
+\9{ \"beohram\",\9\"resbeohram\",\"Beohram\"},\
+\9{ \"beohram\",\9\"abort\",\9\"Leave\"},\
+\
+\9{ \"tyrra\",\9\9\"restyrra\",\9\"Tyrra\"},\
+\9{ \"tyrra\",\9\9\"abort\",\9\"Leave\"},\
+\
+\9{ \"kirath\",\9\9\"reskirath\",\"Kirath\"},\
+\9{ \"kirath\",\9\9\"abort\",\9\"Leave\"},\9\9\9\
+\9{ \"somebones\",\9\"abort\",\9\"Leave\"},\
+\9{ \"tired\",\9\9\"abort\",\9\"Leave\"},\
+\9{ \"attacked\",\9\"abort\",\9\"Leave\"},\
 \9{ \"dummy\",\9\9\"end\",\9\9\"No, you will never leave this conversation!\"}\
 }\9\
 \9\
 \9\
 \9\
+\
+\
 ")
 spawn("eob_dwarf", 19,6,2, "eob_dwarf_dwarven_cleric")
 	:setAIState("guard")
 spawn("eob_blocker", 19,7,1, "eob_blocker_dwarfcamp_24")
-spawn("timer", 18,6,2, "timer_dwarven_cleric_resting")
-	:setTimerInterval(300)
+spawn("timer", 20,5,2, "timer_dwarven_cleric_resting")
+	:setTimerInterval(10)
 	:activate()
 	:addConnector("activate", "counter_dwarven_cleric_rested", "increment")
 	:addConnector("activate", "timer_dwarven_cleric_resting", "deactivate")
-spawn("counter", 18,5,1, "counter_dwarven_cleric_rested")
+spawn("counter", 19,5,1, "counter_dwarven_cleric_rested")
 spawn("script_entity", 14,9,0, "script_entity_dwarven_camp_attacked")
 	:setSource("-- if you ever attack any of the dwarves in camp\
 -- yes even by accident (like throwing rations)\
@@ -7903,6 +8323,161 @@ spawn("eob_ruins_illusion_wall_rune_fake", 23,1,2, "eob_ruins_illusion_wall_rune
 spawn("eob_ruins_illusion_wall_rune_fake", 23,3,0, "eob_ruins_illusion_wall_rune_fake_33")
 spawn("eob_blocker", 23,2,2, "eob_blocker_28")
 spawn("secret", 6,29,1, "secret_14")
+spawn("eob_ruins_alcove", 18,7,0, "eob_ruins_alcove_valhalla")
+spawn("script_entity", 18,3,2, "script_entity_search_bones")
+	:setSource("-- valhalla resurrection services\
+-- this would be sooooo easier if we just put the bones into one alcove\
+\
+function onResurrect()\
+\
+\9-- check inventory for bones\
+\9local bonesid = {}\
+\9local champid = {}\
+\9local slotid = {}\
+\9local i = 1\
+\9local champ = 0\
+\9local c = 0\
+\9local item = nil\
+\9local name = \"\"\
+\9local slot = 0\
+\
+\9\
+\9-- check all champtions\
+\9for c = 1,4\
+\9do\
+\9\9champ =  party:getChampion(c)\
+\9\9if champ \
+\9\9then\
+\9\9\9--hudPrint(\"checking inventory of champion: \" .. champ:getName() ..\"\")\
+\
+\9\9\9-- check hands\
+\9\9\9for slot = 7,8\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item \
+\9\9\9\9then \
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\9\9\9\9\9if string.find(item.name,\"eob_bones\") \
+\9\9\9\9\9then\
+\9\9\9\9\9\9bonesid[i] = item.id\
+\9\9\9\9\9\9champid[i] = c\
+\9\9\9\9\9\9slotid[i] = slot\
+\9\9\9\9\9\9i= i + 1\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9end\
+\9\9\9\
+\9\9\9-- check bags\
+\9\9\9for slot = 11,31\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item \
+\9\9\9\9then \
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\9\9\9\9\9if string.find(item.name,\"eob_bones\") \
+\9\9\9\9\9then\
+\9\9\9\9\9\9bonesid[i] = item.id\
+\9\9\9\9\9\9champid[i] = c\
+\9\9\9\9\9\9slotid[i] = slot\
+\9\9\9\9\9\9i= i + 1\
+\9\9\9\9\9end\9\9\9\
+\9\9\9\9end\
+\9\9\9end\
+\9\9end\
+\9end\
+\
+\9i=1\
+\9while bonesid[i]\
+\9do\
+\9\9hudPrint(\"champion: \" .. champid[i] .. \" slot: \" .. slotid[i] .. \" item: \" .. bonesid[i] .. \"\")\
+\9i=i+1\
+    end\
+\
+return somebones\
+\9\
+end\
+\
+\
+\
+\
+\
+--[[\
+\
+-- this would be sooooo easier if we just put the bones into one alcove\
+function onResurrect()\
+\
+\9-- check inventory for bones\
+\9local bonesname = {}\
+\9local champid = {}\
+\9local slotid = {}\
+\9local i = 1\
+\9local champ = 0\
+\9local c = 0\
+\9local item = nil\
+\9local name = \"\"\
+\9local slot = 0\
+\
+\9\
+\9-- check all champtions\
+\9for c = 1,4\
+\9do\
+\9\9champ =  party:getChampion(c)\
+\9\9if champ \
+\9\9then\
+\9\9\9--hudPrint(\"checking inventory of champion: \" .. champ:getName() ..\"\")\
+\
+\9\9\9-- check hands\
+\9\9\9for slot = 7,8\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item \
+\9\9\9\9then \
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\9\9\9\9\9if string.find(item.name,\"eob_bones\") \
+\9\9\9\9\9then\
+\9\9\9\9\9\9bonesname[i] = item.name\
+\9\9\9\9\9\9champid[i] = c\
+\9\9\9\9\9\9slotid[i] = slot\
+\9\9\9\9\9\9i= i + 1\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9end\
+\9\9\9\
+\9\9\9-- check bags\
+\9\9\9for slot = 11,31\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item \
+\9\9\9\9then \
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\9\9\9\9\9if string.find(item.name,\"eob_bones\") \
+\9\9\9\9\9then\
+\9\9\9\9\9\9bonesname[i] = item.name\
+\9\9\9\9\9\9champid[i] = c\
+\9\9\9\9\9\9slotid[i] = slot\
+\9\9\9\9\9\9i= i + 1\
+\9\9\9\9\9end\9\9\9\
+\9\9\9\9end\
+\9\9\9end\
+\9\9end\
+\9end\
+\
+\9i=1\
+\9while bonesname[i]\
+\9do\
+\9\9hudPrint(\"champion: \" .. champid[i] .. \" slot: \" .. slotid[i] .. \" item: \" .. bonesname[i] .. \"\")\
+\
+\9i=i+1\
+    end\
+\
+if bonesname[1] == \"eob_bones_human_anya\" then return \"anya\" \
+elseif bonesname[1] == \"eob_bones_human_tod\" then return \"tod\"\
+end\
+\9\
+end\
+]]\
+")
+spawn("eob_bones_human_ileria", 18,7,0, "eob_bones_human_ileria_1")
 
 --- level 6 ---
 
@@ -7929,7 +8504,7 @@ mapDesc([[
 ########.#.##.########.#..###.##
 ####...#.#.#...#.......#..#...##
 ###....#.#.#...#..#######.#.####
-#.###....#.########.......#.#..#
+#.#.#....#.########.......#.#..#
 #......##..#...####.#####.#.#..#
 ####...#..##...#.##.##.........#
 #######..##....#....##.####.####
@@ -8005,7 +8580,7 @@ spawn("eob_ruins_door_stone_one", 29,15,0, "eob_ruins_door_stone_one_8")
 spawn("eob_ruins_door_stone", 13,16,0, "eob_ruins_door_stone_54")
 	:addPullChain()
 spawn("eob_ruins_ornate_lock", 4,17,2, "eob_ruins_ornate_lock_4")
-	:setOpenedBy("eob_key_dwarven_u")
+	:setOpenedBy("eob_key_dwarven")
 	:addConnector("activate", "script_entity_51", "firstKey")
 spawn("eob_ruins_wall_text", 7,19,2, "eob_ruins_wall_text_20")
 	:setWallText("Round and round...")
@@ -8118,7 +8693,7 @@ spawn("eob_kenku1_1", 13,3,0, "eob_kenku1_1_2")
 spawn("eob_kenku1_2", 14,7,0, "eob_kenku1_2_2")
 spawn("eob_kenku1_1", 23,7,0, "eob_kenku1_1_3")
 spawn("eob_kenku1_2", 20,12,0, "eob_kenku1_2_3")
-spawn("eob_kenku1_2", 3,18,0, "eob_kenku1_2_4")
+spawn("eob_kenku1_2", 3,19,0, "eob_kenku1_2_4")
 spawn("eob_kenku1_2", 30,4,0, "eob_kenku1_2_5")
 spawn("eob_kenku1_2", 21,5,0, "eob_kenku1_2_6")
 spawn("eob_kenku1_1", 13,5,0, "eob_kenku1_1_4")
@@ -8736,7 +9311,9 @@ function firstKey()\
 \9end\
 \
 \9-- spawn new lock \
-\9spawn(\"eob_ruins_ornate_lock\",6,6,19,3):setOpenedBy(\"eob_key_dwarven_u\"):addConnector(\"activate\",\"script_entity_51\",\"secondKey\")\
+\9spawn(\"eob_ruins_ornate_lock\",6,6,19,3):setOpenedBy(\"eob_key_dwarven\"):addConnector(\"activate\",\"script_entity_51\",\"secondKey\")\
+\9-- spawn eob_dwarven_wall_cube\
+\9spawn(\"eob_dwarven_wall_cube\",6,3,19,0)\
 \9\9\
 end\
 \
@@ -8765,7 +9342,7 @@ function secondKey()\
 \9spawn(\"eob_dwarven_wall_cube\",6,4,18,0)\
 \9\
 \9-- spawn new lock \
-\9spawn(\"eob_ruins_ornate_lock\",6,4,21,0):setOpenedBy(\"eob_key_dwarven_u\"):addConnector(\"activate\",\"script_entity_51\",\"thirdKey\")\
+\9spawn(\"eob_ruins_ornate_lock\",6,4,21,0):setOpenedBy(\"eob_key_dwarven\"):addConnector(\"activate\",\"script_entity_51\",\"thirdKey\")\
 \
 end\
 \
@@ -9194,7 +9771,10 @@ spawn("eob_dwarven_wall_cube", 14,18,0, "eob_ruins_illusion_wall_sp6_4")
 spawn("eob_dwarven_wall_cube", 14,17,2, "eob_ruins_illusion_wall_sp6_5")
 spawn("eob_ruins_button", 18,24,0, "eob_ruins_button_16")
 	:addConnector("toggle", "eob_ruins_door_stone_one_12", "toggle")
-spawn("starting_location", 4,3,1, "starting_location_1")
+spawn("eob_ruins_button", 27,3,3, "eob_ruins_button_17")
+	:addConnector("toggle", "eob_ruins_door_stone_one_4", "toggle")
+spawn("eob_ruins_button", 26,7,2, "eob_ruins_button_18")
+	:addConnector("toggle", "eob_ruins_door_stone_one_7", "toggle")
 
 --- level 7 ---
 
@@ -9220,7 +9800,7 @@ mapDesc([[
 #.#...###.#..#...########.###..#
 #.#.......#..#.#.#...#.##.##.###
 #.####.##.####...#.###.##..#.###
-#......##...####...#.#.##....###
+#......##....###...#.#.##....###
 #.##......##########.#.######.##
 #.##.#.##.##....#....#.#.......#
 ####.#.##...####..##.#.#.#.#.###
@@ -9241,41 +9821,58 @@ spawn("eob_drow_door", 19,4,1, "eob_drow_door_2")
 	:addPullChain()
 spawn("eob_drow_fireball_firing_pad", 25,4,0, "eob_drow_fireball_firing_pad_1")
 spawn("eob_drow_door", 28,4,3, "eob_drow_door_3")
-spawn("eob_drow_wall_text", 2,5,0, "eob_drow_wall_text_1")
-	:setWallText("")
 spawn("eob_drow_pressure_plate", 4,5,3, "eob_drow_pressure_plate_1")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "timer_6", "activate")
+	:addConnector("activate", "timer_7", "activate")
 spawn("eob_drow_fireball_firing_pad", 4,5,0, "eob_drow_fireball_firing_pad_2")
 spawn("eob_drow_pressure_plate", 6,5,2, "eob_drow_pressure_plate_2")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
+	:addConnector("activate", "timer_6", "activate")
+	:addConnector("activate", "timer_7", "activate")
 spawn("eob_drow_door_one", 12,7,1, "eob_drow_door_one_1")
-	:addPullChain()
 spawn("eob_drow_door", 29,7,3, "eob_drow_door_4")
 spawn("eob_drow_pit", 26,8,0, "eob_drow_pit_1")
+	:addTrapDoor()
+	:setPitState("open")
 spawn("eob_drow_pressure_plate", 4,9,2, "eob_drow_pressure_plate_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
+	:addConnector("activate", "timer_6", "activate")
+	:addConnector("activate", "timer_7", "activate")
 spawn("eob_drow_pressure_plate", 6,9,2, "eob_drow_pressure_plate_4")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "timer_6", "activate")
+	:addConnector("activate", "timer_7", "activate")
 spawn("eob_drow_lock_spider", 12,9,1, "eob_drow_lock_spider_1")
 	:setOpenedBy("")
 spawn("eob_drow_pit", 26,9,2, "eob_drow_pit_2")
+	:addTrapDoor()
+	:setPitState("open")
 spawn("eob_drow_door", 29,9,3, "eob_drow_door_5")
 spawn("eob_drow_door", 13,10,3, "eob_drow_door_6")
 spawn("eob_drow_stairs_up", 14,10,1, "eob_drow_stairs_up_1")
 spawn("eob_drow_button", 26,10,3, "eob_drow_button_1")
+	:addConnector("toggle", "eob_drow_pit_2", "toggle")
+	:addConnector("toggle", "spawner_3", "activate")
+	:addConnector("toggle", "timer_9", "activate")
 spawn("eob_drow_pressure_plate", 29,11,3, "eob_drow_pressure_plate_5")
 	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "eob_drow_door_5", "open")
+	:addConnector("activate", "eob_drow_door_4", "open")
+	:addConnector("activate", "eob_drow_door_3", "open")
+	:addConnector("activate", "eob_drow_pit_2", "close")
 spawn("eob_drow_lock_spider", 11,13,1, "eob_drow_lock_spider_2")
+	:setOpenedBy("")
 spawn("eob_drow_door", 11,14,0, "eob_drow_door_7")
 spawn("eob_drow_button", 20,14,0, "eob_drow_button_2")
 spawn("eob_drow_alcove", 20,14,3, "eob_drow_alcove_1")
@@ -9292,7 +9889,7 @@ spawn("eob_drow_door", 25,16,2, "eob_drow_door_9")
 spawn("eob_drow_stairs_down", 28,16,0, "eob_drow_stairs_down_2")
 spawn("eob_drow_wall_text", 22,17,3, "eob_drow_wall_text_4")
 	:setWallText("")
-spawn("eob_drow_stairs_down", 11,18,1, "eob_drow_stairs_down_3")
+spawn("eob_drow_stairs_down", 12,18,1, "eob_drow_stairs_down_3")
 spawn("eob_drow_wall_text", 22,18,1, "eob_drow_wall_text_5")
 	:setWallText("")
 spawn("eob_drow_door_one", 27,18,1, "eob_drow_door_one_2")
@@ -9386,15 +9983,17 @@ spawn("eob_drow_lock_ornate", 20,30,2, "eob_drow_lock_ornate_4")
 spawn("eob_drow_door", 21,30,1, "eob_drow_door_30")
 spawn("eob_drow_lock_ornate", 22,30,2, "eob_drow_lock_ornate_5")
 spawn("scroll_fireball", 2,3,3, "eob_mage_scroll_fireball_2")
+	:setScrollText("")
 spawn("eob_rations_iron_u", 17,5,2, "eob_rations_iron_u_9")
 spawn("eob_medallion_of_adornment_u", 17,5,2, "eob_medallion_of_adornment_u_2")
 spawn("eob_cleric_scroll_bless", 17,5,2, "eob_cleric_scroll_bless_1")
-spawn("eob_arrow_u", 22,8,0, "eob_arrow_u_13")
+spawn("eob_arrow_u", 22,8,3, "eob_arrow_u_13")
 spawn("eob_cleric_scroll_protect_evil10", 30,11,1, "eob_cleric_scroll_protect_evil10_1")
 spawn("eob_cleric_scroll_remove_paralysis", 30,11,0, "eob_cleric_scroll_remove_paralysis_1")
 spawn("eob_cleric_scroll_slow_poison", 3,12,2, "eob_cleric_scroll_slow_poison_2")
+	:setScrollText("")
 spawn("eob_cleric_scroll_create_food", 6,12,2, "eob_cleric_scroll_create_food_1")
-spawn("eob_key_u", 30,12,3, "eob_key_u_4")
+	:setScrollText("")
 spawn("eob_medallion_luck_stone_u", 3,14,0, "eob_medallion_luck_stone_u_1")
 spawn("eob_ring_protection2_u", 14,15,2, "eob_ring_protection2_u_1")
 spawn("eob_arrow_u", 12,16,1, "eob_arrow_u_14")
@@ -9412,35 +10011,43 @@ spawn("eob_arrow_u", 27,23,1, "eob_arrow_u_19")
 spawn("eob_arrow_u", 27,23,2, "eob_arrow_u_20")
 spawn("eob_key_drow_u", 14,25,0, "eob_key_drow_u_1")
 spawn("scroll_lightning_bolt", 30,25,1, "eob_mage_scroll_lightning_bolt_1")
-spawn("eob_key_u", 4,26,1, "eob_key_u_5")
-spawn("eob_potion_healing", 4,26,0, "eob_potion_healing_7")
+spawn("eob_potion_healing", 4,26,3, "eob_potion_healing_7")
 spawn("eob_key_drow_u", 17,27,2, "eob_key_drow_u_2")
 spawn("eob_cleric_scroll_cure_light_wnds", 19,27,3, "eob_cleric_scroll_cure_light_wnds_1")
 spawn("eob_key_jeweled_u", 25,27,3, "eob_key_jeweled_u_2")
 spawn("eob_key_ruby_u", 27,27,3, "eob_key_ruby_u_1")
-spawn("eob_shield_u", 30,14,2, "eob_shield_u_5")
+spawn("eob_shield_u", 30,14,3, "eob_shield_u_5")
 spawn("eob_bones_human_ileria_u", 29,4,1, "eob_bones_human_ileria_u_1")
-spawn("eob_holy_symbol", 29,4,1, "eob_holy_symbol_1")
 spawn("eob_skelwar2_1_group", 27,27,0, "eob_skelwar2_1_group_1")
 spawn("eob_skelwar1_1", 19,27,0, "eob_skelwar1_1_1")
 spawn("eob_skelwar1_2", 27,23,0, "eob_skelwar1_2_1")
-spawn("eob_drowelf1_1", 3,16,0, "eob_drowelf1_1_1")
-spawn("eob_skelwar1_1", 29,4,0, "eob_skelwar1_1_2")
-spawn("eob_drowelf1_1", 3,15,0, "eob_drowelf1_1_2")
+spawn("eob_drowelf1_1", 3,16,1, "eob_drowelf1_1_1")
+	:setAIState("guard")
+spawn("eob_skelwar1_1", 29,4,3, "eob_skelwar1_1_2")
+spawn("eob_drowelf1_1", 3,15,1, "eob_drowelf1_1_2")
+	:setAIState("guard")
 spawn("eob_skelwar2_1_group", 20,18,0, "eob_skelwar2_1_group_2")
 spawn("eob_skelwar1_2", 30,9,0, "eob_skelwar1_2_2")
-spawn("eob_drowelf1_1", 6,2,0, "eob_drowelf1_1_3")
+spawn("eob_drowelf1_1", 6,2,2, "eob_drowelf1_1_3")
+	:setAIState("guard")
 spawn("eob_skelwar2_2_group", 30,25,0, "eob_skelwar2_2_group_1")
 spawn("eob_skelwar1_1", 30,7,0, "eob_skelwar1_1_3")
 spawn("eob_drowelf2_1_group", 2,2,0, "eob_drowelf2_1_group_1")
+	:setAIState("guard")
 spawn("eob_skelwar1_2", 17,27,0, "eob_skelwar1_2_3")
-spawn("eob_drowelf1_1", 7,11,0, "eob_drowelf1_1_4")
-spawn("eob_drowelf1_1", 7,12,0, "eob_drowelf1_1_5")
-spawn("eob_drowelf2_1_group", 1,18,0, "eob_drowelf2_1_group_2")
-spawn("eob_drowelf1_1", 3,14,0, "eob_drowelf1_1_6")
-spawn("eob_drowelf2_1_group", 1,17,0, "eob_drowelf2_1_group_3")
+spawn("eob_drowelf1_1", 7,11,1, "eob_drowelf1_1_4")
+	:setAIState("guard")
+spawn("eob_drowelf1_1", 7,12,1, "eob_drowelf1_1_5")
+	:setAIState("guard")
+spawn("eob_drowelf2_1_group", 1,18,2, "eob_drowelf2_1_group_drow_patrol_1")
+	:setAIState("guard")
+spawn("eob_drowelf1_1", 3,14,1, "eob_drowelf1_1_6")
+	:setAIState("guard")
+spawn("eob_drowelf2_1_group", 1,17,2, "eob_drowelf2_1_group_drow_patrol_2")
+	:setAIState("guard")
 spawn("eob_skelwar1_1", 17,23,0, "eob_skelwar1_1_4")
-spawn("eob_drowelf1_1", 17,4,0, "eob_drowelf1_1_7")
+spawn("eob_drowelf1_1", 17,4,1, "eob_drowelf1_1_7")
+	:setAIState("guard")
 spawn("eob_skelwar1_1", 26,18,0, "eob_skelwar1_1_5")
 spawn("eob_skelwar1_1", 25,23,0, "eob_skelwar1_1_6")
 spawn("eob_skelwar1_1", 14,25,0, "eob_skelwar1_1_7")
@@ -9448,10 +10055,157 @@ spawn("eob_ruins_alcove", 12,28,0, "eob_ruins_alcove_portal_7_necklace")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_ruins_alcove", 14,28,0, "eob_ruins_alcove_portal_7_medallion")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("gw_event", 1,19,1, "gw_event_1")
+spawn("gw_event", 1,19,0, "gw_event_drow_patrol")
 	:setSource("-- meeting the drow party\
 -- you can either turn back = discontinue the game\
--- or attack")
+-- or attack\
+\
+-- is this event enabled?\
+--enabled = true\
+\
+-- name of the imeage to show\
+image = \"mod_assets/textures/events/eob1-drow-patrol.dds\"\
+image_width = 354\
+image_hieght = 242\
+\
+\
+-- Defines states. Each entry must have exactly two columns:\
+-- first is state, the second is description shown.\
+-- Event will start from the first state on the list.\
+-- There is also one special state called \"end\". Once moved\
+-- to state \"end\", the whole event ends.\
+\
+states = {\
+{ \"init\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"A Drow patrol squad stops you from advancing. The patrol leader \9\\n\" ..\
+\9\"eyes you with contempt and snarls, \\\"Okay troll bait, give me one \9\\n\" ..\
+\9\"reason why I shoudn\\'t run you to the slave pens.\\\"\" }, \
+{ \"bribe\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"\\\"What? Are you trying to bribe or insult me? I don\\'t want toys, \9\\n\" ..\
+\9\"I want potential servants. Any creature will do: Kenku, Kobolds, \9\\n\" ..\
+\9\"Troglodytes. The younger they are, the easier they are to break in.\\n\" ..\
+\9\"But what am I rambling on to you for? Get out of here, or we\\'ll \9\\n\" ..\
+\9\"run you through with our swords!\\\"\" },\
+{ \"bribed\",  \
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"The patrol leader hefts a kenku egg with approval. \\\"A bit young, \9\\n\" ..\
+\9\"but potentially usefull.\\\" He turns his dark gaze back to you. \9\\n\" ..\
+\9\"\\\"All right, you can pass. But keep out of our way!\\\" The Drow patrol\\n\" ..\
+\9\"leader takes all the kenku eggs from your party and walks away.\" }\
+\
+}\
+\
+function onAttack()\
+\9-- blockers at the patrol\
+\9eob_blocker_drow_patrol_1:destroy()\
+\9eob_blocker_drow_patrol_2:destroy()\
+\9eob_blocker_drow_patrol_3:destroy()\
+\9-- blockers north-east room \
+\9eob_blocker_drow_patrol_4:destroy()\
+\9eob_blocker_drow_patrol_5:destroy()\
+\9eob_blocker_drow_patrol_6:destroy()\
+end\
+\
+\
+function onBribe()\
+\9-- bribe by removing all kenku eggs\
+\9-- check inventory for kenku eggs\
+\9local champ = 0\
+\9local c = 0\
+\9local item = nil\
+\9local slot = 0\
+\9local foundegg = false\
+\
+\9\
+\9-- check all champtions\
+\9for c = 1,4\
+\9do\
+\9\9champ =  party:getChampion(c)\
+\9\9if champ \
+\9\9then\
+\9\9\9--hudPrint(\"checking inventory of champion: \" .. champ:getName() ..\"\")\
+\
+\9\9\9-- check hands\
+\9\9\9for slot = 7,8\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item and string.find(item.name,\"eob_egg\") \
+\9\9\9\9then \
+\9\9\9\9\9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item.name .. \"\")\
+\9\9\9\9\9champ:removeItem(slot)\
+\9\9\9\9\9item:destroy()\
+\9\9\9\9\9foundegg = true\
+\9\9\9\9end\
+\9\9\9end\
+\9\9\9\
+\9\9\9-- check bags\
+\9\9\9for slot = 11,31\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item and string.find(item.name,\"eob_egg\") \
+\9\9\9\9then\
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item.name .. \"\")\
+\9\9\9\9\9champ:removeItem(slot)\
+\9\9\9\9\9item:destroy()\
+\9\9\9\9\9foundegg = true\
+\9\9\9\9end\9\9\9\
+\9\9\9end\
+\9\9end\
+\9end\
+\
+\9if foundegg \9\
+\9then\
+\9\9return \"bribed\"\
+\9else\
+\9\9return \"bribe\"\
+\9end\
+\
+end\
+\
+\
+function onBribed()\
+\9eob_blocker_drow_patrol_1:destroy()\
+\9eob_blocker_drow_patrol_2:destroy()\
+\9eob_blocker_drow_patrol_3:destroy()\
+\9for e in entitiesAt(7,1,18)\
+\9do\
+\9\9--hudPrint(\"\".. e.name .. \"\")\
+\9\9if string.find(e.name,\"eob_drowelf\")\
+\9\9then e:destroy()\
+\9\9end\
+\9end\
+\9for e in entitiesAt(7,1,17)\
+\9do\
+\9\9--hudPrint(\"\".. e.name .. \"\")\
+\9\9if string.find(e.name,\"eob_drowelf\")\
+\9\9then e:destroy()\
+\9\9end\
+\9end\
+end\
+\
+\
+\
+\
+-- defines possible actions in each state. Each entry has\
+-- 4 values. First is a state in which you can take that action. \
+-- Second is a state name to which player will transition if that\
+-- action is taken. Third is a text printed on the action button.\
+-- Fourth defines function callback. It is optional. This function\
+-- may not return anything and the state specified in value 2 will \
+-- be used. The function may also return a name of the state, thus\
+-- overriding default transition. One of the transitions must\
+-- transit to \"end\" state (a dummy state that concludes the whole\
+-- event).\
+actions = {\
+  { \"init\",\9\9\"end\",\9\9\"Attack\", onAttack},\
+  { \"init\",\9\9\"bribe\",\9\"Bribe\", onBribe},\
+  { \"bribe\",\9\"abort\",\9\"More\"},\
+  { \"bribed\",\9\"end\",\9\9\"More\", onBribed}\
+}\
+\
+")
 spawn("eob_stone_medallion_u", 14,28,0, "eob_stone_medallion_u_3")
 spawn("eob_stone_necklace_u", 12,28,0, "eob_stone_necklace_u_2")
 spawn("eob_ruins_alcove", 13,28,0, "eob_ruins_alcove_portal_7_dagger")
@@ -9460,6 +10214,101 @@ spawn("eob_stone_dagger", 13,28,0, "eob_stone_dagger_2")
 spawn("eob_ruins_alcove", 12,28,3, "eob_ruins_alcove_portal_7_holy_symbol")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_holy_symbol", 12,28,3, "eob_stone_holy_symbol_2")
+spawn("eob_blocker", 1,16,2, "eob_blocker_drow_patrol_3")
+spawn("eob_blocker", 2,18,1, "eob_blocker_drow_patrol_2")
+spawn("eob_blocker", 1,19,1, "eob_blocker_drow_patrol_1")
+spawn("eob_blocker", 4,14,2, "eob_blocker_drow_patrol_6")
+spawn("eob_blocker", 4,15,2, "eob_blocker_drow_patrol_5")
+spawn("eob_blocker", 4,16,1, "eob_blocker_drow_patrol_4")
+spawn("spawner", 25,4,2, "spawner_3")
+	:setSpawnedEntity("fireball")
+	:setCoolDown(0)
+spawn("eob_key_gold", 30,12,2, "eob_key_gold_1")
+spawn("eob_key_gold", 4,26,1, "eob_key_gold_2")
+spawn("eob_holy_symbol", 29,4,1, "eob_holy_symbol_1")
+spawn("eob_blocker", 18,4,2, "eob_blocker_drow_patrol_8")
+spawn("eob_blocker", 17,5,0, "eob_blocker_drow_patrol_7")
+spawn("eob_blocker", 17,3,2, "eob_blocker_drow_patrol_9")
+spawn("eob_blocker", 6,3,2, "eob_blocker_drow_patrol_10")
+spawn("eob_blocker", 6,1,2, "eob_blocker_drow_patrol_11")
+spawn("eob_drowelf2_1_group", 7,5,2, "eob_drowelf2_1_group_2")
+	:setAIState("guard")
+spawn("eob_drowelf2_1_group", 8,5,2, "eob_drowelf2_1_group_3")
+	:setAIState("guard")
+spawn("eob_blocker", 8,7,2, "eob_blocker_drow_patrol_12")
+spawn("eob_blocker", 8,11,2, "eob_blocker_drow_patrol_14")
+spawn("eob_blocker", 8,12,2, "eob_blocker_drow_patrol_13")
+spawn("eob_drow_button", 13,7,2, "eob_drow_button_32")
+	:addConnector("toggle", "eob_drow_door_one_1", "toggle")
+spawn("spawner", 4,5,1, "spawner_4")
+	:setSpawnedEntity("fireball")
+	:setCoolDown(0)
+spawn("timer", 5,6,2, "timer_6")
+	:setTimerInterval(0.5)
+	:addConnector("activate", "spawner_4", "activate")
+	:addConnector("activate", "timer_6", "deactivate")
+spawn("timer", 5,7,1, "timer_7")
+	:setTimerInterval(1.5)
+	:addConnector("activate", "spawner_5", "activate")
+	:addConnector("activate", "script_entity_39", "removeBlockers")
+	:addConnector("activate", "timer_7", "deactivate")
+spawn("spawner", 6,5,0, "spawner_5")
+	:setSpawnedEntity("fireball")
+	:setCoolDown(0)
+spawn("script_entity", 5,4,0, "script_entity_39")
+	:setSource("-- in original the fireball follows into L turn \
+-- once any drow is attacked they become aggressive and come after you\
+-- if you catch the fireball - they wont attack\
+\
+-- this is a short cut, before we put onAttack hook on all drows \
+function removeBlockers()\
+\
+\9for e in allEntities(7)\
+\9do\
+\9\9if string.find(e.id,\"eob_blocker_drow_patrol\")\
+\9\9then\
+\9\9\9--hudPrint(\"removing blocker \" .. e.id ..\"\")\
+\9\9\9e:destroy()\
+\9\9elseif string.find(e.id,\"drowelf\")\
+\9\9then\
+\9\9\9--hudPrint(\"activating  \" .. e.id ..\"\")\9\9\
+\9\9\9e:setAIState(\"default\")\
+\9\9end\9\9\
+\9end\
+end")
+spawn("script_entity", 24,10,2, "script_entity_43")
+	:setSource("-- in original the fireball follows L turn from 25,8 to 26,8\
+-- because I cant make the fireball go L turn, \
+-- so I tried to make the puzzle a bit differently")
+spawn("prison_wall_text", 2,5,0, "prison_wall_text_1")
+	:setWallText("Don't delay!")
+spawn("pressure_plate_hidden", 26,9,2, "pressure_plate_hidden_98")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setSilent(true)
+	:addConnector("activate", "timer_8", "activate")
+spawn("timer", 27,8,1, "timer_8")
+	:setTimerInterval(1)
+	:addConnector("activate", "eob_drow_pit_1", "close")
+	:addConnector("activate", "timer_10", "activate")
+	:addConnector("activate", "timer_8", "deactivate")
+spawn("timer", 27,9,3, "timer_9")
+	:setTimerInterval(4)
+	:addConnector("activate", "eob_drow_pit_2", "open")
+	:addConnector("activate", "timer_9", "deactivate")
+spawn("starting_location", 26,10,3, "starting_location_1")
+spawn("timer", 26,7,1, "timer_10")
+	:setTimerInterval(3)
+	:addConnector("activate", "eob_drow_pit_1", "open")
+	:addConnector("activate", "eob_drow_pit_2", "open")
+	:addConnector("activate", "timer_10", "deactivate")
+spawn("eob_drow_pressure_plate", 25,9,3, "eob_drow_pressure_plate_25")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "eob_drow_pit_2", "toggle")
+	:addConnector("activate", "spawner_3", "activate")
 
 --- level 8 ---
 
@@ -9680,7 +10529,7 @@ spawn("eob_leather_boots_u", 7,15,1, "eob_leather_boots_u_3")
 spawn("eob_potion_extra_healing", 21,15,0, "eob_potion_extra_healing_4")
 spawn("eob_cleric_scroll_raise_dead", 21,15,0, "eob_cleric_scroll_raise_dead_1")
 spawn("eob_key_ruby_u", 25,16,0, "eob_key_ruby_u_3")
-spawn("eob_key_drow_u", 20,20,2, "eob_key_drow_u_4")
+spawn("eob_key_drow_u", 20,20,1, "eob_key_drow_u_4")
 spawn("eob_key_jeweled_u", 21,21,0, "eob_key_jeweled_u_3")
 spawn("scroll_shield", 21,21,0, "eob_mage_scroll_shield_2")
 spawn("eob_plate_mail_cursed3_u", 4,23,0, "eob_plate_mail_cursed3_u_1")
@@ -9748,8 +10597,8 @@ mapDesc([[
 #.############.#...#...####.#.##
 #.#.########...#.###.#.#..#.#.##
 ##....#.#.#..###.....#.#..#.####
-#...#.#.....#####.####.#.......#
-#...#.#.....#####.#....####.#..#
+#...#.#.....######.###.#.......#
+#...#.#.....#######....####.#..#
 ##.##.#.....####.##....#.##.#..#
 #...#...#.#.#..#.##....###...#.#
 #..##.########...#####.#.....#.#
@@ -9928,7 +10777,7 @@ spawn("eob_drow_pressure_plate", 3,17,2, "eob_drow_pressure_plate_24")
 	:setTriggeredByItem(true)
 spawn("eob_drow_button", 7,17,3, "eob_drow_button_25")
 spawn("eob_drow_magic_missile_firing_pad", 11,17,1, "eob_drow_magic_missile_firing_pad_5")
-spawn("eob_drow_stairs_up", 17,17,2, "eob_drow_stairs_up_11")
+spawn("eob_drow_stairs_up", 18,16,2, "eob_drow_stairs_up_11")
 spawn("eob_drow_wall_text", 19,17,3, "eob_drow_wall_text_26")
 	:setWallText("")
 spawn("eob_drow_magic_missile_firing_pad", 7,18,3, "eob_drow_magic_missile_firing_pad_6")
