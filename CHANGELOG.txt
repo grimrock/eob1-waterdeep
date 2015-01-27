@@ -1,3 +1,153 @@
+v0.02.17 (changes made by Carlos)
+==========
+ LEVEL 1
+==========
+no changes
+
+
+==========
+ LEVEL 2
+==========
+- updated script_entity_2 (at possiton 1,1)  part function SpecialQuest2(sender)
+should spawn rations at every location of dagger - not just one at party location
+- all drainpipes added with text "This slimy, smelly drainpipe reveals nothing."
+- removed eob_wall_button_7  on 10,21
+- removed eob_wall_button_8  on  2,21
+- removed eob_wall_button_9  on  7,18
+replaced by pull chains 
+in original there is small blue button from each side of the door
+pull chain is not button but still makes more sense then just one button outside
+
+- removed monster eob_flind1_1_1 on 23,6
+there are just two monsters in original in this section
+
+
+==========
+ LEVEL 3 
+==========
+-museum/galerie with monsters fixed - they attack only when attacked first
+see monsters.lua cloneObject{  name = "eob_kuotoa1_1_galery"
+-replaced monsters as per original
+-added hidden preasure plate 11,18 as per original
+-added silent teleporter & rotator 15,19 as per original
+- fixed door button on 17,19
+- fixed door lever  on 16,22
+- added hidden plate on 17,12 to close iron door eob_sewers_door_metal_17 on 17,12
+- lock at 25,13, added spawner of two monsters 
+to match with original (two Kuo_toa)
+- red gem alcoves missing on empty click
+"THIS HOLE LOOKS LIKE THE INSIDE OF A JEWEL BOX."
+possitons 19.17 and 20,23
+attempt to replace with hidden plates, shown only until you place gem inside
+- pit room entrance 21,23
+- added new red gem (as per original) to 17,24 and torch 18,24
+- attempt to fix the pit system in south east room
+- in original they got two modes, which would require a LOT of scripting
+- added hidden plate on 21,24 to reset the pits when entering room
+- fixed exit teleporter on 29,25 under pit room as per original
+- added two new teleports in the end area on 4,5 and 11,12 as per original
+- special secret level 3 fixed 
+- added the object secret 10,6 now it plays sound when eyes are removed
+- added red gem in 14,28 (spawns when red gem is used on lock on 19,17) as per original (eventhough you end up with useless red gem this way)
+
+
+==========
+ LEVEL 4 
+==========
+- when going from level 4 to level 3 one ends up at wrong locations
+  removed stairs up from lvl4 that leads to lvl3, replaced with ladder & ceiling shaft & teleporter
+  I know in original there are stairs, but this looks good and what is more important WORKS 
+- fixed Tahorn, he is NOT an insectoid mage guys, tried to balance his numbers based on original + what other characters in grimrock are at lvl3
+- button at 16,21 now also opens secret wall at same location to room with spider (cant find secret wall that would match color with other walls)
+- fixed spider (now he guard/waits behind the secrete dwarf cube at 18,21)
+- fixed text on wall 20,20
+- fixed text for levers to 'Access control lever.'
+- fixed 3 levers to 3 holes, fixed preasure plate to toggle the holes as per original
+- fixed texts on wall in 11,11 room
+- fixed text possition on 10,20
+- fixed plate activation toggles the hole on 8,20 as per original
+- fixed stairs between 4th and 5th level, those on 5th moved one square down, now looks much better
+- fixed button at 14,26 to toggle door at 13,26 (not just open once)
+- moved door from 13,1 to 14,1 (cosmetic change) and attach lever on 15,2 to them 
+- add if both 9,13 and 13,13 doors are closed, remove secrete cube wall on 11,18 as per original
+- add secret cube wall on 8,11 toggled by chain on 11,18
+- fixed mechnism of 4 doors at 3,7, any door opening when all doors are closed spawns one potion, up to 3 potions (defined by counter)
+- moved pressure plates closer to door in spider sector to close them right when you enter on 13,27
+- add one spide at 25,25
+- removed dwarf cube from 26,18 as per original
+- add dwarf cube to 27,17 as per original
+- dwarf cubes at 26,13 and 27,17, set with counters, each needs to be pressed 2 times to open its cube, at least 10 sec apart (timer)
+  unable to fetch the exact sequence from original
+  but it seems that the plates that activates them must be pressed several times 
+  its is definitely possible to open both by going south and north 2 times
+  I also saw in original that only 27,17 was open - unable to reproduce yet though
+- connected lever on 3,3 secret area to cube 16,4 (toggle) and removed the eob_ruins_wall_small_statue 16,3/16,5 (as the graphic doesnt fit to cube wall)
+- added pressure_plate_release to wall moves at 16,10
+- replaced eob_ruins_illusion_wall on 5,4 with eob_ruins_illusion_wall_rune_fake (which dont disapper once walked through)
+- added system of spider respawning and each spider passing a web will renew that web and eggs now
+- fixed oracle of knowledge (item identifier if you put orb of power into alcove )
+- add timer to replace hacked webs & eggs with fixed ones + spider spawner
+
+done differently then original
+- added secret when discovered illusional wall at 5,4
+- drow clever at 11,18 is now spawned by special quest (otherwise the special quest on this level does nothing)
+
+
+==========
+ LEVEL 5 
+==========
+- fixed secret button on 2,15 and secret wall on 3,15 but doesnt fit together yet
+- removed pull chain from door 1,13 (in original they are not openable from south, only from north), temporary added button on nearby wall
+- add pressure plate on 10,5 with secret
+- add dwarven cube on 19,16 and connected to button on 20,16
+- door on 8,10 should be forceable
+- removed pull chain on door 6,10, attached to secret button on 6,9
+- fixed alcove 10,13 - special quest for level 5, on inserting 5 eob_rations, turn them into 5 eob_rations_iron
+- attached lever 19,22 to door 19,22
+- fixed teleporter on 17,27 set target 19,19
+- fixed locks on 24,28 and 25,28 to open door and remove dwarven_cube to access and activate teleport on 26,27
+- added teleport from 26,27 to 28,23 by default deactivated
+- added hidden plates that activate pit falls in the south-east area, had to create new decoration eob_ruins_floor_destroyable defined in objects.lua, to be able to destroy this fake floor once the pit opens, otherwise the pit colided with the default floor and didnt look like pit at all
+- lever on 19,18 now cleans all the pits in the area (script could be improved on)
+- added silent teleport from 28,17 to 25,17
+- added trap door to 22,13 and attached to plate on 22,14
+- fixed teleporters in the north east area, and update text on walls
+- added hidden plate on 27,16  connected to secrete on 27,17
+- attached secret button on 13,2 to the illusionary wall/door next to it
+- replaced on 8,10 eob_ruins_door_stone_stacked with, also adjusted forcing script on lvl 1 x1y14 to recognize all objects with name including word "door" and "force" as forcable door
+- attempt to recreate the dwarf camp dialog (resurrection works only for Tod, Anya and Ileira so far)
+- replaced eob_ruins_illusion_wall through the whole level with eob_ruins_illusion_wall_rune_fake (which dont disapper once walked through)
+	
+
+==========
+ LEVEL 6 
+==========
+
+- stairs up to level 5 moved from 16,22 to 16,21 to better match the environment
+- fixed pressure plates on 25,3 and 25,5 activate door on any two weapons put down (any which name contains dagger, sword, mace, axe)
+- fixed text at 24,4
+- fixed key on 19,22 with lock on 27,7 with door on 27,6
+- fixed secret wall at 18,29 and nearby buttons
+- fixed secret wall at 13,28 and nearby buttons
+- fixed system of 1 plate  & shooting darts around 29,13
+- fixed system of 1 plate  & shooting darts around 5,11
+- fixed system of 3 plates & shooting darts in southwest area from 7,23 till 7,25
+- defined new type of eob_dwarven_wall_cube_invisible in objects.lua (using graphic from floor)
+- fixed system of inserting darts/daggers to alcoves in south central area, needed to 
+  (could be improved on, minor graphic glitches eg now throwed weapons disappear)
+- stairs at 4,0 and 5,6 temporarily made as invisible teleporter
+- doors at 1,6 and 7,6 must be openable only from inside (but there is no one side pull chain) replaced with buttons
+- replaced pits on 2,12 and 8,12 with silent teleporter & the same pits (if you put them in order of teleporter first then pit, you will be teleported but not fall down) - damage from the fall  component missing 
+- fixed system of keys and locks and cubes to get to level 7 around 4,19
+- exit stairs moved from 1,20 to 1,19 to allign with stairs on lvl 7
+- replaced all kengu eggs in the level with one type of egg eob_egg_10_u and fixed the special quest on 13,17 (could be improved on)
+- changed object eob_egg_10_u in items_Eobconverter.lua to stackable = false, secret doesnt work with stackable items, neither are the eggs tackable in original game
+- created darkmage dialog and attack on 26,15, so far using gorgomog
+- added kenku respawner
+- added little teleport puzzle instead of plain stairs in north-west corner
+
+
+
 v0.02.16 (not released yet)
 - (DJ) Leech (by Wallasaurus) added
 - (JKos) spellbook update
