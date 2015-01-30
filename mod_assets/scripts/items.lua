@@ -334,3 +334,24 @@ cloneObject{
 --	baseObject = "note",
 --	uiName = "Wently's note",
 -- --------------------------------------- --
+
+
+-- carlos
+
+	defineObject{
+		name = "torch",
+		class = "Item",
+		uiName = "Torch",
+		model = "assets/models/items/torch.fbx",
+		gfxIndex = 130,
+		torch = true,
+		fuel = 1100,
+		attackPower = 4,
+		accuracy = 0,
+		coolDownTime = 3,
+		attackMethod = "meleeAttack",
+		attackSwipe = "vertical",
+		attackSound = "swipe",
+		impactSound = "impact_blunt",
+		weight = 1.2,
+	}

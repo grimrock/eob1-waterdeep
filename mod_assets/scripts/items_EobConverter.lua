@@ -2368,13 +2368,13 @@ cloneObject {
 }
 
 cloneObject {
-	name = "eob_bones_human_ileria_u",  -- Human Bones
+	name = "eob_bones_human_ileira_u",  -- Human Bones
 	baseObject = "remains_of_toorum",
 	uiName = "Human Bones",
 }
 
 cloneObject {
-	name = "eob_bones_human_ileria",
+	name = "eob_bones_human_ileira",
 	baseObject = "remains_of_toorum",
 	uiName = "Human Bones",
 }

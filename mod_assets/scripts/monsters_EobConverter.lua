@@ -63,6 +63,20 @@ cloneObject {
 cloneObject {
 	name = "eob_drowelf",
 	baseObject = "uggardian",
+   	onDamage = function(self, damage, damageType)
+		for e  in allEntities(7)
+		do
+		  if string.find(e.name,"eob_drowelf")
+		  then e:setAIState("default")
+			--hudPrint("activating: " .. e.id)
+		  end
+	 	  if string.find(e.name,"eob_blocker_drow_patrol") 
+		  then 
+			hudPrint("destroying: " .. e.id)
+			e:destroy()
+		  end
+		end	
+	     end
 }
 
 cloneObject {
@@ -413,6 +427,65 @@ cloneObject {
 	name = "eob_drowelf1_1",
 	baseObject = "eob_drowelf",
 	lootDrop = {50, "eob_long_sword_sharp_u"},
+   	onDamage = function(self, damage, damageType)
+		for e  in allEntities(7)
+		do
+		  if string.find(e.name,"eob_drowelf")
+		  then e:setAIState("default")
+			--hudPrint("activating: " .. e.id)
+	 	  elseif string.find(e.id,"eob_blocker_drow_patrol") 
+		  then 
+			--hudPrint("destroying: " .. e.id)
+			e:destroy()
+		  end
+		end	
+	      end,
+}
+
+cloneObject {
+	name = "eob_drowelf2_1",
+	baseObject = "eob_drowelf",
+	lootDrop = {50, "eob_long_sword_sharp_u"},
+   	onDamage = function(self, damage, damageType)
+		for e  in allEntities(7)
+		do
+		  if string.find(e.name,"eob_drowelf")
+		  then e:setAIState("default")
+			--hudPrint("activating: " .. e.id)
+	 	  elseif string.find(e.id,"eob_blocker_drow_patrol") 
+		  then 
+			--hudPrint("destroying: " .. e.id)
+			e:destroy()
+		  end
+		end	
+	     end,
+}
+
+defineObject {
+	name = "eob_drowelf2_1_group",
+	class = "MonsterGroup",
+	monsterType = "eob_drowelf2_1",
+	count = 2,
+   	onDamage = function(self, damage, damageType)
+		for e  in allEntities(7)
+		do
+		  if string.find(e.name,"eob_drowelf")
+		  then e:setAIState("default")
+			--hudPrint("activating: " .. e.id)
+	 	  elseif string.find(e.id,"eob_blocker_drow_patrol") 
+		  then 
+			--hudPrint("destroying: " .. e.id)
+			e:destroy()
+		  end
+		end	
+	     end,
+}
+
+defineObject {
+	name = "eob_skelwar2_2_group",
+	class = "MonsterGroup",
+	monsterType = "eob_skelwar2_2",
+	count = 2,
 }
 
 cloneObject {
@@ -435,27 +508,6 @@ cloneObject {
 		eob_skelwar2_2_c:increment()
 	end,
 }
-
-defineObject {
-	name = "eob_skelwar2_2_group",
-	class = "MonsterGroup",
-	monsterType = "eob_skelwar2_2",
-	count = 2,
-}
-
-cloneObject {
-	name = "eob_drowelf2_1",
-	baseObject = "eob_drowelf",
-	lootDrop = {50, "eob_long_sword_sharp_u"},
-}
-
-defineObject {
-	name = "eob_drowelf2_1_group",
-	class = "MonsterGroup",
-	monsterType = "eob_drowelf2_1",
-	count = 2,
-}
-
 ----------------
 --- Level 08 ---
 ----------------

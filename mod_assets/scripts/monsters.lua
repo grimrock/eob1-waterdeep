@@ -210,3 +210,23 @@ cloneObject{
 	     end
 }
 
+-- ==================================== --
+-- ============= LEVEL 07 ============= --
+-- ==================================== --
+--[[
+-- must be defined in the first eob_drowelf defintion in monsters_eobconverter.lua
+-- so that all sub-drows inherit this function
+cloneObject {
+	name = "eob_drowelf",
+	baseObject = "uggardian",
+   	onDamage = function(self, damage, damageType)
+		for e  in allEntities(7)
+		do
+	 	  if string.find(e.name,"eob_blocker") 
+		     and (e.level == 7 and e.x >= 1 and e.x <= 20 and e.y >= 1 and e.y <= 20 )
+		  then e:destroy()
+		  end
+		end	
+	     end
+}
+]]

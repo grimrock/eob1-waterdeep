@@ -496,7 +496,6 @@ cloneObject {
 	name = "eob_drow_wall_illusion",
 	baseObject = "prison_secret_door",
 }
-
 cloneObject {
 	name = "eob_drow_wall_throwable",
 	baseObject = "dungeon_ivy_1",
@@ -533,11 +532,12 @@ cloneObject {
 	name = "eob_drow_wall_text",
 	baseObject = "prison_wall_text_long",
 }
-
+--[[ commented by carlos, looks like duplicate
 cloneObject {
 	name = "eob_drow_wall_text",
 	baseObject = "dungeon_wall_text_long",
 }
+]]
 
 ------------------------
 --- Stairs / Ladders ---

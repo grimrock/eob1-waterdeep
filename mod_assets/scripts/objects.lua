@@ -185,6 +185,32 @@ defineObject{
 }
 -- Added by JKos --
 
+-- carlos
+defineObject{
+	name = "eob_drow_wall_illusion",
+	class = "Decoration",
+	model = "assets/models/env/prison_wall_01.fbx",
+	placement = "wall",
+	editorIcon = 124,
+}
+defineObject {
+	name = "eob_drow_wall_illusion_with_spider",
+	class = "Decoration",
+	model = "assets/models/env/prison_wall_01.fbx",
+	placement = "wall",
+	editorIcon = 124,
+}
+
+defineObject {
+	name = "eob_drow_wall_throwable",
+	class = "Decoration",
+	model = "assets/models/env/prison_wall_01.fbx",
+	placement = "wall",
+	editorIcon = 124,
+}
+
+-- carlos
+
 -- ======================== --
 -- ======  Pillars   ====== --
 -- ======================== --
@@ -221,6 +247,15 @@ cloneObject{
 	model = "mod_assets/models/env/eob_sewers_wallbrick_rats.fbx",
 	replacesWall = false,
 }
+
+-- carlos
+cloneObject {
+	name = "eob_drow_wall_text_short",
+	baseObject = "prison_wall_text",
+}
+
+-- carlos
+
 -- ======================== --
 -- ====  Decorations  ===== --
 -- ======================== --
@@ -500,6 +535,9 @@ defineObject{
 	editorIcon = 8,
 }
 
+
+
+-- carlos
 
 -- ======================== --
 -- ======  Locks  ======= --
