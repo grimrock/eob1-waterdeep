@@ -1,3 +1,8 @@
+v0.02.18 (changes made by Carlos)
+Levels 7 - 9 playable
+few minor things are missing 
+
+
 v0.02.17 (changes made by Carlos)
 ==========
  LEVEL 1
