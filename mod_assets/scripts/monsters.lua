@@ -175,58 +175,189 @@ cloneObject {
 	baseObject = "eob_drider"
 }
 
+-- carlos
+-- redefining all here, not to mess with monsters_EobConverter.lua file
 cloneObject{
    name = "eob_kuotoa1_1_museum",
    baseObject = "eob_kuotoa1_1",
-   --when you damange this concrete type of monster
+   --when you damange this type of monster
    --all the blockers eob_blocker_museum_xx will be removed
    --this type of monster should be only use in museum on level 3
    onDamage = function(self, damage, damageType)
-		  blockerexists = findEntity("eob_blocker_museum_1")
-		  if blockerexists
-		  then 
-		    for i = 1, 22, 1 do
-		      findEntity("eob_blocker_museum_" .. i .. ""):destroy()
-		    end
-		  end
-   	      end	
+		script_entity_museum.onAttack() -- lvl 3 on 10,18
+	     end,
 }
-
 
 cloneObject{
    name = "eob_flind1_2_museum",
    baseObject = "eob_flind1_2",
-   --when you damage this concrete type of monster
+   --when you damage this type of monster
    --all the blockers eob_blocker_museum_xx will be removed
    --this type of monster should be only use in museum on level 3
    onDamage = function(self, damage, damageType)
-		for e  in allEntities(3)
-		do
-	 	  if string.find(e.name,"eob_blocker") ~= nil
-		     and (e.level == 3 and e.x >= 8 and e.x <= 13 and e.y >= 19 and e.y <= 22)
-		  then e:destroy()
-		  end
-		end	
+		script_entity_museum.onAttack() -- lvl 3 on 10,18
+	     end,
+}
+
+
+cloneObject {
+	name = "eob_dwarf",
+	baseObject = "skeleton_warrior",
+-- if you attack any of the dwarves in game
+-- then remove the dwarven camp blockers and dwarven dialogs
+   onDamage = function(self, damage, damageType)
+		--counter_dwarf_camp_attacked:increment()
+		script_entity_dwarven_camp_attacked.attackDwarves()
 	     end
 }
+
+--carlos
+
+-- ==================================== --
+-- ============= LEVEL 05 ============= --
+-- ==================================== --
+-- carlos
+-- redefining all here, not to mess with monsters_EobConverter.lua file
+cloneObject {
+	name = "eob_dwarf",
+	baseObject = "skeleton_warrior",
+-- if you attack any of the dwarves in game
+-- then remove the dwarven camp blockers and dwarven dialogs
+   onDamage = function(self, damage, damageType)
+		script_entity_dwarven_camp_attacked.attackDwarves() -- lvl 5 on 17,10
+	     end
+}
+
+
+-- the rest are here only to inherit the above onDamage hook
+cloneObject {
+	name = "eob_dwarf1_1",
+	baseObject = "eob_dwarf",
+	lootDrop = {50, "eob_dwarven_helmet_u", 100, "eob_rations_u"},
+
+
+}
+
+cloneObject {
+	name = "eob_dwarf2_1",
+	baseObject = "eob_dwarf",
+	lootDrop = {50, "eob_dwarven_helmet_u", 100, "eob_rations_u"},
+}
+
+defineObject {
+	name = "eob_dwarf2_1_group",
+	class = "MonsterGroup",
+	monsterType = "eob_dwarf2_1",
+	count = 2,
+}
+
+cloneObject {
+	name = "eob_dwarf1_2",
+	baseObject = "eob_dwarf",
+	lootDrop = {50, "eob_axe_u", 100, "eob_rations_u"},
+}
+
+cloneObject {
+	name = "eob_dwarf4_1",
+	baseObject = "eob_dwarf",
+	lootDrop = {},
+	onDie = function(monster)
+		if findEntity("eob_dwarf4_1_c") == nil then
+			spawn("counter", 5, 0, 0, 0, "eob_dwarf4_1_c")
+		end
+		if eob_dwarf4_1_c:getValue() % 4 < 1 then
+			if math.random(0,99) < 50 then
+				spawn("eob_axe_u", monster.level, monster.x, monster.y, monster.facing, "eob_axe_u_18_14_"..eob_dwarf4_1_c:getValue())
+			end
+			spawn("eob_rations_u", monster.level, monster.x, monster.y, monster.facing, "eob_rations_u_1"..eob_dwarf4_1_c:getValue())
+		elseif eob_dwarf4_1_c:getValue() % 4 < 4 then
+			if math.random(0,99) < 50 then
+				spawn("eob_dwarven_helmet_u", monster.level, monster.x, monster.y, monster.facing, "eob_dwarven_helmet_u_18_14_"..eob_dwarf4_1_c:getValue())
+			end
+			spawn("eob_rations_u", monster.level, monster.x, monster.y, monster.facing, "eob_rations_u_2"..eob_dwarf4_1_c:getValue())
+		end
+		eob_dwarf4_1_c:increment()
+	end,
+}
+
+defineObject {
+	name = "eob_dwarf4_1_group",
+	class = "MonsterGroup",
+	monsterType = "eob_dwarf4_1",
+	count = 4,
+}
+
+--carlos
+
 
 -- ==================================== --
 -- ============= LEVEL 07 ============= --
 -- ==================================== --
---[[
--- must be defined in the first eob_drowelf defintion in monsters_eobconverter.lua
--- so that all sub-drows inherit this function
+
+-- carlos
+-- redefining all here, not to mess with monsters_EobConverter.lua file
 cloneObject {
 	name = "eob_drowelf",
 	baseObject = "uggardian",
    	onDamage = function(self, damage, damageType)
-		for e  in allEntities(7)
-		do
-	 	  if string.find(e.name,"eob_blocker") 
-		     and (e.level == 7 and e.x >= 1 and e.x <= 20 and e.y >= 1 and e.y <= 20 )
-		  then e:destroy()
-		  end
-		end	
+		   script_entity_drow_patrol.onAttack() --lvl 7 on 2,19
+		   end,
+}
+
+cloneObject {
+	name = "eob_drowelf1_1",
+	baseObject = "eob_drowelf",
+	lootDrop = {50, "eob_long_sword_sharp_u"},
+   	onDamage = function(self, damage, damageType)
+		   script_entity_drow_patrol.onAttack() --lvl 7 on 2,19
+		   end,
+}
+
+cloneObject {
+	name = "eob_drowelf2_1",
+	baseObject = "eob_drowelf",
+	lootDrop = {50, "eob_long_sword_sharp_u"},
+   	onDamage = function(self, damage, damageType)
+		   script_entity_drow_patrol.onAttack() --lvl 7 on 2,19
+		   end,
+}
+
+defineObject {
+	name = "eob_drowelf2_1_group",
+	class = "MonsterGroup",
+	monsterType = "eob_drowelf2_1",
+	count = 2,
+   	onDamage = function(self, damage, damageType)
+		   script_entity_drow_patrol.onAttack() --lvl 7 on 2,19
+		   end,
+}
+--carlos
+
+-- ==================================== --
+-- ============= LEVEL 10 ============= --
+-- ==================================== --
+-- carlos
+-- mantis "statues" for level 10 special quest
+cloneObject {
+	name = "eob_mantis",
+	baseObject = "ogre",
+}
+
+cloneObject {
+	name = "eob_mantis_dagger_statue",
+	baseObject = "eob_mantis",
+	lootDrop = {50, "eob_dagger"},
+   	onDamage = function(self, damage, damageType)
+		script_entity_special_quest_10.removeBlockers()	
 	     end
 }
-]]
+
+cloneObject {
+	name = "eob_mantis_halbred_statue",
+	baseObject = "eob_mantis",
+	lootDrop = {50, "eob_halberd_u"},
+   	onDamage = function(self, damage, damageType)
+		script_entity_special_quest_10.removeBlockers()
+	     end
+}
+--carlos

@@ -319,6 +319,50 @@ cloneObject{
 }
 
 -- ==================================== --
+-- ============= LEVEL 04 ============= --
+-- ==================================== --
+	
+-- carlos
+-- torches make fire damage 
+-- spider webs are vulnerable to fire
+
+-- original definition of torch
+-- used with holders
+	defineObject{
+		name = "torch",
+		class = "Item",
+		uiName = "Torch",
+		model = "assets/models/items/torch.fbx",
+		gfxIndex = 130,
+		torch = true,
+		fuel = 1100,
+		attackPower = 8,
+		damageType ="fire",--added by carlos
+		accuracy = 0,
+		coolDownTime = 3,
+		attackMethod = "meleeAttack",
+		attackSwipe = "vertical",
+		attackSound = "swipe",
+		impactSound = "impact_blunt",
+		weight = 1.2,
+	}
+
+
+-- carlos
+-- ==================================== --
+-- ============= LEVEL 06 ============= --
+-- ==================================== --
+-- carlos
+
+-- eggs are not stackable, also messes with special quest
+cloneObject {
+	name = "eob_egg_10",
+	baseObject = "slime_bell",
+	uiName = "Kenku Egg",
+	stackable = false, 
+}
+-- carlos
+-- ==================================== --
 -- ====  New Items - Experimental ===== --
 -- ==================================== --
 
@@ -336,22 +380,417 @@ cloneObject{
 -- --------------------------------------- --
 
 
--- carlos
 
-	defineObject{
-		name = "torch",
-		class = "Item",
-		uiName = "Torch",
-		model = "assets/models/items/torch.fbx",
-		gfxIndex = 130,
-		torch = true,
-		fuel = 1100,
-		attackPower = 4,
-		accuracy = 0,
-		coolDownTime = 3,
-		attackMethod = "meleeAttack",
-		attackSwipe = "vertical",
-		attackSound = "swipe",
-		impactSound = "impact_blunt",
-		weight = 1.2,
-	}
+-- carlos 
+-- Paladin Holy Symbol, green
+cloneObject {
+	name = "eob_holy_symbol_paladin_u",  
+	baseObject = "golden_chalice",
+	uiName = "Paladin Holy Symbol",
+}
+
+cloneObject {
+	name = "eob_holy_symbol_paladin",
+	baseObject = "golden_chalice",
+	uiName = "Paladin Holy Symbol",
+}
+-- Cleric Holy symbol, yellow
+cloneObject {
+	name = "eob_holy_symbol_cleric_u",  
+	baseObject = "golden_chalice",
+	uiName = "Cleric Holy symbol",
+}
+
+cloneObject {
+	name = "eob_holy_symbol_cleric",
+	baseObject = "golden_chalice",
+	uiName = "Cleric Holy symbol",
+}
+
+
+-- attempt on wands fix
+-- WANDS OF MAGIC MISSILE
+defineObject{
+	name = "eob_wand_magic_missile_3_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "spellcraft",
+	requiredLevel = 1,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "magic_missile",
+	wandPower = 25,
+	charges = 3,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_magic_missile_20_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "spellcraft",
+	requiredLevel = 1,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "magic_missile",
+	wandPower = 25,
+	charges = 20,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+
+defineObject{
+	name = "eob_wand_magic_missile_3",
+	class = "Item",
+	uiName = "Wand of Magic missile",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Wand of Magic missile.",
+	skill = "spellcraft",
+	requiredLevel = 1,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "magic_missile",
+	wandPower = 25,
+	charges = 3,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_magic_missile_20",
+	class = "Item",
+	uiName = "Wand of Magic missile",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Wand of Magic missile.",
+	skill = "spellcraft",
+	requiredLevel = 1,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "magic_missile",
+	wandPower = 25,
+	charges = 20,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+
+-- WANDS OF FIREBALL
+defineObject{
+	name = "eob_wand_fireball_10_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "fire_magic",
+	requiredLevel = 13,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "fireball",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_fireball_10",
+	class = "Item",
+	uiName = "Wand of Fireball",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand of Fireball",
+	skill = "fire_magic",
+	requiredLevel = 13,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "fireball",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+
+-- WANDS OF LIGHTNING BOLT
+defineObject{
+	name = "eob_wand_lightning_bolt_10_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "air_magic",
+	requiredLevel = 14,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "lightning_bolt",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_lightning_bolt_10",
+	class = "Item",
+	uiName = "Wand of Lightning bolt.",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand of Lightning bolt.",
+	skill = "air_magic",
+	requiredLevel = 14,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "lightning_bolt",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+
+-- WAND OF CONE OF COLD
+defineObject{
+	name = "eob_wand_cone_of_cold_2_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "ice_magic",
+	requiredLevel = 19,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "cone_of_cold",
+	wandPower = 25,
+	charges = 2,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_cone_of_cold_2",
+	class = "Item",
+	uiName = "Wand of Cone of Cold",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand of Cone of Cold.",
+	skill = "ice_magic",
+	requiredLevel = 19,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "cone_of_cold",
+	wandPower = 25,
+	charges = 2,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_cone_of_cold_10_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "ice_magic",
+	requiredLevel = 19,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "cone_of_cold",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_cone_of_cold_10",
+	class = "Item",
+	uiName = "Wand of Cone of Cold",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand of Cone of Cold.",
+	skill = "ice_magic",
+	requiredLevel = 19,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "cone_of_cold",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+
+-- WAND OF ICE STORM
+-- cant tell why this one doesnt work
+defineObject{
+	name = "eob_wand_ice_storm_10_u",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand.",
+	skill = "ice_magic",
+	requiredLevel = 13,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "ice_storm",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+defineObject{
+	name = "eob_wand_ice_storm_10",
+	class = "Item",
+	uiName = "Wand of Ice Storm",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand of Ice Storm.",
+	skill = "ice_magic",
+	requiredLevel = 13,
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "castWandSpell",
+	spell = "ice_storm",
+	wandPower = 25,
+	charges = 10,
+	emptyItem = "eob_wand_empty",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+-- DISCHARGED WANDS
+-- LOST ALL ITS POWER 
+
+defineObject{
+	name = "eob_wand_empty",
+	class = "Item",
+	uiName = "Wand",
+	model = "assets/models/items/whitewood_wand.fbx",
+	description = "Magic wand - now completely drained.",
+	gfxIndex = 56,
+	attackPower = 14,
+	accuracy = 0,
+	coolDownTime = 5,
+	attackMethod = "meleeAttack",
+	attackSwipe = "vertical",
+	attackSound = "swipe",
+	impactSound = "impact_blunt",
+	weight = 1.7,
+}
+
+cloneObject{
+	name = "eob_stone_gem",
+	baseObject = "blue_gem",
+	uiName = "Stone Gem",
+	glitterEffect = "magic_glow_blue",
+}
+
+
+
+
+
+defineObject{
+	name = "cube",
+	class = "Item",
+	uiName = "Shuriken",
+	model = "mod_assets/models/env/eob_dwarven_wall_cube.fbx",
+	skill = "throwing_weapons",
+	gfxIndex = 12,
+	throwingWeapon = true,
+	attackPower = 11,
+	coolDownTime = 3.5,
+	attackMethod = "throwAttack",
+	attackSound = "swipe",
+	impactSound = "impact_blade",
+	stackable = true,
+	sharpProjectile = true,
+	projectileRotationSpeed = 0,
+	projectileRotationX = 0,
+	projectileRotationY = 0,
+	weight = 100,
+}
+-- carlos

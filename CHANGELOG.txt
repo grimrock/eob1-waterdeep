@@ -1,4 +1,12 @@
-v0.02.18 (changes made by Carlos)
+v0.02.19
+changes made by Carlos
+levels 1-11 are playable
+all the puzzles, keys, doors, special quests etc. should work as original
+
+
+
+v0.02.18 
+changes made by Carlos
 Levels 7 - 9 playable
 few minor things are missing 
 

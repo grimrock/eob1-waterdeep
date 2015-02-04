@@ -485,14 +485,18 @@ fw_defineObject{
 	model = "mod_assets/framework/models/null.fbx",
 	gfxIndex = 109,
 	attackPower = 1,
-	impactSound = "",
-	attackSound = "",
+	speed=10,
+-- empty paths spawned error messages (carlos)
+--	impactSound = "",
+--	attackSound = "",
 	stackable = false,
 	sharpProjectile = false,
 	castShadow = false,
 	projectileRotationY = 0,
 	weight = 0,	
 }
+
+
 
 defineMaterial{
 	name = "mtl_null",

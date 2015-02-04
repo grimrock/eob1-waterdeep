@@ -7,7 +7,7 @@ defineParticleSystem{
 	emitters = {		
 		-- fog
 		{
-			emissionRate = 150,
+		emissionRate = 150,
          	emissionTime = 0,
          	maxParticles = 500,
         	spawnBurst = false,
@@ -55,6 +55,7 @@ defineParticleSystem{
 		
 	}
 }
+
 
 defineParticleSystem{
 	name = "magic_glow_blue",

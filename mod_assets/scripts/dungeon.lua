@@ -875,7 +875,7 @@ function isForced()\
 \9local partystr = member:getStat(\"strength\")\
 \9local doorstr = math.random(1,25)\
 \9fw.debugPrint(\"ForceDoor: partyStr=\"..partystr..\", doorStr=\"..doorstr)\
-\9hudPrint(\"ForceDoor: partyStr=\"..partystr..\", doorStr=\"..doorstr)\
+\9--hudPrint(\"ForceDoor: partyStr=\"..partystr..\", doorStr=\"..doorstr)\
 \9if (partystr>doorstr) then\
 \9\9hudPrint(member:getName()..texts.getT(\"door_member_try_open_ok\"))\
 \9\9return true\
@@ -1063,14 +1063,16 @@ Initially, Magic Missile does two to five points of damage, and for every two ex
 \9\9--skill='spellcraft',\
 \9\9projectile='spell_projectile',\
 \9\9sound='fireball_launch',\
-\9\9onHitSound='fireball_hit',\
+\9\9onHitSound='lightning_bolt_hit_small',\
 \9\9particleEffect='magic_missile',\
 \9\9onHitParticleEffect='magic_missile_hit',\
-\9\9speed=12,\
+\9\9speed=10,\
 \9\9damageType = 'physical',\
 \9\9calculateDamage=function(caster)\
 \9\9\9local modifier = math.ceil(caster:getLevel()/2)\
-\9\9\9return  math.random(modifier*2, modifier * 5)\9\
+\9\9\9-- carlos spell dmg tunning\
+\9\9\9--return  math.random(modifier*2, modifier * 5)\9\
+\9\9\9return  math.random(modifier*20, modifier * 50)\9\
 \9\9end\
 \9}\
 \9\
@@ -1209,8 +1211,9 @@ This spell causes the mage to project a chilling cone of sub-zero cold. The numb
 Duration: Instantaneous\
 Area of Effect: A cross-shaped area of 3x3 squares\
 \
-The magically created storn this spell produces is a pounding torrent of huge hailstones. The spell pummels the targets with 3-30 points of damage. The range of this spell is based on the caster's level.]]\
+The magically created storm this spell produces is a pounding torrent of huge hailstones. The spell pummels the targets with 3-30 points of damage. The range of this spell is based on the caster's level.]]\
 ,\9\9\
+\9\9skill=\"ice_magic\",\
 \9\9level=4,\
 \9\9runes='AI',\
 \9\9book_page=4,\
@@ -2717,13 +2720,13 @@ spawn("script_entity", 23,1,2, "gw_spell_book")
 function getRuneImage(runeChar)\
 \9local runeMap = {\
 \9\9A='rune1_fire',\
-\9\9B='rune2_death',\
+\9\9B='rune8_life',\
 \9\9C='rune3_air',\
 \9\9D='rune4_spirituality',\
 \9\9E='rune5_balance',\
 \9\9F='rune6_physicality',\
 \9\9G='rune7_earth',\
-\9\9H='rune8_life',\
+\9\9H='rune2_death',\
 \9\9I='rune9_water'\
 \9}\
 \
@@ -2808,7 +2811,7 @@ function addSpell(book,spell)\
 \9\
 \9local text = line:addChild('text',spell.name..'_text',0,0,300,20,spell.uiname)\
 \9text.marginLeft = 10\
-\9text.textColor = {200,200,200,200}\
+\9text.textColor = {255,255,255,255}\
 \9text:setRelativePosition('after_previous')\
 \9\
 \9text.onClick = _turnPage\
@@ -2834,8 +2837,8 @@ function addSpell(book,spell)\
 \9end\9\9\
 \9\
 \9local spellText = spellDescr:addChild('text','spell_text_'..spell.name,0,250,350,200,spell.description)\
-\9spellText.textColor = {200,200,200,200}\
-\9spellText.textSize = 'medium'\
+\9spellText.textColor = {255,255,255,255}\
+\9spellText.textSize = 'small'\
 \
 end\
 \
@@ -3063,8 +3066,71 @@ function closePortal()\
 \
 end")
 spawn("eob_sewers_secret_door", 9,15,3, "eob_sewers_secret_door_2")
-spawn("eob_sewers_secret_button_large", 9,15,0, "eob_sewers_secret_button_large_2")
+spawn("eob_sewers_secret_button_large", 9,15,2, "eob_sewers_secret_button_large_2")
 	:addConnector("toggle", "eob_sewers_secret_door_2", "toggle")
+spawn("eob_sewers_lever", 7,15,0, "eob_sewers_lever_fog_on_off")
+	:setLeverState("activated")
+	:addConnector("deactivate", "script_entity_fog_on_off", "fogoff")
+	:addConnector("activate", "script_entity_fog_on_off", "fogon")
+spawn("eob_sewers_wall_text_long", 7,15,0, "eob_sewers_wall_text_long_4")
+	:setWallText("turn on / off the fog in levels 1 to 3")
+spawn("script_entity", 7,14,3, "script_entity_fog_on_off")
+	:setSource("function fogoff()\
+\9local level=1\
+\9for level=1,3\
+\9do\
+\9\9for e in allEntities(level)\
+\9\9do\
+\9\9\9if e.name == \"sewers_fog\"\
+\9\9\9then \
+\9\9\9\9e:destroy()\
+\9\9\9end\
+\9\9end\
+\9end\
+\9\
+end\
+\
+function fogon()\
+--- level 1 ---\
+spawn(\"sewers_fog\", 1, 18,15,2, \"sewers_fog_2\")\
+spawn(\"sewers_fog\", 1,22,11,1, \"sewers_fog_3\")\
+spawn(\"sewers_fog\", 1,22,21,2, \"sewers_fog_4\")\
+spawn(\"sewers_fog\", 1,10,23,2, \"sewers_fog_5\")\
+spawn(\"sewers_fog\", 1,6,27,2, \"sewers_fog_6\")\
+spawn(\"sewers_fog\", 1,10,18,0, \"sewers_fog_7\")\
+spawn(\"sewers_fog\", 1,25,19,1, \"sewers_fog_8\")\
+spawn(\"sewers_fog\", 1,13,15,0, \"sewers_fog_1\")\
+\
+--- level 2 ---\
+spawn(\"sewers_fog\", 2,24,23,1, \"sewers_fog_9\")\
+spawn(\"sewers_fog\", 2,25,19,0, \"sewers_fog_10\")\
+spawn(\"sewers_fog\", 2,19,27,3, \"sewers_fog_11\")\
+spawn(\"sewers_fog\", 2,22,18,1, \"sewers_fog_12\")\
+spawn(\"sewers_fog\", 2,28,14,1, \"sewers_fog_13\")\
+spawn(\"sewers_fog\", 2,14,20,2, \"sewers_fog_14\")\
+spawn(\"sewers_fog\", 2,11,28,0, \"sewers_fog_15\")\
+spawn(\"sewers_fog\", 2,4,29,3, \"sewers_fog_16\")\
+spawn(\"sewers_fog\", 2,4,22,0, \"sewers_fog_17\")\
+spawn(\"sewers_fog\", 2,4,16,3, \"sewers_fog_18\")\
+spawn(\"sewers_fog\", 2,8,17,1, \"sewers_fog_19\")\
+spawn(\"sewers_fog\", 2,14,11,0, \"sewers_fog_20\")\
+spawn(\"sewers_fog\", 2,23,5,2, \"sewers_fog_21\")\
+spawn(\"sewers_fog\", 2,4,10,2, \"sewers_fog_22\")\
+spawn(\"sewers_fog\", 2,15,7,0, \"sewers_fog_23\")\
+spawn(\"sewers_fog\", 2,24,12,3, \"sewers_fog_24\")\
+spawn(\"sewers_fog\", 2,18,4,2, \"sewers_fog_25\")\
+spawn(\"sewers_fog\", 2,12,4,2, \"sewers_fog_26\")\
+spawn(\"sewers_fog\", 2,10,11,2, \"sewers_fog_27\")\
+spawn(\"sewers_fog\", 2,24,27,3, \"sewers_fog_29\")\
+--- level 3 ---\
+spawn(\"sewers_fog\", 3,30,6,2, \"sewers_fog_28\")\
+spawn(\"sewers_fog\", 3,25,10,2, \"sewers_fog_30\")\
+\
+\
+end")
+spawn("eob_sewers_secret_button_large", 8,15,2, "eob_sewers_secret_button_large_4")
+	:addConnector("toggle", "eob_sewers_secret_door_2", "toggle")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -5031,11 +5097,26 @@ spawn("script_entity", 14,27,2, "script_entity_29")
 	:setSource("function spawnRedGem()\
 \9spawn(\"eob_gem_red\",3,14,28,0)\
 end")
-spawn("script_entity", 10,18,2, "script_entity_30")
-	:setSource("-- dont remove any blockers\
--- unless you adjust their number in monster.lua\
--- under eob_kuotoa1_1_museum\
--- or figure out better way how to remove them")
+spawn("script_entity", 10,18,2, "script_entity_museum")
+	:setSource("-- check monsters.lua\
+-- two special kind of monsters have defined hook onDamage, to run this script\
+\
+-- removes blockers and set monsters AI State from guard to normal (= find and destroy)\
+function onAttack()\
+\9\9for e  in allEntities(3)\
+\9\9do\
+\9\9 if string.find(e.name,\"eob_flind1_2_museum\") \
+\9\9 or string.find(e.name,\"eob_kuotoa1_1_museum\")\
+\9\9  then e:setAIState(\"default\")\
+\9\9\9--hudPrint(\"activating: \" .. e.id)\
+\9\9\9\
+\9 \9 elseif string.find(e.name,\"eob_blocker\") ~= nil\
+\9\9     and (e.level == 3 and e.x >= 8 and e.x <= 13 and e.y >= 19 and e.y <= 22)\
+\9\9  then e:destroy()\
+\9\9  end\
+\9\9end\
+\
+end")
 spawn("eob_flind1_2_museum", 10,19,1, "eob_flind1_2_museum_1")
 	:setAIState("guard")
 spawn("eob_flind1_2_museum", 10,20,3, "eob_flind1_2_museum_2")
@@ -5108,7 +5189,6 @@ mapDesc([[
 ##############################.#
 ]])
 spawn("eob_ruins_door_stone_one", 15,1,3, "eob_ruins_door_stone_one_1")
-	:addPullChain()
 spawn("eob_ruins_portal_amulet", 15,1,0, "eob_ruins_portal_amulet_1")
 spawn("eob_ruins_wall_text", 17,1,0, "eob_ruins_wall_text_1")
 	:setWallText("There is Evil that lies beyond this room.")
@@ -6020,60 +6100,74 @@ spawn("counter", 31,6,1, "counter_3")
 	:setInitialValue(3)
 	:setValue(3)
 	:addConnector("activate", "script_entity_18", "removeWall3")
-spawn("torch_holder", 9,3,2, "torch_holder_13")
+spawn("torch_holder", 8,3,2, "torch_holder_13")
+	:addTorch()
 spawn("secret", 5,3,1, "secret_6")
-spawn("secret", 22,4,2, "secret_oracle_of_knowedge")
+spawn("secret", 22,4,2, "secret_oracle_of_knowledge")
 spawn("script_entity", 22,3,2, "script_entity_54")
 	:setSource("-- if orb of power is put to alcove\
 -- activate secret\
 -- and identify all other items in alcove\
--- in fact it looks for orb of power and item with \"_u\" in name\
--- if both found, destroy the \"_u\" item,\
+-- in fact it looks for orb of power and item with \"_u_\" in ID\
+-- if both found, destroy the \"_u_\" item,\
 -- and replace it with version without \"_u\" in name\
--- i just hope nobody will create some \"eob_unbelievable_item\"\
+\
 \
 function identifyItems(alcove)\
-\9local power=0\
-\9local newitem=\"eob_rations\"\
+\9local c = 0\
+\9local champ = nil\
+\9local slot = 0\
+\9local item = nil\
+\9local newitem = nil\9\
 \
 \9-- check if orb of power is present\
 \9for i in alcove:containedItems()\
 \9do\
-\9\9if string.find(i.name,\"eob_orb_of_power\") ~= nil\
+\9\9if string.find(i.name,\"eob_orb_of_power\") \
 \9\9then\9\
-\9\9\9power=1\
-\9\9\9-- secret activates only the first time \
-\9\9\9secret_oracle_of_knowedge:activate()\
-\9\9end\
-\9end\
+\9\9\9playSound(\"secret\")\
+\9\9\9secret_oracle_of_knowledge:activate()\
 \
-\9-- is orb of power present?\
-\9if \9power == 1 \9then\
-\9\9for i in alcove:containedItems()\
-\9\9do\9\
-\9\9\9-- search for \"_u_\" in the item id\
-\9\9\9if string.find(i.id,\"_u_\") ~= nil\
-\9\9\9then \
-\9\9\9 \9newitem = string.gsub(i.name,\"_u\",\"\")\
-\9\9\9\9-- remove the unidentified original\
-\9\9\9\9hudPrint(\"Identified: \" .. i.id .. \" into \" .. newitem)\
-\9\9\9\9i:destroy()\
-\9\9\9\9-- either spawn the identified version of item in the alcove\
-\9\9\9\9-- but this version throws error, probably it cant destory the original quick enough\
-\9\9\9\9-- and messes with duplicates\
-\9\9\9\9--alcove:addItem(spawn(newitem))\
-\9\9\9\9\
-\9\9\9\9-- or throw it out on the ground , no errors find wiht this version\
-\9\9\9\9spawn(newitem,party.level,party.x,party.y,party.facing)\
+\9-- check all champtions\
+\9for c = 1,4\
+\9do\
+\9\9champ =  party:getChampion(c)\
+\9\9if champ \
+\9\9then\
+\9\9\9--hudPrint(\"checking inventory of champion: \" .. champ:getName() ..\"\")\
+\
+\9\9\9-- check all slots  1 - 31\
+\9\9\9for slot = 1,31\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item \
+\9\9\9\9then \
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\
+\9\9\9\9\9-- search for \"_u_\" in the item id (not in name, cause some items might have name with _u and not be unidentified versions)\
+\9\9\9\9\9if string.find(item.id,\"_u_\")\
+\9\9\9\9\9then \
+\9\9\9\9\9\9-- create identified version of the same item (name without _u)\
+\9\9\9\9\9 \9newitem = spawn(string.gsub(item.name,\"_u\",\"\"))\
+\9\9\9\9\9\9--hudPrint(\"Identified: \" .. item.name .. \" into \" .. newitem.name)\
+\9\9\9\9\9\9-- remove the unidentified original\
+\9\9\9\9\9\9champ:removeItem(slot)\
+\9\9\9\9\9\9item:destroy()\
+\9\9\9\9\9\9-- put the identified version of item to the same slot\
+\9\9\9\9\9\9champ:insertItem(slot, newitem)\
+\9\9\9\9\9end\
+\9\9\9\9end\
 \9\9\9end\
 \9\9end\
 \9end\
-\
+\9end\
+\9end\
+\9\
+\9\
 end")
 spawn("secret", 24,15,1, "secret_13")
 spawn("eob_ruins_alcove", 16,1,0, "eob_ruins_alcove_portal_4_medallion")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_medallion_u", 16,1,0, "eob_stone_medallion_u_1")
 spawn("eob_ruins_illusion_wall_fake", 5,3,2, "eob_ruins_illusion_wall_fake_1")
 spawn("eob_ruins_illusion_wall_rune_fake", 5,5,0, "eob_ruins_illusion_wall_rune_fake_1")
 spawn("eob_ruins_illusion_wall_rune_fake", 30,1,3, "eob_ruins_illusion_wall_rune_fake_2")
@@ -6134,7 +6228,7 @@ function spawnSpider()\
 \9\9end\
 \
 \9\9spawn(\"eob_spider\",4,x,y,0)\
-\9\9hudPrint(\"spawning spider at \".. location .. \" x:\" .. x .. \" y:\" .. y ..\" remaining spiders:\" .. counter_spider_spawner:getValue() .. \"\")\
+\9\9--hudPrint(\"spawning spider at \".. location .. \" x:\" .. x .. \" y:\" .. y ..\" remaining spiders:\" .. counter_spider_spawner:getValue() .. \"\")\
 \9\9counter_spider_spawner:decrement()\
 \9\
 \9else\
@@ -6146,7 +6240,7 @@ function spawnSpider()\
 \9\9\
 \9\9timer_spider_spawner:deactivate()\
 \9\9counter_spider_spawner:setValue(6)\
-\9\9hudPrint(\"no more spiders for now\")\
+\9\9--hudPrint(\"no more spiders for now\")\
 \9end\9\
 \
 \
@@ -6157,7 +6251,7 @@ end\
 -- when leaving the are via pressure plate at 14,23 reset the lair\
 function resetSpiderLair()\
 \
-\9\9hudPrint(\"Reseting the spider lair!\")\9\9\9\
+\9\9--hudPrint(\"Reseting the spider lair!\")\9\9\9\
 \
 \
 \9\9-- first destory all spider eggs in level\
@@ -6234,7 +6328,7 @@ end\
 -- renew web that a spider passed \
 function fixSpiderWeb(timer)\
 \9\9\
-\9hudPrint(\"weawing net on level:\" .. timer.level .. \" x: \" .. timer.x .. \" y: \" .. timer.y ..\" facing: \" .. timer.facing .. \"\")\
+\9--hudPrint(\"weawing net on level:\" .. timer.level .. \" x: \" .. timer.x .. \" y: \" .. timer.y ..\" facing: \" .. timer.facing .. \"\")\
 \
 \9local l=timer.level\
 \9local x=timer.x\
@@ -6258,7 +6352,7 @@ end\
 -- renew eggs that a spider passed \
 function fixSpiderEggs(timer)\
 \9\9\
-\9hudPrint(\"laying eggs on level:\" .. timer.level .. \" x: \" .. timer.x .. \" y: \" .. timer.y ..\" facing: \" .. timer.facing .. \"\")\
+\9--hudPrint(\"laying eggs on level:\" .. timer.level .. \" x: \" .. timer.x .. \" y: \" .. timer.y ..\" facing: \" .. timer.facing .. \"\")\
 \
 \9local l=timer.level\
 \9local x=timer.x\
@@ -6404,11 +6498,22 @@ spawn("pressure_plate_hidden", 29,11,0, "pressure_plate_hidden_114")
 	:setSilent(true)
 	:addConnector("activate", "script_entity_spider_spawner", "triggerSpiderWebEggs")
 spawn("secret", 4,16,3, "secret_12")
-spawn("eob_potion_giant_strength_u", 23,4,2, "eob_potion_giant_strength_u_1")
-spawn("eob_orb_of_power", 24,4,2, "eob_orb_of_power_1")
-spawn("eob_wand_magic_missile_20_u", 23,4,0, "eob_wand_magic_missile_20_u_2")
-spawn("eob_sling_cursed3_u", 23,4,3, "eob_sling_cursed3_u_2")
-spawn("eob_plate_mail_cursed3_u", 23,4,1, "eob_plate_mail_cursed3_u_2")
+spawn("torch_holder", 23,4,3, "torch_holder_14")
+	:addTorch()
+spawn("torch_holder", 24,4,1, "torch_holder_16")
+	:addTorch()
+spawn("torch_holder", 16,24,1, "torch_holder_15")
+	:addTorch()
+spawn("torch_holder", 13,10,1, "torch_holder_18")
+	:addTorch()
+spawn("torch_holder", 19,3,0, "torch_holder_20")
+	:addTorch()
+spawn("torch_holder", 26,19,1, "torch_holder_21")
+	:addTorch()
+spawn("torch_holder", 13,28,3, "torch_holder_22")
+	:addTorch()
+spawn("torch", 19,24,2, "torch_1")
+spawn("torch", 29,29,1, "torch_2")
 
 --- level 5 ---
 
@@ -6807,10 +6912,11 @@ spawn("eob_teleporter", 26,27,3, "eob_teleporter_4")
 spawn("script_entity", 20,26,2, "script_entity_40")
 	:setSource("-- not using simple ruin_pits because it looks much differently then the original\
 -- mainly you see that there are closed pits, in original you have no idea the first time\
--- decoration that looks exactly like dwarven floor on every step\
+\
+-- using decoration that looks exactly like dwarven floor on every step\
 -- because this fake decoration can be later destroyed by script\
 -- default floor cannot be destroyed and it messes with the trap doors when not destroyed\
--- hidden plate at every step calls scripts\
+-- there is hidden plate at every step that calls scripts\
 -- save party possition into global variable\
 -- summons open pit at last posstion (also destroyes the floor/decoration)\
 -- update possition to new one\
@@ -7504,6 +7610,49 @@ states = {\
 \9\"\\\"It\\'s unfortunate that you can not help us.\\n\" ..  \
 \9\"We wish you well in your travels.\\\"\\n\"\
 --\9\"-----------------------------------------------------------------\"\
+\9},\
+{ \"keirgar1\",\
+\9-- strangly enough, Keirgar wont make it alone\
+\9-- you get no credit from dwarf for just freeing him\
+\9-- no taking him with your party\
+--\9\"---------------------------------------------\"\9\9\
+\9\"The Dwarves rejoice at the return of their\9\9\\n\" .. \
+\9\"prince. Warriors and the cleric surround\9 \9\\n\" .. \
+\9\"the prince. Armun turns to you. \9\9\9\9\\n\" .. \
+\9\"\\n\\\"Beyond hope, you have returned with \9\9\\n\" .. \
+\9\"prince Keirgar. \9\9\9\9\9\9\9\9\\n\" .. \
+\9\"How can we possibly thank you?\\\"\9\9\9\9\\n\" .. \
+\9\"\\n\\\"They wish information on ways to surface\\\", Keirgar interrupts.\\n\" .. \
+\9\"\\n\\\"Lore has it there is an ancient throne room about seven levels \9\\n\" .. \
+\9\"down. In the throne room, there is a secret door in north wall. \9\\n\" .. \
+\9\"The door opens to a long underground passageway, which should \9\9\\n\" .. \
+\9\"take you to the lands just east of Watterdeep.\\\"\"\
+--\9\"-----------------------------------------------------------------\"\
+\9},\9\
+{ \"keirgar2\",\
+--\9\"---------------------------------------------\"\9\9\
+\9\"Prince Keirgar says, \9\\n\" ..\
+\9\"\\\"There must be some other way I can repay\9\\n\" .. \
+\9\"you for bringing me back to my people.\9\9\\n\" .. \
+\9\"The least I can do is continue to help you \\n\" .. \
+\9\"in your quest against Xanathar.\\\"\" \
+--\9\"-----------------------------------------------------------------\"\
+\9},\
+{ \"potion\",\
+--\9\"---------------------------------------------\"\9\9\
+\9\"\\\"This should awaken the king!\\\",\9\9\9\9\\n\" ..\
+\9\"you exclaim, as you give the potion to the \9\\n\" ..\
+\9\"cleric. Skeptically, the cleric administers the\\n\" ..\
+\9\"potion. A few moments later, king Teirgoh\9\9\\n\" ..\
+\9\"awakens, still weak but very much alive!\9\9\\n\" ..\
+\9\"Quickly, the Dwarves explain the past \9\9\9\\n\" ..\
+\9\"events to king Teirgoh, including your part \9\\n\" ..\
+\9\"in awakening him from the coma.\\n\9\9\9\9\9\\n\" ..\
+\9\"Grateful, the king thanks you.\\n\9\9\9\9\\n\" ..\
+\9\"\\\"Brave adventurers, you have saved my life. \9\\n\" ..\
+\9\"Please accept this, our most precious gift. I can tell you little \\n\" ..\
+\9\"about it, save only that it will aid you in your darkest hour.\\\"\"\
+--\9\"-----------------------------------------------------------------\"\
 \9}\
 }\
 \9\
@@ -7524,8 +7673,78 @@ function onVisit()\
 \9\9and\9counter_dwarf_camp_helped:getValue()  == 0\
 \9then\
 \9\9return \"visited\"\
-\9else\
 \
+\9-- prince Keirgar saved from chains and joined to party (he won't make it on his own)\
+\9-- condition could be changed to 'if Keirgar is in party\"\
+\9elseif counter_dwarf_camp_keirgar_rescued:getValue() == 1\
+\9   and counter_dwarf_camp_keirgar_returned:getValue() == 0\
+ \9then\
+\9\9return \"keirgar1\"\
+\
+\
+\9--party has not yet returned with dwarven healing potion \
+\9elseif  counter_dwarf_camp_potion:getValue() == 0 \
+\9then\
+\9\9-- search for dwarven healing potion to revive the king\
+\9\9local haspotion = false\
+\9\9local c\9= 0\
+\9\9local champ = nil\
+\9\9local slot\9= nil\
+\9\9local e = nil\
+\9\
+\9\9-- check all champtions\
+\9\9for c = 1,4\
+\9\9do\
+\9\9\9champ =  party:getChampion(c)\
+\9\9\9if champ \
+\9\9\9then\
+\9\9\9\9--hudPrint(\"checking inventory of champion: \" .. champ:getName() ..\"\")\
+\9\
+\9\9\9\9-- check hands\
+\9\9\9\9for slot = 7,8\
+\9\9\9\9do\
+\9\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9\9if item \
+\9\9\9\9\9then \
+\9\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\9\9\9\9\9\9if string.find(item.name,\"eob_dwarven_potion_healing\")\
+\9\9\9\9\9\9then \
+\9\9\9\9\9\9\9-- if the dwarven healing potion is found - remove it\
+\9\9\9\9\9\9\9haspotion=true\
+\9\9\9\9\9\9\9champ:removeItem(slot)\
+\9\9\9\9\9\9\9item:destroy()\
+\9\9\9\9\9\9end\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9\9\
+\9\9\9\9-- check bags\
+\9\9\9\9for slot = 11,31\
+\9\9\9\9do\
+\9\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9\9if item \
+\9\9\9\9\9then \
+\9\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\9\9\9\9\9\9if string.find(item.name,\"eob_dwarven_potion_healing\")\
+\9\9\9\9\9\9then \
+\9\9\9\9\9\9\9-- if the dwarven healing potion is found - remove it\
+\9\9\9\9\9\9\9haspotion=true\
+\9\9\9\9\9\9\9champ:removeItem(slot)\
+\9\9\9\9\9\9\9item:destroy()\
+\9\9\9\9\9\9end\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9end\9\9\
+\9\9end\
+\
+\9\9-- if party has dwarven healing potion \
+\9\9if haspotion == true\
+\9\9then\
+\9\9\9return \"potion\"\
+\9\9else\
+\9\9\9return \"helped\" \
+\9\9end\
+\
+\9else\
 \9-- else return classic greeting that will bother you during every visit\
 \9\9return \"helped\"\
 \9end\
@@ -7548,6 +7767,18 @@ function setHelped()\
 \9end\
 \9--hudPrint(\"setHelped:\".. counter_dwarf_camp_visited:getValue() .. \"-\" .. counter_dwarf_camp_helped:getValue() ..\"\")\9\
 end\
+\
+\
+function returnKeirgar()\
+\9counter_dwarf_camp_keirgar_returned:increment()\
+end\
+\
+function onPotion()\
+\9counter_dwarf_camp_potion:increment()\
+\9-- spawn the wand of Slivias\
+\9spawn(\"eob_wand_slivias_17_u\", party.level, party.x, party.y, party.facing)\
+end\
+\
 \
 function onJoin()\
 \9script_entity_valhalla.dohrumJoin()\
@@ -7589,6 +7820,9 @@ actions = {\
 \9{ \"nojoin\",\9\9\"abort\",\9\"More\"},\
 \9{ \"leave\",\9\9\"abort\",\9\"More\"},\
 \9{ \"helped\",\9\9\"abort\",\9\"More\"},\
+\9{ \"keirgar1\",\9\"keirgar2\",\9\"MORE\", returnKeirgar},\
+\9{ \"keirgar2\",\9\"abort\",\9\"MORE\",},\
+\9{ \"potion\",\9\9\"abort\",\9\"MORE\",onPotion},\
 \9{ \"dummy\",\9\9\"end\",\9\9\"No, you will never leave this conversation!\"}\
 }\
 \
@@ -7694,8 +7928,8 @@ function todJoin()\
 \9\9vitality = 18,        -- Vitality (EOB constituion 18)\
 \9\9willpower = 14,       -- Willpower(EOB wisdom 14, inteligence 11)\
 \9\9\
-\9\9protection = 50,      -- protection\
-\9\9evasion = 4, \9\9  -- evasion (bonus from dex)\
+\9\9protection = 0,      -- protection\
+\9\9evasion = 5, \9\9  -- evasion (bonus from dex)\
 \9\9\9\9\
 \9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
 \9\9-- from fire, cold, poison or shock magic\
@@ -7804,7 +8038,7 @@ function ileiraJoin()\
 \9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
 \9\9-- staves, swords, throwing_weapons and unarmed_combat\
 \9\9-- random picked skills wont work, must follow the group of mage\
-\9\9--skills = { air_magic = 0, earth_magic = 3 , armors = 5 , maces = 4, spellcraft = 6 },\
+\9\9--skills = { air_magic = 0, earth_magic = 3 , armors = 5 , maces = 4, spellcraft = 6 },-- probable skills for cleric\
 \9\9skills = { air_magic = 4, earth_magic = 6, fire_magic = 0, ice_magic = 0, spellcraft = 6, staves = 2 },\
 \9\9\9\9\
 \9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
@@ -7915,14 +8149,199 @@ function beohramJoin()\
 \9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
 \9gw_party.addChampion(newguy)\
 end\
+\
+\
+function tyrraJoin()\
+\9newguy = {\
+\9\9name = \"Tyrra\",    -- just a name\
+\9\9race = \"Human\", \9-- must be one of: Human, Minotaur, Lizardman, Insectoid  (in EOB human)\
+\9\9class = \"Rogue\",    -- must be one of: Figther, Rogue, Mage or Ranger (in Eob Tyrra is  ranger)\
+\9\9sex = \"female\", \9-- must be one of: male, female\
+\9\9level = 6,          -- character's level (EOB level 6)\
+\9\9portrait = \"mod_assets/textures/portraits/eob1-tyrra.dds\", -- must be 128x128 dds file\
+\9\9\
+\9\9-- allowed skills: air_magic, armors, assassination, athletics, axes, daggers, \
+\9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
+\9\9-- staves, swords, throwing_weapons and unarmed_combat\
+\9\9skills = { assassination = 0, daggers = 0, dodge = 0, missile_weapons = 18, throwing_weapons = 0, unarmed_combat = 0 },\
+\9\9\9\9\
+\9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
+\9\9-- fire_resistant, fist_fighter, head_hunter, healthy, lightning_speed,\
+\9\9-- natural_armor, poison_resistant, skilled, strong_mind, tough\
+\9\9-- Traits must be specified in quotes.\
+\9\9-- Typically each character has 2 traits, but you can specify more or less.\
+\9\9traits = { \"agile\",\"healthy\"},\
+\9\9\
+\9\9health = 110, \9\9 -- Maximum health (orig EOB1 health 45 (copared to Taghorn who has 45))\
+\9\9current_health = 110,  -- Current health\
+\9\9\
+\9\9energy = 90,         -- Maximum energy\
+\9\9current_energy = 90, -- Current energy\
+\
+\9\9strength = 16,        -- Strength (EOB strength 16)\
+\9\9dexterity = 18,       -- Dexterity(EOB dexterity 18)\
+\9\9vitality = 17,        -- Vitality (EOB constituion 17)\
+\9\9willpower = 16,       -- Willpower(EOB wisdom 16, inteligence 14)\
+\9\9\
+\9\9protection = 0,      -- protection\
+\9\9evasion = 0, \9\9  -- evasion (bonus from dex)\
+\9\9\9\9\
+\9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
+\9\9-- from fire, cold, poison or shock magic\
+\9\9resist_fire = 0,\
+\9\9resist_cold = 0,\
+\9\9resist_poison = 0,\
+\9\9resist_shock = 0,\
+\9\9\
+\9\9-- items: Notation item_name = slot. Slots numbering: 1 (head), 2 (torso), 3 (legs), 4 (feet), \
+\9\9-- 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), 9 (gaunlets), 10 (bracers), 11-31 (backpack\
+\9\9-- slots) or 0 (any empty slot in backpack)\
+\9\9-- Make sure you put things in the right slot. Wrong slot (e.g. attempt to try boots on head)\
+\9\9-- will make the item spawn to fail.\
+\
+\9\9items = { },\
+\9\9-- in EOB Tyrra has absolutely nothing on or at him when resurrected\
+\9\9\
+\9\9-- food: 0 (starving) to 1000 (just ate the whole cow)\
+\9\9food = 1000\
+\9\9\
+\9}\
+\
+\9-- Call addChampion method. It will add new guy to the party if there are suitable slots and will\
+\9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
+\9gw_party.addChampion(newguy)\
+end\
+\
+\
+function keirgarJoin()\
+\9newguy = {\
+\9\9name = \"Keirgar\",    -- just a name\
+\9\9race = \"Human\", \9-- must be one of: Human, Minotaur, Lizardman, Insectoid  (in EOB dwarf)\
+\9\9class = \"Fighter\",    -- must be one of: Figther, Rogue, Mage or Ranger (in Eob Keirgar is figther)\
+\9\9sex = \"male\", \9-- must be one of: male, female\
+\9\9level = 5,          -- character's level (EOB level 5)\
+\9\9portrait = \"mod_assets/textures/portraits/eob1-keirgar.dds\", -- must be 128x128 dds file\
+\9\9\
+\9\9-- allowed skills: air_magic, armors, assassination, athletics, axes, daggers, \
+\9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
+\9\9-- staves, swords, throwing_weapons and unarmed_combat\
+\9\9skills = { athletics = 0, armors = 6 , axes = 8, maces = 0, swords = 0, unarmed_combat = 0  },\9\9\9\9\
+\
+\9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
+\9\9-- fire_resistant, fist_fighter, head_hunter, healthy, lightning_speed,\
+\9\9-- natural_armor, poison_resistant, skilled, strong_mind, tough\
+\9\9-- Traits must be specified in quotes.\
+\9\9-- Typically each character has 2 traits, but you can specify more or less.\
+\9\9traits = { \"athletic\",\"healthy\"},\
+\9\9\
+\9\9health = 110, \9\9 -- Maximum health (orig EOB1 health 45 (copared to Taghorn who has 45))\
+\9\9current_health = 7,  -- Current health\
+\9\9\
+\9\9energy = 90,         -- Maximum energy\
+\9\9current_energy = 5, -- Current energy\
+\
+\9\9strength = 24,        -- Strength (EOB strength 18/92)\
+\9\9dexterity = 12,       -- Dexterity(EOB dexterity 12)\
+\9\9vitality = 19,        -- Vitality (EOB constituion 19)\
+\9\9willpower = 15,       -- Willpower(EOB wisdom 15, inteligence 15, charisma 17)\
+\9\9\
+\9\9protection = 5,      -- protection\
+\9\9evasion = 0, \9\9  -- evasion (bonus from dex)\
+\9\9\9\9\
+\9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
+\9\9-- from fire, cold, poison or shock magic\
+\9\9resist_fire = 5,\
+\9\9resist_cold = 5,\
+\9\9resist_poison = 5,\
+\9\9resist_shock = 5,\
+\9\9\
+\9\9-- items: Notation item_name = slot. Slots numbering: 1 (head), 2 (torso), 3 (legs), 4 (feet), \
+\9\9-- 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), 9 (gaunlets), 10 (bracers), 11-31 (backpack\
+\9\9-- slots) or 0 (any empty slot in backpack)\
+\9\9-- Make sure you put things in the right slot. Wrong slot (e.g. attempt to try boots on head)\
+\9\9-- will make the item spawn to fail.\
+\
+\9\9items = { },\
+\9\9-- in EOB Keirgar has absolutely nothing on or at him when resurrected\
+\9\9\
+\9\9-- food: 0 (starving) to 1000 (just ate the whole cow)\
+\9\9food = 100\
+\9\9\
+\9}\
+\
+\9-- Call addChampion method. It will add new guy to the party if there are suitable slots and will\
+\9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
+\9gw_party.addChampion(newguy)\
+end\
+\
+\
+function kirathJoin()\
+\9newguy = {\
+\9\9name = \"Kirath\",    -- just a name\
+\9\9race = \"Human\", \9-- must be one of: Human, Minotaur, Lizardman, Insectoid  (in EOB half-elf)\
+\9\9class = \"Mage\",    -- must be one of: Figther, Rogue, Mage or Ranger (in Eob kirath is mage)\
+\9\9sex = \"male\", \9-- must be one of: male, female\
+\9\9level = 7,          -- character's level (EOB level 7)\
+\9\9portrait = \"mod_assets/textures/portraits/eob1-kirath.dds\", -- must be 128x128 dds file\
+\9\9\
+\9\9-- allowed skills: air_magic, armors, assassination, athletics, axes, daggers, \
+\9\9-- dodge, earth_magic, fire_magic, ice_magic, maces, missile_weapons, spellcraft,\
+\9\9-- staves, swords, throwing_weapons and unarmed_combat\
+\9\9skills = { air_magic = 10, earth_magic = 0, fire_magic = 5, ice_magic = 0, spellcraft = 6, staves = 0 },\
+\9\9\9\9\
+\9\9-- allowed traits: aggressive, agile, athletic, aura, cold_resistant, evasive, \
+\9\9-- fire_resistant, fist_fighter, head_hunter, healthy, lightning_speed,\
+\9\9-- natural_armor, poison_resistant, skilled, strong_mind, tough\
+\9\9-- Traits must be specified in quotes.\
+\9\9-- Typically each character has 2 traits, but you can specify more or less.\
+\9\9traits = { \"agile\",\"strong_mind\"},\
+\9\9\
+\9\9health = 45, \9\9 -- Maximum health (orig EOB1 health 20 (copared to Taghorn who has 45))\
+\9\9current_health = 45,  -- Current health\
+\9\9\
+\9\9energy = 80,         -- Maximum energy\
+\9\9current_energy = 80, -- Current energy\
+\
+\9\9strength = 11,        -- Strength (EOB strength 11)\
+\9\9dexterity = 18,       -- Dexterity(EOB dexterity 18)\
+\9\9vitality = 8,        -- Vitality (EOB constituion 8)\
+\9\9willpower = 17,       -- Willpower(EOB wisdom 13, inteligence 17, charisma 12)\
+\9\9\
+\9\9protection = 0,      -- protection\
+\9\9evasion = 0, \9\9  -- evasion (bonus from dex)\
+\9\9\9\9\
+\9\9-- Resist fire/cold/poison/shock (remember that those values will be modified by bonuses\
+\9\9-- from fire, cold, poison or shock magic\
+\9\9resist_fire = 0,\
+\9\9resist_cold = 0,\
+\9\9resist_poison = 0,\
+\9\9resist_shock = 0,\
+\9\9\
+\9\9-- items: Notation item_name = slot. Slots numbering: 1 (head), 2 (torso), 3 (legs), 4 (feet), \
+\9\9-- 5 (cloak), 6 (neck), 7 (left hand), 8 (right hand), 9 (gaunlets), 10 (bracers), 11-31 (backpack\
+\9\9-- slots) or 0 (any empty slot in backpack)\
+\9\9-- Make sure you put things in the right slot. Wrong slot (e.g. attempt to try boots on head)\
+\9\9-- will make the item spawn to fail.\
+\
+\9\9items = { },\
+\9\9-- in EOB Kirath has absolutely nothing on or at him when resurrected\
+\9\9-- however at his bones are also found\
+\9\9-- mage book, flicka +5 dagger, bracers +2, ring +2, robe of defense +5\
+\9\9-- although the +x on AC dont stack so only +5 is applied if you put on all items\
+\9\9\
+\9\9-- food: 0 (starving) to 1000 (just ate the whole cow)\
+\9\9food = 1000\
+\9\9\
+\9}\
+\
+\9-- Call addChampion method. It will add new guy to the party if there are suitable slots and will\
+\9-- display a GUI prompt selecting a party member to drop if your party is already 4 guys\
+\9gw_party.addChampion(newguy)\
+end\
 ")
 spawn("counter", 14,11,3, "counter_dwarf_camp_visited")
-	:setInitialValue(1)
-	:setValue(1)
 spawn("counter", 14,13,3, "counter_dwarf_camp_attacked")
 spawn("counter", 14,12,1, "counter_dwarf_camp_helped")
-	:setInitialValue(1)
-	:setValue(1)
 spawn("altar", 18,13,2, "altar_1")
 	:addItem(spawn("skull"))
 spawn("eob_blocker", 15,8,0, "eob_blocker_dwarfcamp_1")
@@ -8111,11 +8530,64 @@ states = {\
 \9},\
 \
 { \"tyrra\",\
-\9\"tyrra\"\
+\9\"Which should be resurreted?\"\
+\9},\
+{ \"restyrra\",\
+--\9\"-----------------------------------\"\
+\9\"Tyrra takes in her surroundings. \9\\n\" ..\
+\9\"\\n\\\"Oh, this is just great. I get \9\\n\" ..\
+\9\"killed following some fool party\9\\n\" ..\
+\9\"down here, and now another party\9\\n\" ..\
+\9\"comes by, resurrects me, and wants\9\\n\" ..\
+\9\"me to join up! Just like that!\\n\9\\n\" ..\
+\9\"What makes you think I wanted \9\9\\n\" ..\
+\9\"to be here in the first place?\\n \9\\n\" ..\
+\9\"Sure, I could probably help you; after all, I am a pretty \9\\n\" ..\
+\9\"good ranger, but if you're as foolhardy as the last party\9\\n\" ..\
+\9\"I followed, you'll need a lot more help than I can give you.\\\"\"\
+--\9\"------------------------------------------------------------\"\
+\9},\
+{ \"jointyrra\",\
+\9\"Tyrra joins the party.\"\
+\9},\9\
+{ \"nojointyrra\",\
+--\9\"-----------------------------------\"\
+\9\"\\n\\n\\n\\n\\n\\n\\n \9\9\9\9\9\9\9\9\9\9\9\\n\"..\
+\9\"So you resurrected me just for the fun of it. \9\9\9\9\\n\"..\
+\9\"\\nSure, go ahead. Go. Fine with me. \9\9\9\9\9\9\\n\"..\
+\9\"You do what you want.\9\9\9\9\9\9\9\9\9\9\\n\" ..\
+\9\"\\nMe, I\\'m finding my own way out of here...\\\"\"\
+--\9\"------------------------------------------------------------\"\
 \9},\
 { \"kirath\",\
-\9\"kirath\"\
-\9}\
+\9\"Which should be resurreted?\"\
+\9},\
+{ \"reskirath\",\
+--\9\"-----------------------------------\"\
+\9\"Kirath looks about, annoyed. \\n\\n\" ..\
+\9\"\\\"You mean I was dead? Hmph. \9\9\\n\" ..\
+\9\"Now you probably think I owe you  \9\\n\" ..\
+\9\"for resurrecting me. \9\9\9\9\\n\" ..\
+\9\"I care nothing for your commission \\n\" ..\
+\9\"from the lords of Watterdeep, \9\9\\n\" ..\
+\9\"but we seem to be heading down \9\\n\" ..\
+\9\"the same path. \9\9\9\9\9\\n\" ..\
+\9\"\\nI am Kirath, the greatest wizard of the realms. \\n\" ..\
+\9\"I seek the special magics that Xanathar is alleged to possess. \\n\" ..\
+\9\"Perhaps we can help each other.\9\9\9\9\9\9\\n\" ..\
+\9\"At Least, you might benefit from my talents and power.\9\\\"\"\
+--\9\"------------------------------------------------------------\"\
+\9},\
+{ \"joinkirath\",\
+\9\"Kirath joins the party.\"\
+\9},\9\
+{ \"nojoinkirath\",\
+--\9\"-----------------------------------\"\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n \9\9\9\9\9\\n\" ..\
+\9\"\\\"Have it your way, like as not, I am probably  better off \\n\" ..\
+\9\" without you getting in my way.\\\"\"\
+--\9\"------------------------------------------------------------\"\
+\9},\
 }\
 \
 \
@@ -8193,6 +8665,11 @@ function resTod()\
 \9timer_dwarven_cleric_resting:activate()\
 \9gw_event_dvarven_camp_cleric.destroyBones()\
 end\
+function onJoinTod()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.todJoin()\
+end\
+\
 \
 \
 function resAnya()\
@@ -8204,8 +8681,12 @@ function resAnya()\
 \9counter_dwarven_cleric_rested:setValue(0)\
 \9timer_dwarven_cleric_resting:activate()\
 \9gw_event_dvarven_camp_cleric.destroyBones()\
-\
 end\
+function onJoinAnya()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.anyaJoin()\
+end\
+\
 \
 function resIleira()\
 \9-- set new image with ileira\
@@ -8216,7 +8697,10 @@ function resIleira()\
 \9counter_dwarven_cleric_rested:setValue(0)\
 \9timer_dwarven_cleric_resting:activate()\
 \9gw_event_dvarven_camp_cleric.destroyBones()\
-\
+end\
+function onJoinIleira()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.ileiraJoin()\
 end\
 \
 \
@@ -8231,26 +8715,44 @@ function resBeohram()\
 \9gw_event_dvarven_camp_cleric.destroyBones()\
 \
 end\
-\
-function onJoinTod()\
-\9gw_event_dvarven_camp_cleric.resetPic()\
-\9script_entity_valhalla.todJoin()\
-end\
-\
-\
-function onJoinAnya()\
-\9gw_event_dvarven_camp_cleric.resetPic()\
-\9script_entity_valhalla.anyaJoin()\
-end\
-\
-function onJoinIleira()\
-\9gw_event_dvarven_camp_cleric.resetPic()\
-\9script_entity_valhalla.ileiraJoin()\
-end\
-\
 function onJoinBeohram()\
 \9gw_event_dvarven_camp_cleric.resetPic()\
 \9script_entity_valhalla.beohramJoin()\
+end\
+\
+\
+\
+function resTyrra()\
+\9-- set new image with ileira\
+\9image = \"mod_assets/textures/events/eob1-resurrect-tyrra.dds\"\
+\9image_width = 256\
+\9image_hieght = 192\
+\
+\9counter_dwarven_cleric_rested:setValue(0)\
+\9timer_dwarven_cleric_resting:activate()\
+\9gw_event_dvarven_camp_cleric.destroyBones()\
+\
+end\
+function onJoinTyrra()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.tyrraJoin()\
+end\
+\
+\
+function resKirath()\
+\9-- set new image with ileira\
+\9image = \"mod_assets/textures/events/eob1-resurrect-kirath.dds\"\
+\9image_width = 256\
+\9image_hieght = 192\
+\
+\9counter_dwarven_cleric_rested:setValue(0)\
+\9timer_dwarven_cleric_resting:activate()\
+\9gw_event_dvarven_camp_cleric.destroyBones()\
+\
+end\
+function onJoinKirath()\
+\9gw_event_dvarven_camp_cleric.resetPic()\
+\9script_entity_valhalla.kirathJoin()\
 end\
 \
 \
@@ -8260,7 +8762,6 @@ function resetPic()\
 \9image_width = 172\
 \9image_hieght = 190\
 end\
-\
 function destroyBones()\
 \9-- destory the bones in alcove\
 \9for e in eob_ruins_alcove_valhalla:containedItems()\
@@ -8271,6 +8772,9 @@ function destroyBones()\
 \9\9end\
 \9end\
 end\
+\
+\
+\
 \
 -- defines possible actions in each state. Each entry has\
 -- 4 values. First is a state in which you can take that action. \
@@ -8324,12 +8828,22 @@ actions = {\
 \9{ \"joinbeohram\", \"abort\",\9\9\"More\", onJoinBeohram},\
 \9{ \"nojoinbeohram\",\"abort\",\9\9\"More\", resetPic},\
 \
-\9{ \"tyrra\",\9\9\"restyrra\",\9\"Tyrra\"},\
-\9{ \"tyrra\",\9\9\"abort\",\9\"Leave\"},\
+\9{ \"tyrra\",\9\9\"restyrra\",\9\9\"Tyrra\", resTyrra},\
+\9{ \"tyrra\",\9\9\"abort\",\9\9\"Leave\", resetPic},\
+\9{ \"restyrra\",\9\"jointyrra\",\9\"Yes\"},\
+\9{ \"restyrra\",\9\"nojointyrra\",\"No\"},\
+\9{ \"jointyrra\",  \"abort\",\9\9\"More\", onJoinTyrra},\
+\9{ \"nojointyrra\",\"abort\",\9\9\"More\", resetPic},\
 \
-\9{ \"kirath\",\9\9\"reskirath\",\"Kirath\"},\
-\9{ \"kirath\",\9\9\"abort\",\9\"Leave\"},\9\9\9\
-\9{ \"somebones\",\9\"abort\",\9\"Leave\"},\
+\9{ \"kirath\",\9\9\"reskirath\",\9\"Kirath\", resKirath},\
+\9{ \"kirath\",\9\9\"abort\",\9\9\"Leave\", resetPic},\
+\9{ \"reskirath\",\9\"joinkirath\",\9\"Yes\"},\
+\9{ \"reskirath\",\9\"nojoinkirath\",\9\"No\"},\
+\9{ \"joinkirath\",  \"abort\",\9\9\"More\", onJoinKirath},\
+\9{ \"nojoinkirath\",\"abort\",\9\9\"More\", resetPic},\
+\
+\
+\9--{ \"somebones\",\9\"abort\",\9\"Leave\"},\
 \9{ \"tired\",\9\9\"abort\",\9\"Leave\"},\
 \9{ \"attacked\",\9\"abort\",\9\"Leave\"},\
 \9{ \"dummy\",\9\9\"end\",\9\9\"No, you will never leave this conversation!\"}\
@@ -8344,25 +8858,25 @@ spawn("eob_dwarf", 19,6,2, "eob_dwarf_dwarven_cleric")
 	:setAIState("guard")
 spawn("eob_blocker", 19,7,1, "eob_blocker_dwarfcamp_24")
 spawn("timer", 20,5,2, "timer_dwarven_cleric_resting")
-	:setTimerInterval(10)
+	:setTimerInterval(300)
 	:activate()
 	:addConnector("activate", "counter_dwarven_cleric_rested", "increment")
 	:addConnector("activate", "timer_dwarven_cleric_resting", "deactivate")
 spawn("counter", 19,5,1, "counter_dwarven_cleric_rested")
-spawn("script_entity", 14,9,0, "script_entity_dwarven_camp_attacked")
+spawn("script_entity", 17,10,0, "script_entity_dwarven_camp_attacked")
 	:setSource("-- if you ever attack any of the dwarves in camp\
 -- yes even by accident (like throwing rations)\
 -- they are all gonna kick your ass (remove blockers)\
 -- and no longer provide healing services\
 -- and no longer bother with the entrance message \
 -- (so yes it might be worth it)\
--- for trigger check \9monsters_EobConverter.lua - name = \"eob_dwarf\",\
+-- for trigger check \9monsters.lua - name = \"eob_dwarf\",\
 \
 -- check \
 function attackDwarves()\
 \
 \9counter_dwarf_camp_attacked:increment()\
-\9hudPrint(\"\" .. counter_dwarf_camp_attacked:getValue() .. \"\")\
+\9--hudPrint(\"\" .. counter_dwarf_camp_attacked:getValue() .. \"\")\
 \
 \9-- == 1 , so that it activates just after first attack (and wont throw errors)\
 \9if counter_dwarf_camp_attacked:getValue() == 1\
@@ -8389,7 +8903,6 @@ end\
 ")
 spawn("eob_ruins_alcove", 10,5,0, "eob_ruins_alcove_portal_5_necklace")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_necklace_u", 10,5,0, "eob_stone_necklace_u_1")
 spawn("eob_ruins_illusion_wall_rune_fake", 30,12,2, "eob_ruins_illusion_wall_rune_fake_4")
 spawn("eob_ruins_illusion_wall_rune_fake", 30,14,0, "eob_ruins_illusion_wall_rune_fake_5")
 spawn("eob_ruins_illusion_wall_rune_fake", 24,12,1, "eob_ruins_illusion_wall_rune_fake_7")
@@ -8423,8 +8936,8 @@ spawn("eob_blocker", 1,18,3, "eob_blocker_7")
 spawn("eob_ruins_illusion_wall_rune_fake", 2,10,1, "eob_ruins_illusion_wall_rune_fake_27")
 spawn("eob_ruins_illusion_wall_rune_fake", 4,10,3, "eob_ruins_illusion_wall_rune_fake_24")
 spawn("eob_blocker", 3,10,2, "eob_blocker_22")
-spawn("eob_ruins_illusion_wall_rune_fake", 10,6,0, "eob_ruins_illusion_wall_rune_fake_29")
-spawn("eob_ruins_illusion_wall_rune_fake", 10,6,2, "eob_ruins_illusion_wall_rune_fake_26")
+spawn("eob_ruins_illusion_wall_rune_fake", 10,5,2, "eob_ruins_illusion_wall_rune_fake_29")
+spawn("eob_ruins_illusion_wall_rune_fake", 10,7,0, "eob_ruins_illusion_wall_rune_fake_26")
 spawn("eob_blocker", 10,6,3, "eob_blocker_25")
 spawn("eob_dwarven_wall_cube_invisible", 3,15,2, "eob_dwarven_wall_cube_invisible_1")
 spawn("eob_ruins_illusion_wall_rune_fake", 4,21,1, "eob_ruins_illusion_wall_rune_fake_31")
@@ -8440,7 +8953,9 @@ spawn("eob_blocker", 23,2,2, "eob_blocker_28")
 spawn("secret", 6,29,1, "secret_14")
 spawn("eob_ruins_alcove", 18,7,0, "eob_ruins_alcove_valhalla")
 spawn("script_entity", 18,3,2, "script_entity_search_bones")
-	:setSource("-- valhalla resurrection services\
+	:setSource("-- unused script\
+\
+-- valhalla resurrection services\
 -- this would be sooooo easier if we just put the bones into one alcove\
 \
 function onResurrect()\
@@ -8592,7 +9107,9 @@ end\
 end\
 ]]\
 ")
-spawn("eob_bones_human_beohram", 18,7,0, "eob_bones_human_beohram_1")
+spawn("counter", 16,12,1, "counter_dwarf_camp_keirgar_rescued")
+spawn("counter", 15,14,3, "counter_dwarf_camp_potion")
+spawn("counter", 16,13,0, "counter_dwarf_camp_keirgar_returned")
 
 --- level 6 ---
 
@@ -8838,8 +9355,8 @@ spawn("script_entity", 26,3,3, "script_entity_41")
 --attackMethod: the method to be called when the item is used. Must be one of the following: meleeAttack, throwAttack, rangedAttack, castWandSpell or castRuneSpell.\
 function openOnWeapon()\
 \
-\9northplate = 0\
-\9southplate = 0\
+\9local northplate = 0\
+\9local southplate = 0\
 \
 \9-- is there weapon type item on north plate?\
 \9for e in entitiesAt(6,25,3) \
@@ -9348,6 +9865,8 @@ function shootDarts4()\
 \9\9shootProjectile(\"eob_dart\",6,7,25,3,10,0,0,0,0.7,-0.7,10,nil,false,false)\
 \9\9shootProjectile(\"eob_dart\",6,7,25,3,10,0,0,0,0.7, 0.7,10,nil,false,false)\
 \9\9counter_7:decrement()\
+\9\9-- arm fire pad 1 with one more volley\
+\9\9counter_4:increment()\
 \9end\
 end")
 spawn("counter", 8,23,2, "counter_4")
@@ -9761,7 +10280,6 @@ actions = {\
 ")
 spawn("eob_ruins_alcove", 12,10,1, "eob_ruins_alcove_portal_6_ring")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_ring", 12,10,1, "eob_stone_ring_1")
 spawn("pressure_plate_hidden", 8,12,1, "pressure_plate_hidden_117")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
@@ -10010,7 +10528,7 @@ spawn("eob_drow_wall_text", 28,18,2, "eob_drow_wall_text_10")
 	:setWallText("One battle for glory...")
 spawn("eob_drow_door_one", 20,19,2, "eob_drow_door_one_3")
 	:addPullChain()
-spawn("eob_drow_door_one", 22,20,0, "eob_drow_door_one_4")
+spawn("eob_drow_door_one", 22,19,0, "eob_drow_door_one_4")
 spawn("eob_drow_stairs_up", 1,20,2, "eob_drow_stairs_up_2")
 spawn("eob_drow_stairs_down", 12,20,3, "eob_drow_stairs_down_4")
 spawn("eob_drow_lock_spider", 13,20,2, "eob_drow_lock_spider_3")
@@ -10018,9 +10536,8 @@ spawn("eob_drow_lock_spider", 13,20,2, "eob_drow_lock_spider_3")
 	:addConnector("activate", "eob_drow_door_10", "open")
 spawn("eob_drow_door", 14,20,3, "eob_drow_door_10")
 spawn("eob_drow_stairs_down", 15,20,1, "eob_drow_stairs_down_5")
-spawn("eob_drow_wall_text", 18,19,1, "eob_drow_wall_text_6")
-	:setWallText("cant find this text in original game\
-thats why its out of sight")
+spawn("eob_drow_wall_text", 18,19,2, "eob_drow_wall_text_6")
+	:setWallText("No tresspassing.")
 spawn("eob_drow_lever", 25,20,2, "eob_drow_lever_weapon")
 	:addConnector("activate", "script_entity_three_doors", "openDoor")
 spawn("eob_drow_lever", 27,20,2, "eob_drow_lever_armor")
@@ -10044,9 +10561,8 @@ spawn("eob_teleporter", 20,22,2, "eob_teleporter_23")
 	:setTeleportTarget(29,19,2,7)
 spawn("eob_drow_wall_text", 22,22,1, "eob_drow_wall_text_11")
 	:setWallText("Fight for your freedom.")
-spawn("eob_drow_wall_text", 13,22,1, "eob_drow_wall_text_12")
-	:setWallText("cant find this text in original game\
-thats why its out of sight")
+spawn("eob_drow_wall_text", 13,22,2, "eob_drow_wall_text_12")
+	:setWallText("Use front entrance. Exit only.")
 spawn("eob_drow_door_one", 22,24,0, "eob_drow_door_one_5")
 spawn("eob_drow_door", 17,24,2, "eob_drow_door_15")
 spawn("eob_drow_door", 19,24,2, "eob_drow_door_16")
@@ -10100,6 +10616,7 @@ spawn("eob_drow_door", 10,29,2, "eob_drow_door_26")
 spawn("eob_drow_lock_ornate", 11,30,0, "eob_drow_lock_ornate_1")
 	:setOpenedBy("eob_key_ruby")
 	:addConnector("activate", "eob_drow_door_26", "open")
+	:addConnector("activate", "eob_drow_door_11", "open")
 spawn("eob_drow_alcove", 12,30,2, "eob_drow_alcove_sq7_1")
 	:setActivateAlways(true)
 	:addItem(spawn("eob_rock_glowing_u"))
@@ -10253,14 +10770,8 @@ states = {\
 }\
 \
 function onAttack()\
-\9-- blockers at the patrol\
-\9eob_blocker_drow_patrol_1:destroy()\
-\9eob_blocker_drow_patrol_2:destroy()\
-\9eob_blocker_drow_patrol_3:destroy()\
-\9-- blockers north-east room \
-\9eob_blocker_drow_patrol_4:destroy()\
-\9eob_blocker_drow_patrol_5:destroy()\
-\9eob_blocker_drow_patrol_6:destroy()\
+\9-- calling the function outside the same script doesnt work \
+\9script_entity_drow_patrol.onAttack()\
 end\
 \
 \
@@ -10361,14 +10872,10 @@ actions = {\
 }\
 \
 ")
-spawn("eob_stone_medallion_u", 14,28,0, "eob_stone_medallion_u_3")
-spawn("eob_stone_necklace_u", 12,28,0, "eob_stone_necklace_u_2")
 spawn("eob_ruins_alcove", 13,28,0, "eob_ruins_alcove_portal_7_dagger")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_dagger", 13,28,0, "eob_stone_dagger_2")
 spawn("eob_ruins_alcove", 12,28,3, "eob_ruins_alcove_portal_7_holy_symbol")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_holy_symbol", 12,28,3, "eob_stone_holy_symbol_2")
 spawn("eob_blocker", 1,16,2, "eob_blocker_drow_patrol_3")
 spawn("eob_blocker", 2,18,1, "eob_blocker_drow_patrol_2")
 spawn("eob_blocker", 1,19,1, "eob_blocker_drow_patrol_1")
@@ -10473,13 +10980,13 @@ function openWall()\
 \9\9end\9\
 \9end\
 end")
-spawn("pressure_plate_hidden", 22,20,3, "pressure_plate_hidden_127")
+spawn("pressure_plate_hidden", 22,19,3, "pressure_plate_hidden_127")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
 	:setSilent(true)
 	:addConnector("activate", "eob_drow_door_one_4", "close")
-spawn("eob_drow_button", 22,19,3, "eob_drow_button_36")
+spawn("eob_drow_button", 22,18,3, "eob_drow_button_36")
 	:addConnector("toggle", "eob_drow_door_one_4", "toggle")
 spawn("eob_drow_button", 22,23,3, "eob_drow_button_37")
 	:addConnector("toggle", "eob_drow_door_one_5", "toggle")
@@ -10761,6 +11268,22 @@ spawn("script_entity", 17,26,1, "script_entity_73")
 \9\9end\
 \9end\
 end")
+spawn("script_entity", 2,19,1, "script_entity_drow_patrol")
+	:setSource("function onAttack()\
+\
+   \9for e  in allEntities(7)\
+\9do\
+\9\9  if string.find(e.name,\"eob_drowelf\")\
+\9\9  then e:setAIState(\"default\")\
+\9\9\9--hudPrint(\"activating: \" .. e.id)\
+\9 \9  elseif string.find(e.id,\"eob_blocker_drow_patrol\") \
+\9\9  then \
+\9\9\9--hudPrint(\"destroying: \" .. e.id)\
+\9\9\9e:destroy()\
+\9\9  end\
+\9end\9\
+\
+end")
 
 --- level 8 ---
 
@@ -10820,7 +11343,7 @@ spawn("eob_drow_pressure_plate", 24,3,3, "eob_drow_pressure_plate_special_quest_
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
-	:addConnector("activate", "script_entity_53", "")
+	:addConnector("activate", "script_entity_special_quest_8", "specialQuest8")
 spawn("eob_drow_dart_firing_pad", 24,3,0, "eob_drow_dart_firing_pad_1")
 spawn("eob_drow_dart_firing_pad", 25,3,0, "eob_drow_dart_firing_pad_2")
 spawn("eob_drow_dart_firing_pad", 26,3,0, "eob_drow_dart_firing_pad_3")
@@ -11062,7 +11585,6 @@ spawn("eob_drider1_1", 10,26,0, "eob_drider1_1_10")
 spawn("eob_ruins_alcove", 29,20,3, "eob_ruins_alcove_portal_8_scepter_exit")
 spawn("eob_ruins_alcove", 6,15,0, "eob_ruins_alcove_portal_8_scepter")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_scepter", 6,15,0, "eob_stone_scepter_3")
 spawn("eob_drow_button", 18,6,2, "eob_drow_button_33")
 	:addConnector("toggle", "eob_drow_door_one_7", "toggle")
 spawn("eob_drow_pit", 29,12,3, "eob_drow_pit_12")
@@ -11185,10 +11707,64 @@ spawn("script_entity", 23,4,2, "script_entity_special_quest_8")
 -- if you then step on the plate near entrance\
 -- 10 of the darts are shot out as adamantine darts +4\
 \
-function special_quest_8()\
 \
+-- on stepping on plates shoot darts\
+--\9shootProjectile(projName,level,x,y,dir,speed,gravity,velocityUp,offsetX,offsetY,offsetZ,attackPower,ignoreEntity,fragile,championOrdinal)\
+--\9projectile: the name of the item to shoot.\
+--\9level,x,y: the initial position of the projectile in a level.\
+--\9direction: the shooting direction (0=north, 1=east, 2=south, 3=west).\
+--\9speed: the speed of the projectile (metres/second). Typical values around 10.\
+--\9gravity: the gravity force in y-direction. Typical values around 0.\
+--\9velocityUp: the initial velocity in y-direction. Typically set to 0.\
+--\9offsetX,offsetY,offsetZ: 3D offset in world space from the center of cell.\
+--\9attackPower: attack power of the projectile.\
+--\9ignoreEntity: the entity to be ignored for collisions (or nil if the entity should not ignore any collisions).\
+--\9fragile: a boolean flag, if set the projectile is destroyed on impact.\
+--\9championOrdinal: a champion ordinal number, used for dealing experience points. This parameter is optional.\
 \
+special_quest_8_done = 0\
+firepads_charged = 0\
 \
+function specialQuest8()\
+local mark_sq_8 = false\
+\
+\9-- if all firing pads are preset with dart (based on counter reaching 0)\
+\9-- destroy all darts, and fire adamantine versions\
+\
+\9for i=1,12\
+\9do\
+\9\9alcove=findEntity(\"mouth_socket_dart_\"..i)\
+\9\9if alcove \
+\9\9then\
+\9\9\9for e in alcove:containedItems()\
+\9\9\9do\
+\9\9\9\9if e \
+\9\9\9\9then\
+\9\9\9\9\9e:destroy()\
+\9\9\9\9\9-- fire adamantine darts only if all alcoves are filled with normal darts and quest wasnt done yet\
+\9\9\9\9\9-- othewise fire normal darts\
+\9\9\9\9\9if special_quest_8_done == 0 and firepads_charged == true\
+\9\9\9\9\9then\
+\9\9\9\9\9\9shootProjectile(\"eob_dart_plus4_u\",alcove.level,alcove.x,alcove.y, (alcove.facing +2 ) % 4,10,0,0,0,0,0,10,nil,false,false)\9\9\
+\9\9\9\9\9\9mark_sq_8 = true\
+\9\9\9\9\9else\9\9\9\9\9\9\
+\9\9\9\9\9\9shootProjectile(\"eob_dart\",alcove.level,alcove.x,alcove.y, (alcove.facing +2 ) % 4,10,0,0,0,0,0,10,nil,false,false)\9\9\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9end\
+\9\9end\
+\9end\
+\9-- if we fired the adamantine darts, mark the quest done\
+\9if mark_sq_8 then special_quest_8_done = 1 end\
+end\
+\
+function printSQ8()\
+\9if special_quest_8_done == 0\
+\9then\
+\9\9hudPrint (\"Special quest for this level!\")\
+\9\9secret_special_quest_8:activate()\
+\9\9firepads_charged = true\
+\9end\
 end")
 spawn("script_entity", 15,6,2, "script_entity_east_west")
 	:setSource("-- on click on the text on either side\
@@ -11201,6 +11777,8 @@ function westToEast()\
 \9spawn(\"eob_teleporter\",8,14,6,1,\"eob_teleporter_west_to_east\")\
 \9:setTeleportTarget(16, 6, 3, 8)\
 \9:setChangeFacing(true)\
+\9:setSilent(true)\
+\9:setScreenFlash(false)\
 \9:activate()\
 end\
 \
@@ -11216,6 +11794,8 @@ function eastToWest()\
 \9spawn(\"eob_teleporter\",8,16,6,3,\"eob_teleporter_east_to_west\")\
 \9:setTeleportTarget(14, 6, 1, 8)\
 \9:setChangeFacing(true)\
+\9:setSilent(true)\
+\9:setScreenFlash(false)\
 \9:activate()\
 end\
 \
@@ -11269,18 +11849,6 @@ function kyeForGem()\
 \9end\
 end")
 spawn("eob_key_ruby", 25,16,0, "eob_key_ruby_1")
-spawn("eob_dart", 24,3,0, "eob_dart_1")
-spawn("eob_dart", 25,3,0, "eob_dart_2")
-spawn("eob_dart", 26,3,0, "eob_dart_3")
-spawn("eob_dart", 27,3,0, "eob_dart_4")
-spawn("eob_dart", 28,3,0, "eob_dart_5")
-spawn("eob_dart", 28,3,1, "eob_dart_6")
-spawn("eob_dart", 28,4,1, "eob_dart_7")
-spawn("eob_dart", 28,4,2, "eob_dart_8")
-spawn("eob_dart", 27,4,2, "eob_dart_9")
-spawn("eob_dart", 26,4,2, "eob_dart_10")
-spawn("eob_dart", 25,4,2, "eob_dart_11")
-spawn("eob_dart", 24,4,2, "eob_dart_12")
 spawn("eob_drow_button", 16,6,3, "eob_drow_button_east")
 	:addConnector("toggle", "script_entity_east_west", "eastToWest")
 spawn("eob_drow_button", 14,6,1, "eob_drow_button_west")
@@ -11307,6 +11875,50 @@ spawn("prison_pillar", 14,20,3, "prison_pillar_21")
 spawn("prison_pillar", 18,16,1, "prison_pillar_23")
 spawn("prison_pillar", 20,21,0, "prison_pillar_24")
 spawn("secret", 22,4,2, "secret_special_quest_8")
+spawn("mouth_socket_dart", 24,3,0, "mouth_socket_dart_1")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("counter", 23,5,3, "counter_special_quest_8")
+	:setInitialValue(12)
+	:setValue(12)
+	:addConnector("activate", "script_entity_special_quest_8", "printSQ8")
+spawn("mouth_socket_dart", 25,3,0, "mouth_socket_dart_2")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 26,3,0, "mouth_socket_dart_3")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 28,3,0, "mouth_socket_dart_5")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 27,3,0, "mouth_socket_dart_4")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 28,4,1, "mouth_socket_dart_7")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 28,4,2, "mouth_socket_dart_8")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 27,4,2, "mouth_socket_dart_9")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 26,4,2, "mouth_socket_dart_10")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 25,4,2, "mouth_socket_dart_11")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("mouth_socket_dart", 24,4,2, "mouth_socket_dart_12")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("eob_drow_dart_firing_pad", 28,4,1, "eob_drow_dart_firing_pad_15")
+spawn("mouth_socket_dart", 28,3,1, "mouth_socket_dart_6")
+	:addConnector("activate", "counter_special_quest_8", "decrement")
+	:addConnector("deactivate", "counter_special_quest_8", "increment")
+spawn("secret", 28,23,1, "secret_22")
+spawn("secret", 26,25,1, "secret_23")
+spawn("secret", 18,9,3, "secret_24")
 
 --- level 9 ---
 
@@ -11442,12 +12054,16 @@ spawn("eob_drow_pressure_plate", 8,11,2, "eob_drow_pressure_plate_18")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:addConnector("activate", "script_entity_60", "shootDarts2")
 spawn("eob_drow_wall_illusion", 9,11,0, "eob_drow_wall_illusion_6")
 spawn("eob_drow_wall_illusion", 9,11,2, "eob_drow_wall_illusion_14")
 spawn("eob_drow_pressure_plate", 10,11,2, "eob_drow_pressure_plate_19")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:addConnector("activate", "script_entity_60", "shootDarts3")
 spawn("eob_drow_wall_illusion", 11,11,0, "eob_drow_wall_illusion_8")
 spawn("eob_drow_wall_illusion", 11,11,2, "eob_drow_wall_illusion_16")
 spawn("eob_drow_pressure_plate", 14,11,2, "eob_drow_pressure_plate_20")
@@ -11455,7 +12071,7 @@ spawn("eob_drow_pressure_plate", 14,11,2, "eob_drow_pressure_plate_20")
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
 	:setActivateOnce(true)
-	:addConnector("activate", "script_entity_60", "shootDarts2")
+	:addConnector("activate", "script_entity_60", "shootDarts5")
 spawn("eob_drow_dart_firing_pad", 15,11,1, "eob_drow_dart_firing_pad_37")
 spawn("eob_drow_wall_illusion", 15,11,2, "eob_drow_wall_illusion_18")
 spawn("eob_drow_alcove", 25,11,3, "eob_drow_alcove_thieves_5")
@@ -11494,14 +12110,16 @@ spawn("eob_drow_pit", 2,15,3, "eob_drow_pit_10")
 	:setPitState("open")
 spawn("eob_drow_wall_throwable", 3,15,0, "eob_drow_wall_throwable_1")
 spawn("eob_drow_magic_missile_firing_pad", 7,15,0, "eob_drow_magic_missile_firing_pad_1")
-spawn("eob_drow_button", 9,15,0, "eob_drow_button_23")
-	:addConnector("toggle", "spawner_11", "activate")
+spawn("eob_drow_button", 9,15,0, "eob_drow_button_com_lock_3")
+	:addConnector("toggle", "spawner_com_lock_6", "activate")
+	:addConnector("toggle", "script_entity_com_lock", "combinationLock")
 spawn("eob_drow_magic_missile_firing_pad", 11,15,0, "eob_drow_magic_missile_firing_pad_2")
 spawn("eob_drow_pressure_plate", 12,15,2, "eob_drow_pressure_plate_22")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
-	:addConnector("activate", "spawner_9", "activate")
+	:addConnector("activate", "timer_purge", "activate")
+	:addConnector("activate", "timer_reset_room", "deactivate")
 spawn("eob_drow_lock_spider", 16,15,3, "eob_drow_lock_spider_8")
 	:setOpenedBy("eob_key_jeweled")
 	:addConnector("activate", "eob_drow_door_73", "open")
@@ -11510,8 +12128,9 @@ spawn("eob_drow_pit", 3,16,2, "eob_drow_pit_11")
 	:addTrapDoor()
 	:setPitState("open")
 spawn("eob_drow_magic_missile_firing_pad", 7,16,3, "eob_drow_magic_missile_firing_pad_4")
-spawn("eob_drow_button", 11,16,1, "eob_drow_button_24")
-	:addConnector("toggle", "spawner_9", "activate")
+spawn("eob_drow_button", 11,16,1, "eob_drow_button_com_lock_1")
+	:addConnector("toggle", "spawner_com_lock_1", "activate")
+	:addConnector("toggle", "script_entity_com_lock", "combinationLock")
 spawn("eob_blocker", 24,16,2, "eob_blocker_12")
 spawn("eob_drow_pressure_plate", 25,16,2, "eob_drow_pressure_plate_23")
 	:setTriggeredByParty(true)
@@ -11525,40 +12144,38 @@ spawn("eob_drow_door", 25,16,1, "eob_drow_door_75")
 spawn("eob_drow_door_one", 27,16,1, "eob_drow_door_one_12")
 spawn("eob_drow_ceiling_shaft", 1,17,2, "eob_drow_ceiling_shaft_8")
 spawn("eob_drow_wall_illusion", 2,17,2, "eob_drow_wall_illusion_20")
-spawn("eob_drow_pressure_plate", 3,17,2, "eob_drow_pressure_plate_24")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(false)
-	:setActivateOnce(true)
-	:addConnector("activate", "eob_drow_pit_11", "close")
-	:addConnector("activate", "eob_drow_pit_10", "close")
-spawn("eob_drow_button", 7,17,3, "eob_drow_button_25")
-	:addConnector("toggle", "spawner_14", "activate")
+spawn("eob_drow_button", 7,17,3, "eob_drow_button_com_lock_6")
+	:addConnector("toggle", "spawner_com_lock_5", "activate")
+	:addConnector("toggle", "script_entity_com_lock", "combinationLock")
 spawn("eob_drow_magic_missile_firing_pad", 11,17,1, "eob_drow_magic_missile_firing_pad_5")
 spawn("eob_drow_stairs_up", 18,16,2, "eob_drow_stairs_up_11")
 spawn("eob_drow_wall_text", 19,17,3, "eob_drow_wall_text_26")
 	:setWallText("One key for one gem.")
 spawn("eob_drow_magic_missile_firing_pad", 7,18,3, "eob_drow_magic_missile_firing_pad_6")
-spawn("eob_drow_button", 11,18,1, "eob_drow_button_26")
-	:addConnector("toggle", "spawner_12", "activate")
+spawn("eob_drow_button", 11,18,1, "eob_drow_button_com_lock_5")
+	:addConnector("toggle", "spawner_com_lock_2", "activate")
+	:addConnector("toggle", "script_entity_com_lock", "combinationLock")
 spawn("eob_drow_alcove", 19,18,3, "eob_drow_alcove_key_for_gem")
 spawn("eob_drow_wall_text", 22,18,1, "eob_drow_wall_text_special_quest_9")
-	:setWallText("Drow writing is written here.")
+	:setWallText("Drow writing is written here.\
+It is written, the key lies on the other side.")
 spawn("eob_drow_button", 24,18,1, "eob_drow_button_27")
 	:setActivateOnce(true)
 spawn("eob_drow_wall_illusion", 30,18,2, "eob_drow_wall_illusion_24")
 spawn("eob_drow_wall_illusion", 2,19,0, "eob_drow_wall_illusion_19")
 spawn("eob_drow_door", 3,19,1, "eob_drow_door_76")
 	:addPullChain()
-spawn("eob_drow_door", 6,19,1, "eob_drow_door_77")
-spawn("eob_drow_button", 7,19,2, "eob_drow_button_29")
-	:addConnector("toggle", "spawner_15", "activate")
+spawn("eob_drow_door", 6,19,1, "eob_drow_door_com_lock")
+spawn("eob_drow_button", 7,19,2, "eob_drow_button_com_lock_4")
+	:addConnector("toggle", "spawner_com_lock_4", "activate")
+	:addConnector("toggle", "script_entity_com_lock", "combinationLock")
 spawn("eob_drow_lock_spider", 7,19,1, "eob_drow_lock_spider_9")
 	:setOpenedBy("eob_key_drow")
-	:addConnector("activate", "eob_drow_door_77", "open")
+	:addConnector("activate", "eob_drow_door_com_lock", "open")
 spawn("eob_drow_magic_missile_firing_pad", 9,19,2, "eob_drow_magic_missile_firing_pad_7")
-spawn("eob_drow_button", 11,19,2, "eob_drow_button_30")
-	:addConnector("toggle", "spawner_13", "activate")
+spawn("eob_drow_button", 11,19,2, "eob_drow_button_com_lock_2")
+	:addConnector("toggle", "spawner_com_lock_3", "activate")
+	:addConnector("toggle", "script_entity_com_lock", "combinationLock")
 spawn("eob_drow_wall_illusion", 13,19,1, "eob_drow_wall_illusion_22")
 spawn("eob_drow_door_one", 16,18,2, "eob_drow_door_one_13")
 	:addPullChain()
@@ -11592,6 +12209,7 @@ spawn("eob_drow_wall_text", 24,25,3, "eob_drow_wall_text_29")
 	:setWallText("Oracle of devouring")
 spawn("eob_drow_stairs_down", 6,26,3, "eob_drow_stairs_down_13")
 spawn("eob_drow_alcove", 24,26,3, "eob_drow_alcove_14")
+	:addConnector("activate", "script_entity_oracle_of_devouring", "identifyItems")
 spawn("eob_drow_door", 26,26,1, "eob_drow_door_80")
 	:addPullChain()
 spawn("eob_drow_door", 28,26,3, "eob_drow_door_81")
@@ -11613,7 +12231,6 @@ spawn("scroll_stoneskin", 30,8,3, "eob_mage_scroll_stone_skin_1")
 spawn("eob_arrow_u", 25,14,3, "eob_arrow_u_21")
 spawn("eob_arrow_u", 25,14,1, "eob_arrow_u_22")
 spawn("eob_arrow_u", 25,14,2, "eob_arrow_u_23")
-spawn("eob_key_drow", 9,15,2, "eob_key_drow_7")
 spawn("eob_cleric_scroll_dispel_magic", 2,16,1, "eob_cleric_scroll_dispel_magic_2")
 spawn("eob_cleric_scroll_cure_serious_wnds", 2,16,3, "eob_cleric_scroll_cure_serious_wnds_2")
 spawn("scroll_invisibility", 29,18,2, "eob_mage_scroll_invisibility_2")
@@ -11646,7 +12263,7 @@ spawn("eob_disbeast", 9,6,0, "eob_disbeast_2")
 spawn("eob_disbeast", 29,26,0, "eob_disbeast_3")
 spawn("eob_disbeast", 24,14,0, "eob_disbeast_4")
 spawn("eob_disbeast", 29,4,0, "eob_disbeast_5")
-spawn("eob_disbeast", 24,26,0, "eob_disbeast_6")
+spawn("eob_disbeast", 24,26,1, "eob_disbeast_6")
 spawn("eob_disbeast", 29,2,0, "eob_disbeast_7")
 spawn("eob_rust", 5,9,0, "eob_rust_3")
 	:setAIState("guard")
@@ -11665,7 +12282,6 @@ spawn("eob_disbeast", 10,2,0, "eob_disbeast_14")
 spawn("eob_disbeast", 9,2,0, "eob_disbeast_15")
 spawn("eob_disbeast", 9,1,0, "eob_disbeast_16")
 spawn("eob_disbeast", 12,6,0, "eob_disbeast_17")
-spawn("eob_stone_dagger", 28,20,1, "eob_stone_dagger_3")
 spawn("eob_ruins_alcove", 28,20,1, "eob_ruins_alcove_portal_9_dagger")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("pressure_plate_hidden", 29,12,2, "pressure_plate_hidden_124")
@@ -11776,16 +12392,9 @@ spawn("eob_disbeast", 21,11,0, "eob_disbeast_20")
 spawn("eob_disbeast", 21,10,0, "eob_disbeast_18")
 spawn("eob_drow_button", 28,16,2, "eob_drow_button_34")
 	:addConnector("toggle", "eob_drow_door_one_12", "toggle")
-spawn("spawner", 11,15,2, "spawner_9")
-	:setSpawnedEntity("blob")
+spawn("spawner", 11,15,2, "spawner_com_lock_1")
+	:setSpawnedEntity("magic_missile")
 	:setCoolDown(0)
-spawn("pressure_plate_hidden", 7,12,1, "pressure_plate_hidden_126")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(false)
-	:setActivateOnce(true)
-	:setSilent(true)
-	:addConnector("activate", "script_entity_60", "shootDarts1")
 spawn("script_entity", 13,10,1, "script_entity_60")
 	:setSource("-- the walls behind firing pads should be throwable through but not walkable through\
 -- stepping on the plate also gives about 800 exp to group\
@@ -11805,65 +12414,159 @@ spawn("script_entity", 13,10,1, "script_entity_60")
 --\9fragile: a boolean flag, if set the projectile is destroyed on impact.\
 --\9championOrdinal: a champion ordinal number, used for dealing experience points. This parameter is optional.\
 \
-\
 function shootDarts1()\
-\9\9shootProjectile(\"eob_dart\",9,7,10,2,10,0,0,-0.7,0.7,0,10,nil,false,false)\
 \9\9shootProjectile(\"eob_dart\",9,7,10,2,10,0,0, 0.7,0.7,0,10,nil,false,false)\
+\9\9shootProjectile(\"eob_dart\",9,7,12,0,10,0,0,-0.7,0.7,0,10,nil,false,false)\
 end\
 \
 function shootDarts2()\
+\9\9shootProjectile(\"eob_dart\",9,8,10,2,10,0,0, 0.7,0.7,0,10,nil,false,false)\
+\9\9shootProjectile(\"eob_dart\",9,8,12,0,10,0,0,-0.7,0.7,0,10,nil,false,false)\
+end\
+\
+function shootDarts3()\
+\9\9shootProjectile(\"eob_dart\",9,10,10,2,10,0,0, 0.7,0.7,0,10,nil,false,false)\
+\9\9shootProjectile(\"eob_dart\",9,10,12,0,10,0,0,-0.7,0.7,0,10,nil,false,false)\
+end\
+\
+\
+function shootDarts4()\
+\9\9shootProjectile(\"eob_dart\",9,11,10,2,10,0,0, 0.7,0.7,0,10,nil,false,false)\
+\9\9shootProjectile(\"eob_dart\",9,12,12,0,10,0,0,-0.7,0.7,0,10,nil,false,false)\
+\
+end\
+\
+function shootDarts5()\
 \9\9shootProjectile(\"eob_dart\",9,14,10,2,10,0,0, 0.7,0.7,0,10,nil,false,false)\
 \9\9shootProjectile(\"eob_dart\",9,15,11,3,10,0,0, 0,0.7,-0.7,10,nil,false,false)\
 \9\9shootProjectile(\"eob_dart\",9,14,14,0,10,0,0, 0.7,0.7,0,10,nil,false,false)\
-\
-end")
-spawn("teleporter_rotator180", 3,17,0, "teleporter_rotator180_5")
-	:setTriggeredByParty(false)
-	:setTriggeredByMonster(false)
-	:setTriggeredByItem(true)
-	:setTeleportTarget(3,16,0,9)
-	:setInvisible(true)
-	:setSilent(true)
-	:setHideLight(true)
-	:setScreenFlash(false)
+end\
+")
 spawn("pressure_plate_hidden", 3,14,2, "pressure_plate_hidden_128")
 	:setTriggeredByParty(false)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(true)
 	:setSilent(true)
-	:addConnector("activate", "eob_drow_wall_6", "open")
-	:addConnector("activate", "eob_drow_wall_7", "open")
+	:addConnector("activate", "eob_drow_wall_6", "toggle")
+	:addConnector("activate", "eob_drow_wall_7", "toggle")
+	:addConnector("activate", "eob_drow_wall_21", "toggle")
+	:addConnector("activate", "timer_16", "activate")
+	:addConnector("deactivate", "eob_teleporter_43", "deactivate")
 spawn("eob_drow_wall", 1,15,1, "eob_drow_wall_6")
 spawn("eob_drow_wall", 1,16,0, "eob_drow_wall_7")
 spawn("prison_pressure_plate", 1,15,2, "prison_pressure_plate_1")
-	:setTriggeredByParty(false)
+	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(true)
 	:addConnector("activate", "eob_drow_wall_8", "open")
 spawn("eob_drow_wall", 5,19,3, "eob_drow_wall_8")
-spawn("spawner", 7,15,2, "spawner_11")
-	:setSpawnedEntity("blob")
+spawn("spawner", 7,15,2, "spawner_com_lock_6")
+	:setSpawnedEntity("magic_missile")
 	:setCoolDown(0)
-spawn("spawner", 11,17,3, "spawner_12")
-	:setSpawnedEntity("blob")
+spawn("spawner", 11,17,3, "spawner_com_lock_2")
+	:setSpawnedEntity("magic_missile")
 	:setCoolDown(0)
-spawn("spawner", 9,19,0, "spawner_13")
-	:setSpawnedEntity("blob")
+spawn("spawner", 9,19,0, "spawner_com_lock_3")
+	:setSpawnedEntity("magic_missile")
 	:setCoolDown(0)
-spawn("spawner", 7,16,1, "spawner_14")
-	:setSpawnedEntity("blob")
+spawn("spawner", 7,16,1, "spawner_com_lock_5")
+	:setSpawnedEntity("magic_missile")
 	:setCoolDown(0)
-spawn("spawner", 7,18,1, "spawner_15")
-	:setSpawnedEntity("blob")
+spawn("spawner", 7,18,1, "spawner_com_lock_4")
+	:setSpawnedEntity("magic_missile")
 	:setCoolDown(0)
 spawn("eob_drow_button", 5,20,3, "eob_drow_button_22")
 	:addConnector("toggle", "eob_drow_door_one_14", "toggle")
-spawn("script_entity", 10,15,1, "script_entity_61")
-	:setSource("-- should shoot magic missiles\
--- pity - this room has potential\
--- eg firing the misiles in a sequence\
--- and player would have to find the right blinds spots at the right time\
--- each button could turn off its spawners for a while")
+spawn("script_entity", 10,15,0, "script_entity_com_lock")
+	:setSource("-- not exactly as per original\
+-- and bit overcomplicated\
+-- find in what sequnce you have to press all 6 buttons\
+-- or die in oblivirating magic missile purge\
+\
+\
+-- press all buttons in correct sequence\
+-- in limited time\
+-- to get the door open\
+function combinationLock(button)\
+if nextbutton == nil then nextbutton = \"eob_drow_button_com_lock_1\" end\
+\
+    if   button.id == \"eob_drow_button_com_lock_1\"\
+    and nextbutton == \"eob_drow_button_com_lock_1\"\
+    then\
+        nextbutton = \"eob_drow_button_com_lock_2\"       \
+\
+    elseif button.id == \"eob_drow_button_com_lock_2\"\
+    and   nextbutton == \"eob_drow_button_com_lock_2\"\
+    then\
+        nextbutton = \"eob_drow_button_com_lock_3\"\
+\
+    elseif button.id == \"eob_drow_button_com_lock_3\"\
+    and   nextbutton == \"eob_drow_button_com_lock_3\"\
+    then\
+        nextbutton = \"eob_drow_button_com_lock_4\"\
+\
+    elseif button.id == \"eob_drow_button_com_lock_4\"\
+    and   nextbutton == \"eob_drow_button_com_lock_4\"\
+    then\
+        nextbutton = \"eob_drow_button_com_lock_5\"\
+\
+    elseif button.id == \"eob_drow_button_com_lock_5\"\
+    and   nextbutton == \"eob_drow_button_com_lock_5\"\
+    then\
+        nextbutton = \"eob_drow_button_com_lock_6\"\
+\
+    elseif button.id == \"eob_drow_button_com_lock_6\"\
+    and   nextbutton == \"eob_drow_button_com_lock_6\"\
+    then\
+\9\9shootProjectile(\"eob_key_drow\",9,8,17,0,0,10,0,0,3,0,10,nil,false,false)\
+        timer_reset_room:activate()\
+    else\
+        timer_reset_room:activate()\
+    end\
+\9--hudPrint(\"next \" .. nextbutton )\
+end\
+\
+-- called by timer running out of time\
+-- or if wrong button is pressed\
+function resetRoom()\
+    -- reset button to first one\
+    nextbutton = \"eob_drow_button_com_lock_1\"\
+\9timer_reset_room:deactivate()\
+\9counter_reset_room:setValue(10)\
+\
+end\
+\
+-- countdown ticking\
+function ticking()\
+\9local tick = counter_reset_room:getValue()\
+\
+\9if tick > 0 \
+\9then\
+\9\9playSoundAt(\"button\",9,12,17)\
+\9\9playSoundAt(\"button\",9, 6,17)\
+\9end\
+\
+\9--hudPrint(\"\" .. tick .. \"\")\
+end\
+\
+\
+function purgeRoom()\
+\
+\9-- shoot as many as counter_purge magic missiles from random sites\
+\9if counter_purge:getValue() > 0\
+\9then\
+\9\9local i = math.random(1,6)\
+\9\9findEntity(\"spawner_com_lock_\"..i):activate()\
+\9\9counter_purge:decrement()\
+\9else\
+\9\9-- set the initial values for purge missiles\
+\9\9timer_purge:deactivate()\
+\9\9counter_purge:setValue(24)\
+\9\9counter_reset_room:setValue(10)\
+\9\9nextbutton = \"eob_drow_button_com_lock_1\"\
+\9\9\
+\9end\
+end")
 spawn("script_entity", 24,12,2, "script_entity_hall_of_thieves")
 	:setSource("-- Down this hall, on the west walls, are carved shelves. \
 -- As the characters step next to these shelves, some of their items will be placed there. \
@@ -12072,7 +12775,6 @@ spawn("eob_drow_pressure_plate", 7,19,2, "eob_drow_pressure_plate_13")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(false)
 	:setTriggeredByItem(false)
-	:addConnector("activate", "spawner_15", "activate")
 spawn("prison_pillar", 8,11,3, "prison_pillar_1")
 spawn("prison_pillar", 9,11,0, "prison_pillar_2")
 spawn("prison_pillar", 10,11,2, "prison_pillar_3")
@@ -12081,21 +12783,76 @@ spawn("prison_pillar", 11,12,1, "prison_pillar_5")
 spawn("prison_pillar", 10,12,2, "prison_pillar_6")
 spawn("prison_pillar", 9,12,2, "prison_pillar_7")
 spawn("prison_pillar", 8,12,0, "prison_pillar_8")
-spawn("script_entity", 23,27,0, "script_entity_59")
+spawn("script_entity", 23,27,0, "script_entity_oracle_of_devouring")
 	:setSource("-- oracle of devouring\
 -- There is a shelf carved into the west wall. \
 -- If you place an Orb of Power (from levels 11 or 12) on the shelf, \
--- all magic items carried in your party will be identified but the Orb will disappear. ")
+-- all magic items carried in your party or on the floor in front of alcove\
+-- will be identified but the Orb will disappear. \
+\
+function identifyItems(alcove)\
+\9local c = 0\
+\9local champ = nil\
+\9local slot = 0\
+\9local item = nil\
+\9local newitem = nil\9\
+\
+\9-- check if orb of power is present\
+\9for i in alcove:containedItems()\
+\9do\
+\9\9if string.find(i.name,\"eob_orb_of_power\") \
+\9\9then\9\
+\9\9\9i:destroy()\
+\9\9\9playSound(\"secret\")\
+\9\9\9secret_oracle_of_devouring:activate()\
+\
+\9-- check all champtions\
+\9for c = 1,4\
+\9do\
+\9\9champ =  party:getChampion(c)\
+\9\9if champ \
+\9\9then\
+\9\9\9--hudPrint(\"checking inventory of champion: \" .. champ:getName() ..\"\")\
+\
+\9\9\9-- check all slots  1 - 31\
+\9\9\9for slot = 1,31\
+\9\9\9do\
+\9\9\9\9item = champ:getItem(slot)\
+\9\9\9\9if item \
+\9\9\9\9then \
+\9\9\9    \9--hudPrint(\"slot: \" .. slot ..\" contains: \" .. item:getUIName() .. \"\")\
+\
+\9\9\9\9\9-- search for \"_u_\" in the item id (not in name, cause some items might have name with _u and not be unidentified versions)\
+\9\9\9\9\9if string.find(item.id,\"_u_\")\
+\9\9\9\9\9then \
+\9\9\9\9\9\9-- create identified version of the same item (name without _u)\
+\9\9\9\9\9 \9newitem = spawn(string.gsub(item.name,\"_u\",\"\"))\
+\9\9\9\9\9\9--hudPrint(\"Identified: \" .. item.name .. \" into \" .. newitem.name)\
+\9\9\9\9\9\9-- remove the unidentified original\
+\9\9\9\9\9\9champ:removeItem(slot)\
+\9\9\9\9\9\9item:destroy()\
+\9\9\9\9\9\9-- put the identified version of item to the same slot\
+\9\9\9\9\9\9champ:insertItem(slot, newitem)\
+\9\9\9\9\9end\
+\9\9\9\9end\
+\9\9\9end\
+\9\9end\
+\9end\
+\9end\
+\9end\
+\
+end")
 spawn("eob_drow_wall_throwable", 14,10,0, "eob_drow_wall_throwable_2")
 spawn("eob_drow_wall_throwable", 15,11,1, "eob_drow_wall_throwable_3")
 spawn("script_entity", 18,18,3, "script_entity_66")
-	:setSource("-- creates jeweled key for red gem\
+	:setSource("-- creates jeweled key for any gem\
+-- tested, works with blue and red gems from lvl 3 too\
 \
 function kyeForGem()\
 \
 \9for e in eob_drow_alcove_key_for_gem:containedItems()\
 \9do\
-\9\9if string.find(e.name,\"eob_gem_red\")\
+\9\9if string.find(e.name,\"eob_gem\")\
 \9\9then\
 \9\9\9key = spawn(\"eob_key_jeweled\")\
 \9\9\9eob_drow_alcove_key_for_gem:addItem(key)\
@@ -12144,7 +12901,7 @@ spawn("pressure_plate_hidden", 25,12,3, "pressure_plate_hidden_142")
 spawn("eob_drow_wall_text_short", 25,12,2, "eob_drow_wall_text_thieves")
 	:setWallText("")
 spawn("eob_drow_wall_text_short", 12,14,3, "eob_drow_wall_text_short_1")
-	:setWallText("Drow word for 'button'.")
+	:setWallText("Combination lock.")
 spawn("altar", 3,14,2, "altar_2")
 spawn("altar", 14,9,0, "altar_3")
 spawn("altar", 16,11,1, "altar_4")
@@ -12153,9 +12910,73 @@ spawn("prison_pillar", 19,17,0, "prison_pillar_22")
 spawn("altar", 23,18,1, "altar_special_quest_9")
 spawn("eob_drow_wall_text_short", 20,23,2, "eob_drow_wall_text_short_7")
 	:setWallText("STORAGE")
-spawn("starting_location", 16,20,3, "starting_location_1")
 spawn("eob_drow_wall_text_short", 29,10,1, "eob_drow_wall_text_short_8")
 	:setWallText("Watch your head.")
+spawn("secret", 23,26,2, "secret_oracle_of_devouring")
+spawn("eob_drow_wall", 1,15,0, "eob_drow_wall_21")
+spawn("eob_drow_pressure_plate", 7,12,2, "eob_drow_pressure_plate_6")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:addConnector("activate", "script_entity_60", "shootDarts1")
+spawn("eob_drow_pressure_plate", 11,10,2, "eob_drow_pressure_plate_12")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:addConnector("activate", "script_entity_60", "shootDarts4")
+spawn("eob_teleporter", 3,14,2, "eob_teleporter_43")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(2,16,2,9)
+	:setChangeFacing(false)
+	:deactivate()
+spawn("prison_pillar", 2,16,1, "prison_pillar_11")
+spawn("timer", 2,13,1, "timer_16")
+	:setTimerInterval(1)
+	:addConnector("activate", "eob_teleporter_43", "activate")
+	:addConnector("activate", "timer_16", "deactivate")
+spawn("teleporter_rotator180", 3,17,0, "teleporter_rotator180_5")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(3,16,0,9)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_drow_pressure_plate", 3,17,2, "eob_drow_pressure_plate_21")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:addConnector("activate", "eob_drow_pit_11", "close")
+	:addConnector("activate", "eob_drow_pit_10", "close")
+spawn("secret", 24,20,2, "secret_15")
+spawn("secret", 29,30,1, "secret_16")
+spawn("secret", 30,18,0, "secret_17")
+spawn("secret", 13,19,2, "secret_18")
+spawn("secret", 9,22,1, "secret_19")
+spawn("secret", 28,7,1, "secret_20")
+spawn("secret", 28,3,1, "secret_21")
+spawn("timer", 9,14,3, "timer_reset_room")
+	:setTimerInterval(1)
+	:addConnector("activate", "counter_reset_room", "decrement")
+	:addConnector("activate", "script_entity_com_lock", "ticking")
+spawn("counter", 9,13,1, "counter_reset_room")
+	:setInitialValue(10)
+	:setValue(10)
+	:addConnector("activate", "timer_purge", "activate")
+	:addConnector("activate", "timer_reset_room", "deactivate")
+spawn("timer", 10,14,3, "timer_purge")
+	:setTimerInterval(0.25)
+	:addConnector("activate", "script_entity_com_lock", "purgeRoom")
+spawn("counter", 10,13,0, "counter_purge")
+	:setInitialValue(24)
+	:setValue(24)
+spawn("secret", 8,28,2, "secret_30")
 
 --- level 10 ---
 
@@ -12171,18 +12992,18 @@ mapDesc([[
 ################################
 ################################
 ################################
-################################
-####.######.......##############
-#.......###.#####.##############
-#.##.##.....#...#.#########..###
-#.#.##.######...#.###...#.##.###
+####.#####........##############
+#........#.######.##############
+#.##.###...##...#.##############
+#.###########...#.#########..###
+#.#.##.#######.##.###...#.##.###
 ###.....##..##.##.#.###.#....###
 #######.##.##...#.#......#.#####
-#...##......#####.####.###.#####
+#...##......##.##.####.###.#####
 #...#..#.##.................####
 #...##.#...###.########..##.####
 ##.###...#..########.#.#..#.####
-##.#..##.####..#..#.....########
+##.#..##.####..#..#.....###.####
 ##......................#.....##
 ##.#..##.####..#..#.....#.....##
 #..####......########.###.....##
@@ -12196,23 +13017,21 @@ mapDesc([[
 ##....................###...####
 ################################
 ]])
-spawn("eob_hive_wall_rift", 17,9,1, "eob_hive_wall_rift_1")
-spawn("eob_hive_wall_rift", 9,11,0, "eob_hive_wall_rift_2")
-spawn("eob_hive_alcove", 13,11,3, "eob_hive_alcove_1")
+spawn("eob_hive_wall_rift", 17,8,1, "eob_hive_wall_rift_1")
+spawn("eob_hive_wall_rift", 9,10,0, "eob_hive_wall_rift_2")
+spawn("eob_hive_alcove", 13,10,3, "eob_hive_alcove_1")
 	:addItem(spawn("eob_potion_giant_strength"))
-spawn("eob_hive_wall_text", 13,11,0, "eob_hive_wall_text_1")
-	:setWallText("")
-spawn("eob_hive_pit", 14,11,3, "eob_hive_pit_1")
-spawn("eob_hive_wall_text", 15,11,0, "eob_hive_wall_text_2")
-	:setWallText("")
-spawn("eob_hive_alcove", 15,11,1, "eob_hive_alcove_2")
+spawn("eob_hive_pit", 14,10,3, "eob_hive_pit_1")
+spawn("eob_hive_alcove", 15,10,1, "eob_hive_alcove_2")
 	:addItem(spawn("eob_ring2_feather_fall_u"))
 spawn("eob_hive_stairs_up", 1,12,2, "eob_hive_stairs_up_1")
 spawn("eob_hive_wall_rift", 11,13,0, "eob_hive_wall_rift_3")
 spawn("eob_hive_lever", 13,14,3, "eob_hive_lever_1")
 	:setLeverState("activated")
+	:addConnector("any", "script_entity_move_cube", "moveCubeDown")
 spawn("eob_hive_lever", 15,14,1, "eob_hive_lever_2")
 	:setLeverState("activated")
+	:addConnector("any", "script_entity_move_cube", "moveCubeUp")
 spawn("eob_hive_wall_rift", 22,14,0, "eob_hive_wall_rift_4")
 spawn("eob_hive_wall_rift", 24,14,1, "eob_hive_wall_rift_6")
 spawn("eob_hive_ceiling_shaft", 2,15,3, "eob_hive_ceiling_shaft_1")
@@ -12222,42 +13041,37 @@ spawn("eob_hive_ceiling_shaft", 3,16,2, "eob_hive_ceiling_shaft_2")
 spawn("eob_hive_wall_rift", 8,16,1, "eob_hive_wall_rift_7")
 spawn("eob_hive_door", 16,16,1, "eob_hive_door_1")
 	:addPullChain()
-spawn("eob_hive_wall_text", 19,16,2, "eob_hive_wall_text_3")
-	:setWallText("")
 spawn("eob_hive_door", 20,16,3, "eob_hive_door_2")
 	:addPullChain()
 spawn("eob_hive_lever", 14,17,2, "eob_hive_lever_3")
-	:setLeverState("activated")
+	:addConnector("any", "script_entity_move_cube", "moveCubeUp")
 spawn("eob_hive_door", 2,18,0, "eob_hive_door_3")
 	:addPullChain()
-spawn("eob_hive_switch", 20,18,0, "eob_hive_switch_1")
 spawn("eob_hive_door", 20,18,2, "eob_hive_door_4")
 	:addPullChain()
 spawn("eob_hive_door", 22,18,2, "eob_hive_door_5")
 	:addPullChain()
-spawn("eob_hive_switch", 22,18,0, "eob_hive_switch_2")
 spawn("eob_hive_secret_button_tiny", 27,18,3, "eob_hive_secret_button_tiny_1")
+	:addConnector("toggle", "eob_hive_wall_1", "toggle")
+	:addConnector("toggle", "eob_hive_wall_2", "toggle")
 spawn("eob_hive_door", 8,19,2, "eob_hive_door_6")
 	:addPullChain()
 spawn("eob_hive_wall_text", 19,19,0, "eob_hive_wall_text_4")
-	:setWallText("")
+	:setWallText("In case of fire...")
 spawn("eob_hive_wall_rift", 21,19,0, "eob_hive_wall_rift_8")
 spawn("eob_hive_wall_text", 23,19,0, "eob_hive_wall_text_5")
-	:setWallText("")
-spawn("eob_hive_wall_text", 7,20,2, "eob_hive_wall_text_7")
-	:setWallText("")
-spawn("eob_hive_wall_text", 7,20,0, "eob_hive_wall_text_6")
-	:setWallText("")
+	:setWallText("In case of flood...")
 spawn("eob_hive_door", 15,20,1, "eob_hive_door_7")
 	:addPullChain()
 spawn("eob_hive_door", 18,20,1, "eob_hive_door_8")
 	:addPullChain()
-spawn("eob_hive_door_one", 2,21,0, "eob_hive_door_one_1")
-	:addPullChain()
+spawn("eob_hive_door_one", 2,22,0, "eob_hive_door_one_1")
 spawn("eob_hive_door", 8,21,0, "eob_hive_door_9")
 	:addPullChain()
 spawn("eob_hive_wall_rift", 16,21,2, "eob_hive_wall_rift_12")
 spawn("eob_hive_lock", 20,21,2, "eob_hive_lock_1")
+	:setOpenedBy("eob_key_skull")
+	:addConnector("activate", "eob_hive_door_10", "open")
 spawn("eob_hive_wall_rift", 22,21,2, "eob_hive_wall_rift_13")
 spawn("eob_hive_wall_rift", 23,21,1, "eob_hive_wall_rift_9")
 spawn("eob_hive_wall_rift", 29,21,1, "eob_hive_wall_rift_10")
@@ -12265,38 +13079,44 @@ spawn("eob_hive_pressure_plate", 1,22,3, "eob_hive_pressure_plate_1")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
+	:addConnector("activate", "script_entity_53", "openDoor")
+	:addConnector("deactivate", "script_entity_53", "openDoor")
 spawn("eob_hive_door", 21,22,0, "eob_hive_door_10")
 spawn("eob_hive_pressure_plate", 1,23,2, "eob_hive_pressure_plate_2")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
+	:addConnector("activate", "script_entity_53", "openDoor")
+	:addConnector("deactivate", "script_entity_53", "openDoor")
 spawn("eob_hive_wall_rift", 5,23,0, "eob_hive_wall_rift_11")
 spawn("eob_hive_pressure_plate", 1,24,2, "eob_hive_pressure_plate_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
+	:addConnector("activate", "script_entity_53", "openDoor")
+	:addConnector("deactivate", "script_entity_53", "openDoor")
 spawn("eob_hive_wall_rift", 9,24,2, "eob_hive_wall_rift_14")
 spawn("eob_hive_wall_text", 21,24,1, "eob_hive_wall_text_8")
-	:setWallText("")
-spawn("eob_blocker", 26,24,3, "eob_blocker_14")
+	:setWallText("WELCOME\
+plus fireball to all on reading")
 spawn("eob_hive_wall_text", 2,25,3, "eob_hive_wall_text_9")
-	:setWallText("")
+	:setWallText("Stow yer weapons.")
 spawn("eob_hive_door", 19,25,2, "eob_hive_door_11")
 	:addPullChain()
 spawn("eob_hive_door", 21,25,2, "eob_hive_door_12")
-	:addPullChain()
 spawn("eob_hive_door", 23,25,2, "eob_hive_door_13")
 	:addPullChain()
-spawn("eob_hive_alcove", 26,25,1, "eob_hive_alcove_3")
+spawn("eob_hive_alcove", 26,25,1, "eob_hive_alcove_special_quest_1")
 	:addItem(spawn("eob_potion_poison"))
+	:addConnector("activate", "script_entity_special_quest_10", "specialQuest10")
 spawn("eob_hive_stairs_up", 6,26,1, "eob_hive_stairs_up_2")
 spawn("eob_hive_wall_rift", 19,26,3, "eob_hive_wall_rift_15")
-spawn("eob_blocker", 26,26,2, "eob_blocker_15")
 spawn("eob_hive_wall_rift", 14,27,3, "eob_hive_wall_rift_16")
 spawn("eob_hive_portal_scepter", 18,27,3, "eob_hive_portal_scepter_1")
 spawn("eob_hive_portal_ring", 23,26,1, "eob_hive_portal_ring_1")
-spawn("eob_hive_alcove", 26,27,1, "eob_hive_alcove_4")
+spawn("eob_hive_alcove", 26,27,1, "eob_hive_alcove_special_quest_2")
 	:addItem(spawn("eob_wand_cone_of_cold_10_u"))
+	:addConnector("activate", "script_entity_special_quest_10", "specialQuest10")
 spawn("eob_hive_stairs_up", 6,28,1, "eob_hive_stairs_up_3")
 spawn("eob_hive_prison_manacles", 17,28,1, "eob_hive_prison_manacles_1")
 spawn("eob_hive_alcove", 19,28,3, "eob_hive_alcove_5")
@@ -12305,87 +13125,735 @@ spawn("eob_hive_alcove", 19,28,3, "eob_hive_alcove_5")
 spawn("eob_hive_wall_rift", 19,28,2, "eob_hive_wall_rift_18")
 spawn("eob_hive_wall_rift", 23,28,2, "eob_hive_wall_rift_19")
 spawn("eob_hive_alcove", 23,28,1, "eob_hive_alcove_6")
-spawn("eob_blocker", 26,28,2, "eob_blocker_16")
 spawn("eob_hive_wall_rift", 2,29,3, "eob_hive_wall_rift_17")
-spawn("eob_hive_alcove", 26,29,1, "eob_hive_alcove_7")
+spawn("eob_hive_alcove", 26,29,1, "eob_hive_alcove_special_quest_3")
 	:addItem(spawn("eob_cleric_scroll_flame_blade"))
 	:addItem(spawn("eob_cleric_scroll_cure_critical_wnds"))
+	:addConnector("activate", "script_entity_special_quest_10", "specialQuest10")
 spawn("eob_hive_pressure_plate", 5,30,3, "eob_hive_pressure_plate_4")
 	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
-spawn("eob_teleporter", 6,30,3, "eob_teleporter_27")
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:addConnector("activate", "script_entity_seven_levers", "deactTeleports")
+	:addConnector("activate", "timer_seven_levers", "activate")
+spawn("eob_teleporter", 6,30,3, "eob_teleporter_seven_levers_7")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_lever", 7,30,0, "eob_hive_lever_4")
+	:setTeleportTarget(9,30,3,10)
+	:setChangeFacing(false)
+spawn("eob_hive_lever", 7,30,0, "eob_hive_lever_seven_levers_7")
+	:addConnector("activate", "script_entity_seven_levers", "sevendown")
+	:addConnector("deactivate", "script_entity_seven_levers", "sevenup")
 spawn("eob_hive_wall_rift", 7,30,2, "eob_hive_wall_rift_20")
-spawn("eob_teleporter", 8,30,3, "eob_teleporter_28")
+spawn("eob_teleporter", 8,30,3, "eob_teleporter_seven_levers_6")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_lever", 9,30,0, "eob_hive_lever_5")
-spawn("eob_teleporter", 10,30,3, "eob_teleporter_29")
+	:setTeleportTarget(19,30,3,10)
+	:setChangeFacing(false)
+spawn("eob_hive_lever", 9,30,0, "eob_hive_lever_seven_levers_6")
+	:addConnector("activate", "script_entity_seven_levers", "sixdown")
+	:addConnector("deactivate", "script_entity_seven_levers", "sixup")
+spawn("eob_teleporter", 10,30,3, "eob_teleporter_seven_levers_5")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_lever", 11,30,0, "eob_hive_lever_6")
+	:setTeleportTarget(15,30,3,10)
+	:setChangeFacing(false)
+spawn("eob_hive_lever", 11,30,0, "eob_hive_lever_seven_levers_5")
+	:addConnector("activate", "script_entity_seven_levers", "fivedown")
+	:addConnector("deactivate", "script_entity_seven_levers", "fiveup")
 spawn("eob_hive_wall_rift", 11,30,2, "eob_hive_wall_rift_21")
-spawn("eob_teleporter", 12,30,3, "eob_teleporter_30")
+spawn("eob_teleporter", 12,30,3, "eob_teleporter_seven_levers_4")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_lever", 13,30,0, "eob_hive_lever_7")
-spawn("eob_teleporter", 14,30,3, "eob_teleporter_31")
+	:setTeleportTarget(5,30,3,10)
+	:setChangeFacing(false)
+spawn("eob_hive_lever", 13,30,0, "eob_hive_lever_seven_levers_4")
+	:addConnector("activate", "script_entity_seven_levers", "fourdown")
+	:addConnector("deactivate", "script_entity_seven_levers", "fourup")
+spawn("eob_teleporter", 14,30,3, "eob_teleporter_seven_levers_3")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
+	:setTeleportTarget(9,30,3,10)
+	:setChangeFacing(false)
 spawn("eob_hive_wall_rift", 15,30,2, "eob_hive_wall_rift_22")
-spawn("eob_hive_lever", 15,30,0, "eob_hive_lever_8")
-spawn("eob_teleporter", 16,30,3, "eob_teleporter_32")
+spawn("eob_hive_lever", 15,30,0, "eob_hive_lever_seven_levers_3")
+	:addConnector("activate", "script_entity_seven_levers", "threedown")
+	:addConnector("deactivate", "script_entity_seven_levers", "threeup")
+spawn("eob_teleporter", 16,30,3, "eob_teleporter_seven_levers_2")
 	:setTriggeredByParty(true)
 	:setTriggeredByMonster(true)
 	:setTriggeredByItem(true)
-spawn("eob_hive_lever", 17,30,0, "eob_hive_lever_9")
-spawn("eob_teleporter", 18,30,3, "eob_teleporter_33")
-	:setTriggeredByParty(true)
-	:setTriggeredByMonster(true)
-	:setTriggeredByItem(true)
-spawn("eob_hive_lever", 19,30,0, "eob_hive_lever_10")
+	:setTeleportTarget(9,30,3,10)
+	:setChangeFacing(false)
+spawn("eob_hive_lever", 17,30,0, "eob_hive_lever_seven_levers_2")
+	:addConnector("activate", "script_entity_seven_levers", "twodown")
+	:addConnector("deactivate", "script_entity_seven_levers", "twoup")
+spawn("eob_hive_lever", 19,30,0, "eob_hive_lever_seven_levers_1")
+	:addConnector("activate", "script_entity_seven_levers", "onedown")
+	:addConnector("deactivate", "script_entity_seven_levers", "oneup")
 spawn("eob_hive_wall_text", 20,30,2, "eob_hive_wall_text_10")
-	:setWallText("")
-spawn("eob_hive_wall_text", 21,30,2, "eob_hive_wall_text_11")
-	:setWallText("")
+	:setWallText("PROPER SEQUENCE")
 spawn("eob_hive_secret_button_small", 25,30,3, "eob_hive_secret_button_small_1")
-spawn("eob_blocker", 26,30,2, "eob_blocker_17")
+	:setActivateOnce(true)
+	:addConnector("toggle", "counter_freeze_blockers", "increment")
 spawn("eob_plate_mail_u", 2,28,0, "eob_plate_mail_u_3")
 spawn("eob_wand_u", 14,27,0, "eob_wand_u_1")
-spawn("eob_arrow_u", 4,11,2, "eob_arrow_u_24")
+spawn("eob_arrow_u", 4,10,2, "eob_arrow_u_24")
 spawn("eob_arrow_u", 15,24,1, "eob_arrow_u_25")
-spawn("eob_key_skull_u", 3,12,0, "eob_key_skull_u_1")
 spawn("eob_cleric_scroll_neutral_poison", 19,13,0, "eob_cleric_scroll_neutral_poison_2")
+	:setScrollText("")
 spawn("scroll_cone_of_cold", 25,22,2, "eob_mage_scroll_cone_of_cold_1")
+	:setScrollText("")
 spawn("eob_bones_elf_tyrra_u", 3,12,1, "eob_bones_elf_tyrra_u_1")
-spawn("eob_mantis1_1", 27,24,0, "eob_mantis1_1_1")
-spawn("eob_mantis1_2", 16,21,0, "eob_mantis1_2_1")
 spawn("eob_mantis1_1", 5,24,0, "eob_mantis1_1_2")
-spawn("eob_mantis1_2", 27,26,0, "eob_mantis1_2_2")
-spawn("eob_mantis1_2", 27,30,0, "eob_mantis1_2_3")
 spawn("eob_mantis1_1", 6,15,0, "eob_mantis1_1_3")
-spawn("eob_mantis1_1", 27,28,0, "eob_mantis1_1_4")
 spawn("eob_mantis1_2", 12,23,0, "eob_mantis1_2_4")
 spawn("eob_mantis1_2", 2,16,0, "eob_mantis1_2_5")
 spawn("eob_mantis1_2", 8,24,0, "eob_mantis1_2_6")
 spawn("eob_mantis1_1", 10,14,0, "eob_mantis1_1_5")
-spawn("eob_mantis1_1", 16,19,0, "eob_mantis1_1_6")
+spawn("eob_mantis1_1", 17,20,0, "eob_mantis1_1_6")
 spawn("eob_mantis1_1", 8,27,0, "eob_mantis1_1_7")
 spawn("eob_mantis1_2", 8,16,0, "eob_mantis1_2_7")
 spawn("eob_ruins_alcove", 23,27,1, "eob_ruins_alcove_portal_10_ring")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_ruins_alcove", 19,27,3, "eob_ruins_alcove_portal_10_scepter")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_ring", 23,27,1, "eob_stone_ring_2")
-spawn("eob_stone_scepter", 19,27,3, "eob_stone_scepter_2")
+spawn("script_entity", 1,21,2, "script_entity_53")
+	:setSource("\
+\
+function openDoor()\
+\
+\9local northplate = 0\
+\9local midleplate = 0\
+\9local southplate = 0\
+\
+\9-- is there weapon type item on north plate?\
+\9for e in entitiesAt(10,1,22) \
+\9do\
+\9\9if string.find(e.name,\"axe\") ~= nil \
+\9\9or string.find(e.name,\"dagger\") ~= nil\
+\9\9or string.find(e.name,\"sword\") ~= nil\
+\9\9or string.find(e.name,\"mace\") ~= nil\
+\9\9or string.find(e.name,\"staff\") ~= nil\
+\9\9then northplate = 1\
+\9\9end\
+\9end\
+\
+\
+\9-- is there weapon type item on south plate?\
+\9for e in entitiesAt(10,1,23) \
+\9do\
+\9\9if string.find(e.name,\"axe\") ~= nil \
+\9\9or string.find(e.name,\"dagger\") ~= nil\
+\9\9or string.find(e.name,\"sword\") ~= nil\
+\9\9or string.find(e.name,\"mace\") ~= nil\
+\9\9or string.find(e.name,\"staff\") ~= nil\
+\9\9then midleplate = 1\
+\9\9end\
+\
+\9end\
+\9\
+\
+\9-- is there weapon type item on south plate?\
+\9for e in entitiesAt(10,1,24) \
+\9do\
+\9\9if string.find(e.name,\"axe\") ~= nil \
+\9\9or string.find(e.name,\"dagger\") ~= nil\
+\9\9or string.find(e.name,\"sword\") ~= nil\
+\9\9or string.find(e.name,\"mace\") ~= nil\
+\9\9or string.find(e.name,\"staff\") ~= nil\
+\9\9then southplate = 1\
+\9\9end\
+\
+\9end\
+\
+\
+\
+\9-- if both has weapon type items open door\
+\9--hudPrint(\"north: \" .. northplate .. \" middle: \" .. midleplate .. \" south: \" .. southplate .. \"\")\
+\
+\9if northplate == 1 and midleplate == 1 and southplate == 1 \
+\9then\
+\9\9eob_hive_door_one_1:open()\
+\9else \
+\9\9eob_hive_door_one_1:close()\
+\9end\
+\9\
+\
+\
+end")
+spawn("eob_hive_wall_text_short", 7,20,0, "eob_hive_wall_text_short_1")
+	:setWallText("HIVE")
+spawn("eob_hive_wall_text_short", 7,20,2, "eob_hive_wall_text_short_2")
+	:setWallText("HIVE")
+spawn("eob_dwarven_wall_cube", 14,15,1, "eob_dwarven_wall_cube_cork")
+spawn("script_entity", 13,15,2, "script_entity_move_cube")
+	:setSource("-- two levers move the cube up\
+-- one lever moves the cube down\
+-- maybe later we can replace destory/respawn model with really moving cube\
+-- sort of doors but on horizontal plane\
+\
+\
+function moveCubeUp()\
+\
+\9cube = findEntity(\"eob_dwarven_wall_cube_cork\")\
+\9\
+\9if cube and cube.y > 13 and cube.y <= 15\
+\9then \
+\9\9-- save the possition\
+\9\9local l = cube.level\
+\9\9local x = cube.x\
+\9\9local y = cube.y -1 -- move up\
+\9\9local f = cube.facing\
+\9\
+\9\9-- destroy original cube\
+\9\9cube:destroy()\
+\9\9\
+\9\9-- create new cube with same ID one square up\
+\9\9spawn(\"eob_dwarven_wall_cube\",l, x, y , f, \"eob_dwarven_wall_cube_cork\")\
+\9\9playSound(\"pressure_plate_released\")\
+\9end\
+end\
+\
+\
+function moveCubeDown()\
+\9cube = findEntity(\"eob_dwarven_wall_cube_cork\")\
+\9\
+\9if cube and cube.y >= 13 and cube.y < 15\
+\9then \
+\9\9-- save the possition\
+\9\9local l = cube.level\
+\9\9local x = cube.x\
+\9\9local y = cube.y + 1 -- move down\
+\9\9local f = cube.facing\
+\9\
+\9\9-- destroy original cube\
+\9\9cube:destroy()\
+\9\9\
+\9\9-- create new cube with same ID one square up\
+\9\9spawn(\"eob_dwarven_wall_cube\",l, x, y , f, \"eob_dwarven_wall_cube_cork\")\
+\
+\9end\
+end")
+spawn("eob_hive_wall_text_short", 13,10,0, "eob_hive_wall_text_short_3")
+	:setWallText("JUMP...")
+spawn("eob_hive_wall_text_short", 15,10,0, "eob_hive_wall_text_short_4")
+	:setWallText("JUMP...")
+spawn("eob_hive_wall_text_short", 19,16,2, "eob_hive_wall_text_short_5")
+	:setWallText("HIVE")
+spawn("eob_mantis1_1", 22,16,3, "eob_mantis1_1_9")
+spawn("eob_hive_wall", 27,19,0, "eob_hive_wall_1")
+spawn("eob_hive_wall", 27,19,2, "eob_hive_wall_2")
+spawn("spawner", 22,19,0, "spawner_10")
+	:setSpawnedEntity("fireball_greater")
+	:setCoolDown(0)
+spawn("spawner", 20,19,0, "spawner_16")
+	:setSpawnedEntity("ice_shards")
+	:setCoolDown(0)
+spawn("eob_hive_button", 20,18,0, "eob_hive_button_4")
+	:addConnector("toggle", "timer_15", "activate")
+spawn("eob_hive_button", 22,18,0, "eob_hive_button_5")
+	:addConnector("toggle", "timer_14", "activate")
+spawn("timer", 22,19,2, "timer_14")
+	:setTimerInterval(1)
+	:addConnector("activate", "spawner_10", "activate")
+	:addConnector("activate", "timer_14", "deactivate")
+spawn("timer", 20,19,2, "timer_15")
+	:setTimerInterval(1)
+	:addConnector("activate", "spawner_16", "activate")
+	:addConnector("activate", "timer_15", "deactivate")
+spawn("eob_key_skull", 3,12,0, "eob_key_skull_1")
+spawn("gw_event", 21,25,1, "gw_event_shindia")
+	:setSource("-- shindia\
+-- activates with stepping on the door square on 21, 25\
+\
+\
+-- name of the imeage to show\
+image = \"mod_assets/textures/events/eob1-shindia.dds\"\
+image_width = 354\
+image_hieght = 242\
+\
+\
+-- Defines states. Each entry must have exactly two columns:\
+-- first is state, the second is description shown.\
+-- Event will start from the first state on the list.\
+-- There is also one special state called \"end\". Once moved\
+-- to state \"end\", the whole event ends.\
+\
+states = {\
+{ \"init\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"Shindia, suddenly realizing the odds, begs for her life. \9\9\\n\" ..\
+\9\"\\\"Wait! Please, don\\'t kill me! Look, I know a lot, and I can give you \\n\" ..\
+\9\"important information! I can tell you how to save the king! \9\\n\" ..\
+\9\"That's worth something, isn\\'t it?! I\\'m no good to you dead!\\\"\"\
+\9}, \
+{ \"hear\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"Anxiuons to stay alive Shindia blurts her story.\9\9\9\\n\" ..\
+\9\"\\\"It\\'s obvious you know of Xanathar\\'s plot. He kidnapped prince\9\\n\" ..\
+\9\"Keirgar to turn the Drow adn the Dwarves against each other.\9\9\\n\" ..\
+\9\"Because we knew the king was too stubborn to brainwash, \\n\" ..\
+\9\"I poisoned him. The only way to revive him from his coma is with the\"\
+\9},\
+{ \"hear2\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"potion that I stashed on the level below, in the \\'Room of the levers\\'\\\".\\n\" ..\
+\9\"Before you can get any more information from Shindia, the party \9\\n\" ..\
+\9\"is distracted by a series of dancing lights far down the corridor.\9\\n\" ..\
+\9\"\\nWhen the party turns back, she is gone.\"\
+\9}\
+}\
+\
+\
+\
+function onAttack()\
+\9\9spawn(\"eob_shindia\", 10, 21, 26, 0)\
+\9\9eob_teleporter_shindia:deactivate()\
+end\
+\
+function onEnd()\
+\9eob_teleporter_shindia:deactivate()\
+end\
+\
+\
+\
+\
+-- defines possible actions in each state. Each entry has\
+-- 4 values. First is a state in which you can take that action. \
+-- Second is a state name to which player will transition if that\
+-- action is taken. Third is a text printed on the action button.\
+-- Fourth defines function callback. It is optional. This function\
+-- may not return anything and the state specified in value 2 will \
+-- be used. The function may also return a name of the state, thus\
+-- overriding default transition. One of the transitions must\
+-- transit to \"end\" state (a dummy state that concludes the whole\
+-- event).\
+actions = {\
+\9{ \"init\",\9\"end\",\9\9\"KILL HER\", onAttack},\
+\9{ \"init\",\9\"hear\",\9\9\"HEAR HER OUT\"},\
+\9{ \"init\",\9\"end\",\9\9\"LET HER GO\", onEnd},\
+\9{ \"hear\",\9\"hear2\",\9\"MORE\"},\
+\9{ \"hear2\",\9\"end\",\9\9\"MORE\", onEnd}\
+}\
+\
+")
+spawn("gw_event", 16,28,2, "gw_event_prince_keirgar")
+	:setSource("-- princ Keirgar in chains\
+\
+\
+-- name of the imeage to show\
+image = \"mod_assets/textures/events/eob1-prince_keirgar.dds\"\
+image_width = 354\
+image_hieght = 242\
+\
+\
+-- Defines states. Each entry must have exactly two columns:\
+-- first is state, the second is description shown.\
+-- Event will start from the first state on the list.\
+-- There is also one special state called \"end\". Once moved\
+-- to state \"end\", the whole event ends.\
+\
+states = {\
+{ \"init\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"You see prince Keirgar struggling against his bonds.\9\9\9\\n\" ..\
+\9\"He looks up at you with desperate hope. \9\9\9\9\9\9\\n\" ..\9\9\9\
+\9\"\\\"Please! You must free me!\9\9\9\9\9\9\9\9\9\\n\" ..\
+\9\"I need to return to my clan and avert the war between\9\9\9\\n\" ..\
+\9\"the Dwarves and the Drow!\\\"\" }, \
+{ \"free\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"Prince Keirgar sighs in relief, \\\"I thank thee, for the timely rescue.\9\\n\" ..\
+\9\"Now I must hurry to my people to warn them of two foul traps.\9\9\\n\" ..\
+\9\"\\\"First, the Drow community was not behind my kidnapping.\9\9\9\\n\" ..\
+\9\"It was Xanathar\\'s minion Shindia. If my people mistakenly attack \9\\n\" ..\
+\9\"the Drow, in their search for me, the Drow will annihilate them\9\\n\" ..\
+\9\"XXXXXXXXXXXX                                 with superior numbers.\"\9\
+\9},\
+\
+{ \"free1\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"Second, if my people continue their search for our ancestral home,\9\\n\" ..\
+\9\"they will run directly into Xanathar himself. I gather from \9\9\\n\" ..\
+\9\"Shindia\\'s comments that Xanathar has set up his main quarters\9\9\\n\" ..\
+\9\"right in the heart of our ancient city!\"\
+\9},\
+{ \"free2\",\
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\9\
+\9\"I must find my people and stop them from attacking the drow or\9\9\\n\" ..\
+\9\"assaulting Xanathar. \\n\\nWill you accompany me, brave adventurers?\\\"\" \
+\9},\
+{ \"kill\",  \
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"You kill the helples dwarf.\"\
+\9},\
+{ \"join\",  \
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"Keirgar joins the party.\"\
+\9},\
+{ \"nojoin\",  \
+\9\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\" ..\
+\9\"Keirgar wanders off in search of his people.\"\
+\9}\
+}\
+\
+\
+\
+function onEnd()\
+\9eob_teleporter_prince_keirgar:deactivate()\
+end\
+\
+\
+function onJoin()\
+\9-- Keirgar definition is on level 5 next to dwarven cleric \
+\9script_entity_valhalla.keirgarJoin()\
+\9counter_dwarf_camp_keirgar_rescued:increment()\
+\9eob_teleporter_prince_keirgar:deactivate()\
+end\
+\
+function onNoJoin()\
+\9-- strangly enough, Keirgar wont make it alone\
+\9-- you get no credit from dwarf for just freeing him\
+\9-- no taking him with your party\
+\9counter_dwarf_camp_keirgar_rescued:increment()\
+\9eob_teleporter_prince_keirgar:deactivate()\
+end\
+\
+\
+\
+\
+-- defines possible actions in each state. Each entry has\
+-- 4 values. First is a state in which you can take that action. \
+-- Second is a state name to which player will transition if that\
+-- action is taken. Third is a text printed on the action button.\
+-- Fourth defines function callback. It is optional. This function\
+-- may not return anything and the state specified in value 2 will \
+-- be used. The function may also return a name of the state, thus\
+-- overriding default transition. One of the transitions must\
+-- transit to \"end\" state (a dummy state that concludes the whole\
+-- event).\
+actions = {\
+\9{ \"init\",\9\"free\",\9\9\"FREE HIM\"},\
+\9{ \"init\",\9\"kill\",\9\9\"KILL HIM\"},\
+\9{ \"init\",\9\"abort\",\9\"LEAVE\"},\
+\9{ \"free\",\9\"free1\",\9\"MORE\"},\
+\9{ \"free1\",\9\"free2\",\9\"MORE\"},\
+\9{ \"free2\",\9\"join\",\9\9\"YES\", onJoin},\
+\9{ \"free2\",\9\"nojoin\",\9\"NO\", onNoJoin},\
+\9{ \"join\",\9\"end\",\9\9\"MORE\"},\
+\9{ \"nojoin\",\9\"end\",\9\9\"MORE\"},\
+\9{ \"kill\",\9\"end\",\9\9\"MORE\", onEnd}\9\
+}\
+\
+")
+spawn("eob_hive_button", 2,21,3, "eob_hive_button_6")
+	:addConnector("toggle", "eob_hive_door_one_1", "toggle")
+spawn("script_entity", 20,29,2, "script_entity_seven_levers")
+	:setSource("--- LEVER AND PORT 1 --- \
+function onedown()\
+\9-- to lever 2\
+\9eob_teleporter_seven_levers_1\
+\9:setTeleportTarget(17, 30, party.facing)\
+end\
+function oneup()\
+\9-- to lever 5\
+\9eob_teleporter_seven_levers_1\
+\9:setTeleportTarget(11, 30, party.facing)\
+end\
+\
+\
+--- LEVER AND PORT 2 --- \
+function twodown()\
+\9-- to lever 7\
+\9eob_teleporter_seven_levers_2\
+\9:setTeleportTarget(7, 30, party.facing)\
+end\
+function twoup()\
+\9-- to lever 6\
+\9eob_teleporter_seven_levers_2\
+\9:setTeleportTarget(9, 30, party.facing)\
+end\
+\
+\
+--- LEVER AND PORT 3 --- \
+function threedown()\
+\9-- to lever 4\
+\9eob_teleporter_seven_levers_3\
+\9:setTeleportTarget(13, 30, party.facing)\
+end\
+function threeup()\
+\9-- to lever 6\
+\9eob_teleporter_seven_levers_3\
+\9:setTeleportTarget(9, 30, party.facing)\
+end\
+\
+\
+--- LEVER AND PORT 4 --- \
+function fourdown()\
+\9-- to lever 1\
+\9eob_teleporter_seven_levers_4\
+\9:setTeleportTarget(19, 30, party.facing)\
+end\
+function fourup()\
+\9-- to final pressure plate\
+\9eob_teleporter_seven_levers_4\
+\9:setTeleportTarget(5, 30, party.facing)\
+end\
+\
+\
+--- LEVER AND PORT 5 --- \
+function fivedown()\
+\9-- to lever 2\
+\9eob_teleporter_seven_levers_5\
+\9:setTeleportTarget(17, 30, party.facing)\
+end\
+function fiveup()\
+\9-- to lever 3\
+\9eob_teleporter_seven_levers_5\
+\9:setTeleportTarget(15, 30, party.facing)\
+end\
+\
+\
+--- LEVER AND PORT 6 --- \
+function sixdown()\
+\9-- to lever 7\
+\9eob_teleporter_seven_levers_6\
+\9:setTeleportTarget(7, 30, party.facing)\
+end\
+function sixup()\
+\9-- to lever 1\
+\9eob_teleporter_seven_levers_6\
+\9:setTeleportTarget(19, 30, party.facing)\
+end\
+\
+\
+--- LEVER AND PORT 7 --- \
+function sevendown()\
+\9-- to lever 1\
+\9eob_teleporter_seven_levers_7\
+\9:setTeleportTarget(19, 30, party.facing)\
+end\
+function sevenup()\
+\9-- to lever 2\
+\9eob_teleporter_seven_levers_7\
+\9:setTeleportTarget(9, 30, party.facing)\
+end\
+\
+\
+function deactTeleports()\
+\9for port in allEntities(10)\
+\9do\
+\9\9if string.find(port.id,\"eob_teleporter_seven_levers\")\
+\9\9then\
+\9\9\9--hudPrint(\"\".. port.id  ..\"\")\
+\9\9\9port:deactivate()\
+\9\9end\
+\9end\
+\
+\
+end\
+\
+\
+function reset()\
+-- re enable all the teleports and levers to default state\
+-- to keep enjoying the puzzle \
+\
+\9for i=1,7\
+\9do\
+\9\9local lever = findEntity(\"eob_hive_lever_seven_levers_\"..i)\
+\9\9lever:setLeverState(\"deactivated\")\
+\9\9playSoundAt(\"lever\",lever.level,lever.x, lever.y, lever.facing)\
+\9end\
+\9\
+\9local port = nill\
+\9for port in allEntities(10)\
+\9do\
+\9\9if string.find(port.id,\"eob_teleporter_seven_levers\")\
+\9\9then\
+\9\9\9--hudPrint(\"\".. port.id  ..\"\")\
+\9\9\9port:activate()\
+\9\9end\
+\9end\
+\
+end")
+spawn("eob_hive_wall_text_short", 21,30,2, "eob_hive_wall_text_short_6")
+	:setWallText("THIRTEEN")
+spawn("script_entity", 26,23,3, "script_entity_turn_spells")
+	:setSource("-- spells/missiles (dager/darts/arrows..) fired from west to east should turn south\
+")
+spawn("script_entity", 28,25,2, "script_entity_special_quest_10")
+	:setSource("function specialQuest10()\
+\9local i = nil\
+\9local one = 0\
+\9local two = 0\
+\9local three = 0\
+\
+\9for i in eob_hive_alcove_special_quest_1:containedItems()\
+\9do\
+\9\9if string.find(i.name, \"eob_egg\") then one = 1 end\
+\9end\
+\
+\9for i in eob_hive_alcove_special_quest_2:containedItems()\
+\9do\
+\9\9if string.find(i.name, \"eob_egg\") then two = 1 end\
+\9end\
+\
+\9for i in eob_hive_alcove_special_quest_3:containedItems()\
+\9do\
+\9\9if string.find(i.name, \"eob_egg\") then three = 1 end\
+\9end\9\
+\
+\
+\9--hudPrint(\"\" .. one .. \" \" .. two .. \" \" .. three .. \"\")\
+\9-- if eggs are in shelves and only if the current mantis are all dead\
+\9if one == 1 and two == 1 and three == 1 and counter_special_quest_10:getValue() == 0\
+\9and not findEntity(\"eob_mantis_dagger_statue_1\")\
+\9and not findEntity(\"eob_mantis_dagger_statue_2\")\
+\9and not findEntity(\"eob_mantis_halbred_statue_1\")\
+\9and not findEntity(\"eob_mantis_halbred_statue_2\")\
+\9then\
+\9\9secret_special_quest_10:activate()\
+\9\9counter_special_quest_10:increment()\
+\9\9hudPrint(\"Special quest for this level!\")\
+\9\9\
+\9\9spawn(\"eob_mantis1_1\",10,27,24,1):addItem(spawn(\"eob_ring_protection2_u\"))\
+\9\9spawn(\"eob_mantis1_1\",10,27,26,1):addItem(spawn(\"eob_ring_protection2_u\"))\
+\9\9spawn(\"eob_mantis1_1\",10,27,28,1):addItem(spawn(\"eob_ring2_feather_fall_u\"))\
+\9\9spawn(\"eob_mantis1_1\",10,27,30,1):addItem(spawn(\"eob_ring2_sustenance_u\"))\
+\9\9\
+\9\9\
+\9end\
+\
+end\
+\
+\
+\
+function removeBlockers()\
+\
+\9-- remove blockers (release the mantis) only when the button on southwest corner wasnt pressed \
+\9if  counter_freeze_blockers:getValue() == 0\
+\9then\
+\9\9eob_blocker_sq_1:deactivate()\
+\9\9eob_blocker_sq_2:deactivate()\
+\9\9eob_blocker_sq_3:deactivate()\
+\9\9eob_blocker_sq_4:deactivate()\
+\9end\
+\
+end\
+")
+spawn("secret", 28,26,1, "secret_special_quest_10")
+spawn("eob_blocker", 26,24,2, "eob_blocker_sq_1")
+spawn("eob_blocker", 26,26,1, "eob_blocker_sq_2")
+spawn("eob_blocker", 26,28,1, "eob_blocker_sq_3")
+spawn("eob_blocker", 26,30,1, "eob_blocker_sq_4")
+spawn("pressure_plate_hidden", 26,24,3, "pressure_plate_hidden_126")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("pressure_plate_hidden", 26,25,3, "pressure_plate_hidden_143")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("pressure_plate_hidden", 26,26,3, "pressure_plate_hidden_144")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("pressure_plate_hidden", 26,27,3, "pressure_plate_hidden_145")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("pressure_plate_hidden", 26,28,3, "pressure_plate_hidden_146")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("pressure_plate_hidden", 26,29,3, "pressure_plate_hidden_147")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("pressure_plate_hidden", 26,30,3, "pressure_plate_hidden_148")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setActivateOnce(true)
+	:setSilent(true)
+	:addConnector("activate", "script_entity_special_quest_10", "removeBlockers")
+spawn("teleporter_rotator90", 26,24,2, "teleporter_rotator90_2")
+	:setTriggeredByParty(false)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(26,25,2,10)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_mantis_dagger_statue", 27,24,3, "eob_mantis_dagger_statue_1")
+spawn("eob_mantis_dagger_statue", 27,28,3, "eob_mantis_dagger_statue_2")
+spawn("eob_mantis_halbred_statue", 27,26,3, "eob_mantis_halbred_statue_1")
+spawn("eob_mantis_halbred_statue", 27,30,3, "eob_mantis_halbred_statue_2")
+spawn("eob_teleporter", 16,28,1, "eob_teleporter_prince_keirgar")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(16,28,1,10)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("counter", 28,24,2, "counter_special_quest_10")
+spawn("dungeon_pillar", 7,27,2, "dungeon_pillar_1")
+spawn("dungeon_pillar", 7,28,3, "dungeon_pillar_2")
+spawn("secret", 27,20,1, "secret_26")
+spawn("eob_hive_door", 21,24,2, "eob_hive_door_44")
+spawn("eob_hive_button", 20,26,0, "eob_hive_button_7")
+	:addConnector("toggle", "eob_hive_door_12", "toggle")
+	:addConnector("toggle", "eob_hive_door_44", "toggle")
+spawn("eob_hive_button", 21,24,3, "eob_hive_button_8")
+	:addConnector("toggle", "eob_hive_door_44", "toggle")
+	:addConnector("toggle", "eob_hive_door_12", "toggle")
+spawn("eob_teleporter", 21,25,2, "eob_teleporter_shindia")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(21,25,2,10)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("timer", 5,29,1, "timer_seven_levers")
+	:setTimerInterval(60)
+	:addConnector("activate", "script_entity_seven_levers", "reset")
+	:addConnector("activate", "timer_seven_levers", "deactivate")
+spawn("eob_teleporter", 18,30,2, "eob_teleporter_seven_levers_1")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(true)
+	:setTriggeredByItem(true)
+	:setTeleportTarget(11,30,2,10)
+	:setChangeFacing(false)
+spawn("counter", 28,27,2, "counter_freeze_blockers")
 
 --- level 11 ---
 
@@ -12398,30 +13866,30 @@ mapDesc([[
 #.......##.#######..#.#...##...#
 #######.#....#...####.#.###..#.#
 #...###.#....#.#............#..#
-#.#...#.###############.###...##
+#.#...#.######.########.###...##
 #...#.#.#...........#...#...#..#
-#######.#.#########.#...#.#..#.#
+#######.#.####.####.#...#.#..#.#
 #...###.#.#.......#.#.###..#...#
 #.#.##..#.#.##.##.#.#....#...###
 #...##.##.#.#...#.#.####.##.#..#
-######..#.#.#.#.#...#..#.#...#.#
+######........#........#.#...#.#
 #...#####.#.#...#.#.##.#.#.#...#
-#.#.....#.#.#####.#.#..#.#####.#
-#...###.#.#.......#.#.##.#.#...#
-#######.#.#########.#.#..#.#...#
+#.#.....#.#.##.##.#.#..#.#####.#
+#...###.#.#.......#.#.##.#.....#
+#######.#.####.####.#.#..#.#...#
 #...###.#...........#.#..#######
-#.#.###.#############.####..#..#
+#.#.###.######.######.####..#..#
 #...###......#.#............#..#
 #######.####...#.#########..#..#
 ##......#..#####.#.......#####.#
 ##...##.#..#####...#.#.#.......#
 ##...##........###.......#####.#
-#########..###.###########..#..#
+###.#####..###.#######.###..#..#
 #.......#..###.#.........#..#..#
 #.......######.#..##.....##.#..#
-#..#.#..#......#######.##...####
+#..#.#..#......#######.##...#.##
 #..#.#..#...##.#..###...#.###.##
-#..###..#...##.#....#...#..#...#
+#..###......##.#....#...#..#...#
 #.......#...#...###.##.###.#...#
 #.......#...#...###........#...#
 ################################
@@ -12442,53 +13910,76 @@ spawn("eob_hive_door", 4,5,3, "eob_hive_door_19")
 	:addPullChain()
 spawn("eob_hive_door", 23,5,0, "eob_hive_door_20")
 	:addPullChain()
-spawn("eob_hive_button", 14,6,0, "eob_hive_button_1")
+spawn("eob_hive_button", 14,6,0, "eob_hive_button_outer")
+	:addConnector("toggle", "script_entity_circles", "outer")
 spawn("eob_hive_wall_rift", 30,7,3, "eob_hive_wall_rift_24")
-spawn("eob_hive_wall_text", 14,8,0, "eob_hive_wall_text_12")
-	:setWallText("")
+spawn("eob_hive_wall_text", 14,8,0, "eob_hive_wall_text_middle")
+	:setWallText("Leave no stone unturned.")
 spawn("eob_hive_door", 21,8,0, "eob_hive_door_21")
 	:addPullChain()
 spawn("eob_hive_wall_rift", 3,9,1, "eob_hive_wall_rift_25")
-spawn("eob_hive_lever", 24,9,1, "eob_hive_lever_11")
+spawn("eob_hive_lever", 24,9,1, "eob_hive_lever_rol_1")
 	:setLeverState("activated")
+	:addConnector("any", "counter_rol_1", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever1")
 spawn("eob_hive_ceiling_shaft", 14,10,2, "eob_hive_ceiling_shaft_3")
-spawn("eob_hive_lever", 24,10,1, "eob_hive_lever_12")
+spawn("eob_hive_lever", 24,10,1, "eob_hive_lever_rol_2")
+	:addConnector("any", "counter_rol_2", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever2")
 spawn("eob_hive_door", 7,11,3, "eob_hive_door_22")
 	:addPullChain()
-spawn("eob_hive_wall_star", 11,11,3, "eob_hive_wall_star_1")
-spawn("eob_hive_wall_rift", 13,11,1, "eob_hive_wall_rift_26")
-spawn("eob_hive_wall_text", 13,11,3, "eob_hive_wall_text_13")
+spawn("eob_hive_wall_star", 11,11,3, "eob_hive_wall_star_middle")
 	:setWallText("")
-spawn("eob_hive_button", 15,11,1, "eob_hive_button_2")
-spawn("eob_hive_wall_star", 19,11,1, "eob_hive_wall_star_2")
+spawn("eob_hive_wall_rift", 13,11,1, "eob_hive_wall_rift_26")
+spawn("eob_hive_wall_text", 13,11,3, "eob_hive_wall_text_inner")
+	:setWallText("Your fate lies in the stars.")
+spawn("eob_hive_button", 15,11,1, "eob_hive_button_inner")
+	:addConnector("toggle", "script_entity_circles", "inner")
+spawn("eob_hive_wall_star", 19,11,1, "eob_hive_wall_star_outer")
+	:setWallText("This is a celestial star of navigation.")
 spawn("eob_hive_door", 21,11,1, "eob_hive_door_23")
 	:addPullChain()
-spawn("eob_hive_lever", 24,11,1, "eob_hive_lever_13")
-spawn("eob_hive_wall_star", 14,12,2, "eob_hive_wall_star_3")
-spawn("eob_hive_lever", 24,12,1, "eob_hive_lever_14")
+spawn("eob_hive_lever", 24,11,1, "eob_hive_lever_rol_3")
+	:addConnector("any", "counter_rol_3", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever3")
+spawn("eob_hive_wall_star", 14,12,2, "eob_hive_wall_star_inner")
+	:setWallText("This is a celestial star of navigation.")
+spawn("eob_hive_lever", 24,12,1, "eob_hive_lever_rol_4")
+	:addConnector("any", "counter_rol_4", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever4")
 spawn("eob_hive_door", 4,13,3, "eob_hive_door_24")
 	:addPullChain()
-spawn("eob_hive_lever", 24,13,1, "eob_hive_lever_15")
+spawn("eob_hive_lever", 24,13,1, "eob_hive_lever_rol_5")
 	:setLeverState("activated")
+	:addConnector("any", "counter_rol_5", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever5")
 spawn("eob_hive_door", 30,13,2, "eob_hive_door_25")
 	:addPullChain()
 spawn("eob_hive_wall_rift", 1,14,3, "eob_hive_wall_rift_27")
-spawn("eob_hive_button", 14,14,2, "eob_hive_button_3")
-spawn("eob_hive_lever", 24,14,1, "eob_hive_lever_16")
+spawn("eob_hive_button", 14,14,2, "eob_hive_button_middle")
+	:addConnector("toggle", "script_entity_circles", "middle")
+spawn("eob_hive_lever", 24,14,1, "eob_hive_lever_rol_6")
 	:setLeverState("activated")
-spawn("eob_hive_lever", 24,15,1, "eob_hive_lever_17")
+	:addConnector("any", "counter_rol_6", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever6")
+spawn("eob_hive_lever", 24,15,1, "eob_hive_lever_rol_7")
 	:setLeverState("activated")
+	:addConnector("any", "counter_rol_7", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever7")
 spawn("eob_hive_secret_button_small", 28,15,3, "eob_hive_secret_button_small_2")
-spawn("eob_hive_wall_text", 30,15,2, "eob_hive_wall_text_14")
-	:setWallText("")
+	:addConnector("toggle", "eob_hive_wall_11", "toggle")
+	:addConnector("toggle", "eob_hive_wall_12", "toggle")
 spawn("eob_hive_wall_rift", 1,16,3, "eob_hive_wall_rift_28")
-spawn("eob_hive_wall_text", 14,16,2, "eob_hive_wall_text_15")
-	:setWallText("")
-spawn("eob_hive_lever", 24,16,1, "eob_hive_lever_18")
-spawn("eob_hive_alcove", 24,16,2, "eob_hive_alcove_8")
-	:addItem(spawn("eob_dwarven_potion_healing"))
+spawn("eob_hive_wall_text", 14,16,2, "eob_hive_wall_text_outer")
+	:setWallText("Alignment must be true.")
+spawn("eob_hive_lever", 24,16,1, "eob_hive_lever_rol_8")
+	:addConnector("any", "counter_rol_8", "increment")
+	:addConnector("any", "script_entity_room_of_levers", "lever8")
+spawn("eob_hive_alcove", 24,16,2, "eob_hive_alcove_room_of_levers")
+	:addItem(spawn("eob_dwarven_potion_healing_u"))
 spawn("eob_hive_door", 8,18,1, "eob_hive_door_26")
 spawn("eob_hive_lock", 9,18,2, "eob_hive_lock_2")
+	:setOpenedBy("eob_key_drow")
 spawn("eob_hive_door", 14,18,2, "eob_hive_door_27")
 	:addPullChain()
 spawn("eob_hive_door", 6,20,1, "eob_hive_door_28")
@@ -12498,12 +13989,16 @@ spawn("eob_hive_door", 30,20,2, "eob_hive_door_29")
 spawn("eob_hive_door", 17,21,1, "eob_hive_door_30")
 	:addPullChain()
 spawn("eob_hive_wall_text", 18,21,1, "eob_hive_wall_text_16")
-	:setWallText("")
+	:setWallText("'CHWAT'")
 spawn("eob_hive_secret_button_tiny", 22,21,3, "eob_hive_secret_button_tiny_2")
+	:addConnector("toggle", "eob_hive_wall_6", "toggle")
+	:addConnector("toggle", "eob_hive_wall_5", "toggle")
 spawn("eob_hive_wall_rift", 24,21,3, "eob_hive_wall_rift_29")
 spawn("eob_hive_door", 25,21,3, "eob_hive_door_31")
 	:addPullChain()
 spawn("eob_hive_secret_button_tiny", 4,22,2, "eob_hive_secret_button_tiny_3")
+	:addConnector("toggle", "eob_hive_wall_7", "toggle")
+	:addConnector("toggle", "eob_hive_wall_8", "toggle")
 spawn("eob_hive_door", 8,22,1, "eob_hive_door_32")
 	:addPullChain()
 spawn("eob_hive_door", 11,22,3, "eob_hive_door_33")
@@ -12516,9 +14011,13 @@ spawn("eob_hive_door", 18,24,3, "eob_hive_door_35")
 	:addPullChain()
 spawn("eob_hive_wall_rift", 29,24,3, "eob_hive_wall_rift_32")
 spawn("eob_hive_lock", 3,25,2, "eob_hive_lock_3")
+	:setOpenedBy("eob_key_drow")
+	:addConnector("activate", "eob_hive_door_37", "open")
 spawn("eob_hive_door", 27,25,0, "eob_hive_door_36")
 	:addPullChain()
 spawn("eob_hive_secret_button_tiny", 30,25,2, "eob_hive_secret_button_tiny_4")
+	:addConnector("toggle", "eob_hive_wall_3", "toggle")
+	:addConnector("toggle", "eob_hive_wall_4", "toggle")
 spawn("eob_hive_door", 4,26,0, "eob_hive_door_37")
 spawn("eob_hive_door", 13,26,1, "eob_hive_door_38")
 	:addPullChain()
@@ -12526,6 +14025,8 @@ spawn("eob_hive_door", 22,26,0, "eob_hive_door_39")
 	:addPullChain()
 spawn("eob_hive_wall_rift", 6,27,3, "eob_hive_wall_rift_33")
 spawn("eob_hive_secret_button_tiny", 9,27,3, "eob_hive_secret_button_tiny_5")
+	:addConnector("toggle", "eob_hive_wall_9", "toggle")
+	:addConnector("toggle", "eob_hive_wall_10", "toggle")
 spawn("eob_hive_door", 14,28,2, "eob_hive_door_40")
 	:addPullChain()
 spawn("eob_hive_door", 18,28,3, "eob_hive_door_41")
@@ -12538,17 +14039,20 @@ spawn("eob_stone_holy_symbol_u", 17,27,0, "eob_stone_holy_symbol_u_1")
 spawn("eob_wand_lightning_bolt_10_u", 3,8,1, "eob_wand_lightning_bolt_10_u_1")
 spawn("eob_medallion_luck_stone_u", 5,6,2, "eob_medallion_luck_stone_u_2")
 spawn("eob_cleric_scroll_raise_dead", 5,6,3, "eob_cleric_scroll_raise_dead_4")
-spawn("eob_stone_orb_u", 26,15,3, "eob_stone_orb_u_1")
-spawn("eob_key_drow", 26,15,3, "eob_key_drow_8")
+spawn("eob_stone_orb_u", 26,15,2, "eob_stone_orb_u_1")
+spawn("eob_key_drow", 26,15,2, "eob_key_drow_8")
 spawn("eob_orb_of_power__from_level11_u", 28,30,2, "eob_orb_of_power__from_level11_u_1")
 spawn("eob_cleric_scroll_raise_dead", 25,1,1, "eob_cleric_scroll_raise_dead_5")
+	:setScrollText("")
 spawn("eob_rock_mossy_u", 25,1,1, "eob_rock_mossy_u_1")
-spawn("eob_rock_mossy_u", 9,11,0, "eob_rock_mossy_u_2")
+spawn("eob_rock_mossy_u", 9,11,3, "eob_rock_mossy_u_2")
 spawn("eob_long_sword_slasher", 1,1,0, "eob_long_sword_slasher_1")
 spawn("eob_banded_armor_plus3_u", 1,1,0, "eob_banded_armor_plus3_u_1")
 spawn("eob_ring2_u", 12,4,3, "eob_ring2_u_4")
 spawn("scroll_hold_monster", 1,17,0, "eob_mage_scroll_hold_monster_1")
+	:setScrollText("")
 spawn("eob_cleric_scroll_cure_serious_wnds", 23,16,2, "eob_cleric_scroll_cure_serious_wnds_3")
+	:setScrollText("")
 spawn("eob_robe_protection5_u", 16,27,0, "eob_robe_protection5_u_1")
 spawn("eob_dagger_flicka_u", 16,27,0, "eob_dagger_flicka_u_1")
 spawn("eob_key_drow", 16,24,0, "eob_key_drow_9")
@@ -12558,7 +14062,8 @@ spawn("eob_bracers_defense2_u", 16,27,0, "eob_bracers_defense2_u_1")
 spawn("eob_spell_book_u", 16,27,0, "eob_spell_book_u_1")
 spawn("eob_mflayer1_1", 15,30,0, "eob_mflayer1_1_1")
 spawn("eob_mflayer1_1", 4,27,0, "eob_mflayer1_1_2")
-spawn("eob_mflayer1_1", 27,23,0, "eob_mflayer1_1_3")
+spawn("eob_mflayer1_1", 27,24,2, "eob_mflayer1_1_3")
+	:setAIState("guard")
 spawn("eob_xorn", 23,2,0, "eob_xorn_1")
 spawn("eob_xorn", 30,4,0, "eob_xorn_2")
 spawn("eob_xorn", 30,10,0, "eob_xorn_3")
@@ -12571,6 +14076,7 @@ spawn("eob_xorn", 27,7,0, "eob_xorn_6")
 spawn("eob_xorn", 25,2,0, "eob_xorn_7")
 spawn("eob_mflayer1_1", 17,25,0, "eob_mflayer1_1_7")
 spawn("eob_xorn", 22,24,0, "eob_xorn_8")
+	:setAIState("guard")
 spawn("eob_mflayer1_1", 29,19,0, "eob_mflayer1_1_8")
 spawn("eob_mflayer1_1", 26,18,0, "eob_mflayer1_1_9")
 spawn("eob_xorn", 27,1,0, "eob_xorn_9")
@@ -12583,7 +14089,563 @@ spawn("eob_ruins_alcove", 15,11,3, "eob_ruins_alcove_portal_11_holy_symbol")
 spawn("eob_ruins_alcove", 4,27,2, "eob_ruins_alcove_portal_11_orb")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
 spawn("eob_stone_orb", 4,27,2, "eob_stone_orb_1")
-spawn("eob_stone_holy_symbol", 15,11,3, "eob_stone_holy_symbol_1")
+spawn("script_entity", 15,9,3, "script_entity_circles")
+	:setSource("-- rotates four objects on three 'rings'\
+-- starting inner at 12 oclock free passage , 3 oclock button, , 6 oclock star , 9 oclock text\
+-- pressing button moves all objects clockwise by one positon\
+-- any time all three free passages are alligned, final wall is removed\
+-- that wall is not put back even if you disallign the inner or middle circle\
+-- but only if you press button on outer circle (as in original game)\
+\
+\
+function inner(button)\
+\
+\9local facing = button.facing\
+\
+\9--destroy all related entities\
+\9for e in allEntities(11)\
+\9do\
+\9\9if e and (\
+\9\9\9   string.find(e.id,\"eob_hive_wall_cube_invisible_inner\") \
+\9\9\9or string.find(e.id,\"eob_hive_wall_star_inner\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_text_inner\")\
+\9\9\9or string.find(e.id,\"eob_hive_button_inner\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_inner\")\
+\9\9\9)\
+\9\9then\
+\9\9\9e:destroy()\
+\9\9end\
+\9end\
+\9\
+\9-- now create all entities \
+\9-- in one of four modes based on facing of button we just pressed\
+\
+\9-- pressing button on north wall\
+\9if facing == 0\
+\9then\
+\9hudPrint(\"inner \" .. facing..\"\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14, 9,0,\"eob_hive_wall_cube_invisible_inner_north\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,16,11,0,\"eob_hive_wall_cube_invisible_inner_east\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14,13,0,\"eob_hive_wall_cube_invisible_inner_south\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,12,11,0,\"eob_hive_wall_cube_invisible_inner_west\")\
+\9spawn(\"eob_hive_button\",\00911,15,11,1,\"eob_hive_button_inner\"):addConnector(\"toggle\",\"script_entity_circles\", \"inner\")\
+\9spawn(\"eob_hive_wall\",\9\00911,15,11,1,\"eob_hive_wall_inner_east1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,17,11,3,\"eob_hive_wall_inner_east2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,14,12,2,\"eob_hive_wall_star_inner\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,14,0,\"eob_hive_wall_inner_south\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,13,11,3,\"eob_hive_wall_text_inner\"):setWallText(\"Your fate lies in the stars.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,11,11,1,\"eob_hive_wall_inner_west\")\9\
+\
+\9counter_inner:setValue(0)\
+\
+\9-- pressing button on east wall\9\
+\9elseif facing == 1\
+\9then\
+\9hudPrint(\"inner \" .. facing..\"\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14, 9,0,\"eob_hive_wall_cube_invisible_inner_north\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,16,11,0,\"eob_hive_wall_cube_invisible_inner_east\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14,13,0,\"eob_hive_wall_cube_invisible_inner_south\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,12,11,0,\"eob_hive_wall_cube_invisible_inner_west\")\
+\9spawn(\"eob_hive_button\",\00911,14,12,2,\"eob_hive_button_inner\"):addConnector(\"toggle\",\"script_entity_circles\", \"inner\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,12,2,\"eob_hive_wall_inner_south1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,14,0,\"eob_hive_wall_inner_south2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,13,11,3,\"eob_hive_wall_star_inner\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,11,11,1,\"eob_hive_wall_inner_west\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,14,10,0,\"eob_hive_wall_text_inner\"):setWallText(\"Your fate lies in the stars.\")\9\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 8,2,\"eob_hive_wall_inner_north\")\9\
+\9\
+\9counter_inner:setValue(1)\
+\
+\9-- pressing button on south wall\
+\9elseif facing == 2\
+\9then\
+\9hudPrint(\"inner \" .. facing..\"\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14, 9,0,\"eob_hive_wall_cube_invisible_inner_north\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,16,11,0,\"eob_hive_wall_cube_invisible_inner_east\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14,13,0,\"eob_hive_wall_cube_invisible_inner_south\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,12,11,0,\"eob_hive_wall_cube_invisible_inner_west\")\
+\9spawn(\"eob_hive_button\",\00911,13,11,3,\"eob_hive_button_inner\"):addConnector(\"toggle\",\"script_entity_circles\", \"inner\")\
+\9spawn(\"eob_hive_wall\",\9\00911,13,11,3,\"eob_hive_wall_inner_west1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,11,11,1,\"eob_hive_wall_inner_west2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,14,10,0,\"eob_hive_wall_star_inner\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 8,2,\"eob_hive_wall_inner_north\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,15,11,1,\"eob_hive_wall_text_inner\"):setWallText(\"Your fate lies in the stars.\")\9\
+\9spawn(\"eob_hive_wall\",\9\00911,17,11,3,\"eob_hive_wall_inner_east\")\
+\
+\9counter_inner:setValue(2)\
+\
+\9-- pressing button on west wall\
+\9elseif facing == 3\9\
+\9then\
+\9hudPrint(\"inner \" .. facing..\"\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14, 9,0,\"eob_hive_wall_cube_invisible_inner_north\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,16,11,0,\"eob_hive_wall_cube_invisible_inner_east\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14,13,0,\"eob_hive_wall_cube_invisible_inner_south\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,12,11,0,\"eob_hive_wall_cube_invisible_inner_west\")\
+\9spawn(\"eob_hive_button\",\00911,14,10,0,\"eob_hive_button_inner\"):addConnector(\"toggle\",\"script_entity_circles\", \"inner\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,10,0,\"eob_hive_wall_inner_north1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 8,2,\"eob_hive_wall_inner_north2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,15,11,1,\"eob_hive_wall_star_inner\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,17,11,3,\"eob_hive_wall_inner_east\")\
+\9spawn(\"eob_hive_wall_text\",\00911,14,12,2,\"eob_hive_wall_text_inner\"):setWallText(\"Your fate lies in the stars.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,14,0,\"eob_hive_wall_inner_south\")\9\
+\
+\9counter_inner:setValue(3)\
+\9end\
+\
+\9-- if the circles are alligned remove wall\
+\9if  counter_inner:getValue() == facing \
+\9and counter_middle:getValue() == facing\
+\9and counter_outer:getValue() ==  facing\
+\9then\
+\9\9eob_hive_wall_blockage:open()\
+\9end\
+end\
+\
+\
+\
+--------------------------------------------------------------------------------------------------------------------------------------------\
+\
+\
+function middle(button)\
+\9local facing = button.facing\
+\
+\9--destroy all related entities\
+\9for e in allEntities(11)\
+\9do\
+\9\9if e and (\
+\9\9\9   string.find(e.id,\"eob_hive_wall_cube_invisible_middle\") \
+\9\9\9or string.find(e.id,\"eob_hive_wall_star_middle\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_text_middle\")\
+\9\9\9or string.find(e.id,\"eob_hive_button_middle\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_middle\")\
+\9\9\9)\
+\9\9then\
+\9\9\9e:destroy()\
+\9\9end\
+\9end\
+\9\
+\9-- now create all entities \
+\9-- in one of four modes based on facing of button we just pressed\
+\
+\9-- pressing button on north wall\
+\9if facing == 0\
+\9then\
+\9hudPrint(\"middle \" .. facing..\"\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14, 7,0,\"eob_hive_wall_cube_invisible_middle_north\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,18,11,0,\"eob_hive_wall_cube_invisible_middle_east\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14,15,0,\"eob_hive_wall_cube_invisible_middle_south\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,10,11,0,\"eob_hive_wall_cube_invisible_middle_west\")\
+\9spawn(\"eob_hive_button\",\00911,17,11,1,\"eob_hive_button_middle\"):addConnector(\"toggle\",\"script_entity_circles\", \"middle\")\
+\9spawn(\"eob_hive_wall\",\9\00911,17,11,1,\"eob_hive_wall_middle_east1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,19,11,3,\"eob_hive_wall_middle_east2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,14,14,2,\"eob_hive_wall_star_middle\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,16,0,\"eob_hive_wall_middle_south\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,11,11,3,\"eob_hive_wall_text_middle\"):setWallText(\"Leave no stone unturned.\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 9,11,1,\"eob_hive_wall_middle_west\")\9\
+\9counter_middle:setValue(0)\
+\
+\9-- pressing button on east wall\9\
+\9elseif facing == 1\
+\9then\
+\9hudPrint(\"middle \" .. facing..\"\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14, 7,0,\"eob_hive_wall_cube_invisible_middle_north\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,18,11,0,\"eob_hive_wall_cube_invisible_middle_east\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14,15,0,\"eob_hive_wall_cube_invisible_middle_south\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,10,11,0,\"eob_hive_wall_cube_invisible_middle_west\")\
+\9spawn(\"eob_hive_button\",\00911,14,14,2,\"eob_hive_button_middle\"):addConnector(\"toggle\",\"script_entity_circles\", \"middle\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,14,2,\"eob_hive_wall_middle_south1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,16,0,\"eob_hive_wall_middle_south2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,11,11,3,\"eob_hive_wall_star_middle\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 9,11,1,\"eob_hive_wall_middle_west\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,14, 8,0,\"eob_hive_wall_text_middle\"):setWallText(\"Leave no stone unturned.\")\9\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 6,2,\"eob_hive_wall_middle_north\")\9\
+\9counter_middle:setValue(1)\9\
+\
+\9-- pressing button on south wall\
+\9elseif facing == 2\
+\9then\
+\9hudPrint(\"middle \" .. facing..\"\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14, 7,0,\"eob_hive_wall_cube_invisible_middle_north\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,18,11,0,\"eob_hive_wall_cube_invisible_middle_east\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14,15,0,\"eob_hive_wall_cube_invisible_middle_south\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,10,11,0,\"eob_hive_wall_cube_invisible_middle_west\")\
+\9spawn(\"eob_hive_button\",\00911,11,11,3,\"eob_hive_button_middle\"):addConnector(\"toggle\",\"script_entity_circles\", \"middle\")\
+\9spawn(\"eob_hive_wall\",\9\00911,11,11,3,\"eob_hive_wall_middle_west1\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 9,11,1,\"eob_hive_wall_middle_west2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,14, 8,0,\"eob_hive_wall_star_middle\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 6,2,\"eob_hive_wall_middle_north\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,17,11,1,\"eob_hive_wall_text_middle\"):setWallText(\"Leave no stone unturned.\")\9\
+\9spawn(\"eob_hive_wall\",\9\00911,19,11,3,\"eob_hive_wall_middle_east\")\
+\9counter_middle:setValue(2)\
+\
+\9-- pressing button on west wall\
+\9elseif facing == 3\9\
+\9then\
+\9hudPrint(\"middle \" .. facing..\"\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14, 7,0,\"eob_hive_wall_cube_invisible_middle_north\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,18,11,0,\"eob_hive_wall_cube_invisible_middle_east\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14,15,0,\"eob_hive_wall_cube_invisible_middle_south\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,10,11,0,\"eob_hive_wall_cube_invisible_middle_west\")\
+\9spawn(\"eob_hive_button\",\00911,14, 8,0,\"eob_hive_button_middle\"):addConnector(\"toggle\",\"script_entity_circles\", \"middle\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 8,0,\"eob_hive_wall_middle_north1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 6,2,\"eob_hive_wall_middle_north2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,17,11,1,\"eob_hive_wall_star_middle\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,19,11,3,\"eob_hive_wall_middle_east\")\
+\9spawn(\"eob_hive_wall_text\",\00911,14,14,2,\"eob_hive_wall_text_middle\"):setWallText(\"Leave no stone unturned.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,16,0,\"eob_hive_wall_middle_south\")\9\
+\9counter_middle:setValue(3)\
+\9end\
+\
+\9-- if the circles are alligned remove wall\
+\9if  counter_inner:getValue() == facing \
+\9and counter_middle:getValue() == facing\
+\9and counter_outer:getValue() ==  facing\
+\9then\
+\9\9eob_hive_wall_blockage:open()\
+\9end\
+end\
+\
+\
+--------------------------------------------------------------------------------------------------------------------------------------------\
+\
+\
+function outer(button)\
+\9local x\9= button.x\
+\9local y = button.y\
+\9local facing = button.facing\
+\
+\9--destroy all related entities\
+\9for e in allEntities(11)\
+\9do\
+\9\9if e and (\
+\9\9\9   string.find(e.id,\"eob_hive_wall_cube_invisible_outer\") \
+\9\9\9or string.find(e.id,\"eob_hive_wall_star_outer\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_text_outer\")\
+\9\9\9or string.find(e.id,\"eob_hive_button_outer\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_outer\")\
+\9\9\9or string.find(e.id,\"eob_hive_wall_blockage\")\
+\9\9\9)\
+\9\9then\
+\9\9\9e:destroy()\
+\9\9end\
+\9end\
+\9\
+\9-- now create all entities \
+\9-- in one of four modes based on facing of button we just pressed\
+\
+\9-- pressing button on north wall\
+\9if facing == 0\
+\9then\
+\9hudPrint(\"outer \" .. facing..\"\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14, 5,0,\"eob_hive_wall_cube_invisible_outer_north\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,20,11,0,\"eob_hive_wall_cube_invisible_outer_east\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14,17,0,\"eob_hive_wall_cube_invisible_outer_south\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11, 8,11,0,\"eob_hive_wall_cube_invisible_outer_west\")\
+\9spawn(\"eob_hive_button\",\00911,19,11,1,\"eob_hive_button_outer\"):addConnector(\"toggle\",\"script_entity_circles\", \"outer\")\
+\9spawn(\"eob_hive_wall\",\9\00911,19,11,1,\"eob_hive_wall_outer_east1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,21,11,3,\"eob_hive_wall_outer_east2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,14,16,2,\"eob_hive_wall_star_outer\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,18,0,\"eob_hive_wall_outer_south\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911, 9,11,3,\"eob_hive_wall_text_outer\"):setWallText(\"Alignment must be true.\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 7,11,1,\"eob_hive_wall_outer_west\")\9\
+\9spawn(\"eob_hive_wall\",11, x,y,facing,\"eob_hive_wall_blockage\")\
+\9counter_outer:setValue(0)\
+\
+\9-- pressing button on east wall\9\
+\9elseif facing == 1\
+\9then\
+\9hudPrint(\"outer \" .. facing..\"\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14, 5,0,\"eob_hive_wall_cube_invisible_outer_north\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,20,11,0,\"eob_hive_wall_cube_invisible_outer_east\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14,17,0,\"eob_hive_wall_cube_invisible_outer_south\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11, 8,11,0,\"eob_hive_wall_cube_invisible_outer_west\")\
+\9spawn(\"eob_hive_button\",\00911,14,16,2,\"eob_hive_button_outer\"):addConnector(\"toggle\",\"script_entity_circles\", \"outer\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,16,2,\"eob_hive_wall_outer_south1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,18,0,\"eob_hive_wall_outer_south2\")\
+\9spawn(\"eob_hive_wall_star\",\00911, 9,11,3,\"eob_hive_wall_star_outer\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 7,11,1,\"eob_hive_wall_outer_west\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,14, 6,0,\"eob_hive_wall_text_outer\"):setWallText(\"Alignment must be true.\")\9\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 4,2,\"eob_hive_wall_outer_north\")\9\
+\9spawn(\"eob_hive_wall\",11, x,y,facing,\"eob_hive_wall_blockage\")\
+\9counter_outer:setValue(1)\
+\
+\9-- pressing button on south wall\
+\9elseif facing == 2\
+\9then\
+\9hudPrint(\"outer \" .. facing..\"\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14, 5,0,\"eob_hive_wall_cube_invisible_outer_north\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,20,11,0,\"eob_hive_wall_cube_invisible_outer_east\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14,17,0,\"eob_hive_wall_cube_invisible_outer_south\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11, 8,11,0,\"eob_hive_wall_cube_invisible_outer_west\")\
+\9spawn(\"eob_hive_button\",\00911, 9,11,3,\"eob_hive_button_outer\"):addConnector(\"toggle\",\"script_entity_circles\", \"outer\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 9,11,3,\"eob_hive_wall_outer_west1\")\
+\9spawn(\"eob_hive_wall\",\9\00911, 7,11,1,\"eob_hive_wall_outer_west2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,14, 6,0,\"eob_hive_wall_star_outer\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 4,2,\"eob_hive_wall_outer_north\")\9\
+\9spawn(\"eob_hive_wall_text\",\00911,19,11,1,\"eob_hive_wall_text_outer\"):setWallText(\"Alignment must be true.\")\9\
+\9spawn(\"eob_hive_wall\",\9\00911,21,11,3,\"eob_hive_wall_outer_east\")\
+\9spawn(\"eob_hive_wall\",11, x,y,facing,\"eob_hive_wall_blockage\")\
+\9counter_outer:setValue(2)\
+\
+\9-- pressing button on west wall\
+\9elseif facing == 3\9\
+\9then\
+\9hudPrint(\"outer \" .. facing..\"\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11,14, 5,0,\"eob_hive_wall_cube_invisible_outer_north\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,20,11,0,\"eob_hive_wall_cube_invisible_outer_east\")\
+\9spawn(\"eob_hive_wall_cube_invisible\",11,14,17,0,\"eob_hive_wall_cube_invisible_outer_south\")\
+\9--spawn(\"eob_hive_wall_cube_invisible\",11, 8,11,0,\"eob_hive_wall_cube_invisible_outer_west\")\
+\9spawn(\"eob_hive_button\",\00911,14, 6,0,\"eob_hive_button_outer\"):addConnector(\"toggle\",\"script_entity_circles\", \"outer\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 6,0,\"eob_hive_wall_outer_north1\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14, 4,2,\"eob_hive_wall_outer_north2\")\
+\9spawn(\"eob_hive_wall_star\",\00911,19,11,1,\"eob_hive_wall_star_outer\"):setWallText(\"This is a celestial star of navigation.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,21,11,3,\"eob_hive_wall_outer_east\")\
+\9spawn(\"eob_hive_wall_text\",\00911,14,16,2,\"eob_hive_wall_text_outer\"):setWallText(\"Alignment must be true.\")\
+\9spawn(\"eob_hive_wall\",\9\00911,14,18,0,\"eob_hive_wall_outer_south\")\9\
+\9spawn(\"eob_hive_wall\",11, x,y,facing,\"eob_hive_wall_blockage\")\
+\9counter_outer:setValue(3)\
+\
+\9end\
+\
+\9-- if the circles are alligned remove wall\
+\9if  counter_inner:getValue() == facing \
+\9and counter_middle:getValue() == facing\
+\9and counter_outer:getValue() ==  facing\
+\9then\
+\9\9eob_hive_wall_blockage:open()\
+\9end\
+\
+\9\
+end")
+spawn("eob_hive_wall_cube_invisible", 12,11,3, "eob_hive_wall_cube_invisible_inner_west")
+spawn("eob_hive_wall_cube_invisible", 14,13,2, "eob_hive_wall_cube_invisible_inner_south")
+spawn("eob_hive_wall", 16,11,3, "eob_hive_wall_inner_east1")
+spawn("eob_hive_wall", 16,11,1, "eob_hive_wall_inner_east2")
+spawn("eob_hive_wall", 14,14,0, "eob_hive_wall_inner_south")
+spawn("eob_hive_wall", 12,11,3, "eob_hive_wall_inner_west")
+spawn("eob_hive_wall_cube_invisible", 10,11,3, "eob_hive_wall_cube_invisible_middle_west")
+spawn("eob_hive_wall_cube_invisible", 14,7,3, "eob_hive_wall_cube_invisible_middle_north")
+spawn("eob_hive_wall", 9,11,1, "eob_hive_wall_middle_west")
+spawn("eob_hive_wall", 14,6,2, "eob_hive_wall_middle_north")
+spawn("eob_hive_wall", 14,16,0, "eob_hive_wall_middle_south2")
+spawn("eob_hive_wall", 14,14,2, "eob_hive_wall_middle_south1")
+spawn("eob_hive_wall", 14,6,0, "eob_hive_wall_outer_north1")
+spawn("eob_hive_wall", 14,4,2, "eob_hive_wall_outer_north2")
+spawn("eob_hive_wall", 21,11,3, "eob_hive_wall_outer_east")
+spawn("eob_hive_wall", 14,18,0, "eob_hive_wall_outer_south")
+spawn("eob_hive_wall_cube_invisible", 20,11,3, "eob_hive_wall_cube_invisible_outer_east")
+spawn("eob_hive_wall_cube_invisible", 14,17,3, "eob_hive_wall_cube_invisible_outer_south")
+spawn("counter", 16,9,1, "counter_inner")
+spawn("counter", 18,7,1, "counter_middle")
+	:setInitialValue(1)
+	:setValue(1)
+spawn("counter", 20,5,1, "counter_outer")
+	:setInitialValue(3)
+	:setValue(3)
+spawn("eob_hive_wall", 8,11,1, "eob_hive_wall_blockage")
+spawn("eob_hive_wall", 29,25,2, "eob_hive_wall_3")
+spawn("eob_hive_wall", 29,27,0, "eob_hive_wall_4")
+spawn("eob_hive_wall", 22,24,0, "eob_hive_wall_5")
+spawn("eob_hive_wall", 22,22,2, "eob_hive_wall_6")
+spawn("script_entity", 23,12,2, "script_entity_room_of_levers")
+	:setSource("-- toggle each lever exactly one\
+-- or try to put all levers UP\
+-- The sequence is: counted from left to right, pull levers 1, 3, 2, 4, 5, 8, 7, 6.\
+-- and you get wand of cone of cold\
+\
+-- check for secret\
+function roomOfLevers()\
+\
+\9if  \
+\9-- every lever pressed exactly once\
+\9(\
+\9\9counter_rol_1:getValue() == 1\
+\9and counter_rol_2:getValue() == 1\
+\9and counter_rol_3:getValue() == 1\
+\9and counter_rol_4:getValue() == 1\
+\9and counter_rol_5:getValue() == 1\
+\9and counter_rol_6:getValue() == 1\
+\9and counter_rol_7:getValue() == 1\
+\9and counter_rol_8:getValue() == 1\
+\9)\
+\9or\
+\9-- all levers up\
+\9(\
+\9\9eob_hive_lever_rol_1:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_2:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_3:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_4:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_5:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_6:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_7:getLeverState() == \"deactivated\"\
+\9and eob_hive_lever_rol_8:getLeverState() == \"deactivated\"\
+\9)\
+\9then\
+\9\9item = spawn(\"eob_wand_cone_of_cold_10_u\")\
+\9\9eob_hive_alcove_room_of_levers:addItem(item)\
+\9\9secret_room_of_levers:activate()\
+\9\9\
+\9end\
+end\
+\
+\
+\
+\
+function switchLever(i)\
+\9-- cant use toggle, cause that would cascade \
+\9-- (eg toggling lever 3 would toggle also toggle lever 2)\
+\9-- which is not original-like behaviour\
+\9--eob_hive_lever_rol_3:toggle()\
+\
+\9-- cycle over all values of array/table called i\
+\9local l = 0\
+\9for _,l in pairs(i)\
+\9do\
+\9\9lever = findEntity(\"eob_hive_lever_rol_\"..l)\
+\9\9\
+\9\9if lever and lever:getLeverState() == \"activated\"\
+\9\9then\
+\9\9\9lever:setLeverState(\"deactivated\")\
+\9\9else\
+\9\9\9lever:setLeverState(\"activated\")\
+\9\9end\
+\9\9hudPrint(\"\".. lever.id ..\" \" .. lever:getLeverState() .. \"\")\
+\9end\
+\9\
+\9-- now check if we triggered the secret\
+\9script_entity_room_of_levers.roomOfLevers()\
+end\
+\
+\
+-- lever 1 switched lever 3,5 to opposite state\
+function lever1()\
+\9local i={3,5}\
+\9script_entity_room_of_levers.switchLever(i)\
+\
+end\
+\
+-- lever 2 switched lever 4,5,6 to opposite state\
+function lever2()\
+\9local i={4,5,6}\
+\9script_entity_room_of_levers.switchLever(i)\
+end\
+\
+-- lever 3 switched lever 2,6,7 to opposite state\
+function lever3()\
+\9local i={2,6,7}\
+\9script_entity_room_of_levers.switchLever(i)\
+end\
+\
+-- lever 4 switched lever 1 to opposite state\
+function lever4()\
+\9local i={1}\
+\9script_entity_room_of_levers.switchLever(i)\
+end\
+\
+-- lever 5 switched lever 8 to opposite state\
+function lever5()\
+\9local i={8}\
+\9script_entity_room_of_levers.switchLever(i)\
+end\
+\
+-- lever 6 switched lever nil to opposite state\
+function lever6()\
+\9--local i={}\
+\9--script_entity_room_of_levers.switchLever(i)\
+end\
+\
+-- lever 7 switched lever nil to opposite state\
+function lever7()\
+\9local i={}\
+\9script_entity_room_of_levers.switchLever(i)\
+end\
+\
+-- lever 8 switched lever 7,1 to opposite state\
+function lever8()\
+\9local i={7,1}\
+\9script_entity_room_of_levers.switchLever(i)\
+end")
+spawn("counter", 25,9,2, "counter_rol_1")
+spawn("counter", 25,10,2, "counter_rol_2")
+spawn("counter", 25,11,2, "counter_rol_3")
+spawn("counter", 25,12,2, "counter_rol_4")
+spawn("counter", 25,13,2, "counter_rol_5")
+spawn("counter", 25,14,2, "counter_rol_6")
+spawn("counter", 25,15,2, "counter_rol_7")
+spawn("counter", 25,16,2, "counter_rol_8")
+spawn("secret", 25,17,2, "secret_room_of_levers")
+spawn("eob_hive_wall", 3,22,2, "eob_hive_wall_7")
+spawn("eob_hive_wall", 3,24,0, "eob_hive_wall_8")
+spawn("eob_hive_wall", 9,28,3, "eob_hive_wall_9")
+spawn("eob_hive_wall", 7,28,1, "eob_hive_wall_10")
+spawn("eob_hive_wall", 28,14,3, "eob_hive_wall_11")
+spawn("eob_hive_wall", 27,14,3, "eob_hive_wall_12")
+spawn("eob_hive_wall_text_short", 30,15,2, "eob_hive_wall_text_short_7")
+	:setWallText("Room of the key.")
+spawn("eob_teleporter", 2,12,3, "eob_teleporter_27")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(2,8,3,11)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_teleporter", 1,9,2, "eob_teleporter_28")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(1,5,2,11)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_teleporter", 2,4,1, "eob_teleporter_29")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(2,16,1,11)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_teleporter", 2,18,1, "eob_teleporter_30")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(2,14,1,11)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_teleporter", 3,9,2, "eob_teleporter_31")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(3,5,2,11)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("eob_teleporter", 2,6,3, "eob_teleporter_32")
+	:setTriggeredByParty(true)
+	:setTriggeredByMonster(false)
+	:setTriggeredByItem(false)
+	:setTeleportTarget(2,10,3,11)
+	:setChangeFacing(false)
+	:setInvisible(true)
+	:setSilent(true)
+	:setHideLight(true)
+	:setScreenFlash(false)
+spawn("secret", 5,6,2, "secret_27")
+spawn("secret", 29,27,1, "secret_28")
+spawn("secret", 16,27,2, "secret_29")
 
 --- level 12 ---
 
@@ -12830,4 +14892,3 @@ spawn("eob_golem", 1,10,0, "eob_golem_6")
 spawn("eob_golem", 1,12,0, "eob_golem_7")
 spawn("eob_ruins_alcove", 15,11,3, "eob_ruins_alcove_portal_12_orb")
 	:addConnector("activate", "script_entity_portal_system", "checkPortal")
-spawn("eob_stone_orb", 15,11,3, "eob_stone_orb_2")

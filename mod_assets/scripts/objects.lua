@@ -38,15 +38,17 @@ cloneObject{
 }
 
 -- carlos forceable door for lvl 5 (opposite entrance to dwarf camp)
+-- see level 1 x1,y14 script forceable_doors, 
+-- objects  with "door" and "force" in name are forceable
 cloneObject{
 	name = "eob_ruins_door_metal_force",
 	baseObject = "temple_door_metal",
-	openVelocity = 0.3,
+	openVelocity = 1,
 -- if we want the door appear to be stucked in middle of open sequence
 -- set close velocity to 0 and then call close() when door in the middle of opening 
 --	closeVelocity = 0,
 --	closeAcceleration = 0,
-	closeSound = "assets/samples/monsters/cube_break_free.wav",
+--	closeSound = "assets/samples/monsters/cube_break_free.wav",
 }
 
 cloneObject {
@@ -171,7 +173,7 @@ defineObject{
 --	model = "assets/models/env/temple_secret_door.fbx",
 	model = "mod_assets/models/env/eob_dwarven_wall.fbx",
 	placement = "wall",
-	editorIcon = 92,
+	editorIcon = 124,
 }
 defineObject{
 	-- this object is used in party hooks --
@@ -181,7 +183,7 @@ defineObject{
 --	model = "assets/models/env/temple_secret_door.fbx",
 	model = "mod_assets/models/env/eob_dwarven_wall.fbx",
 	placement = "wall",
-	editorIcon = 92,
+	editorIcon = 124,
 }
 -- Added by JKos --
 
@@ -209,6 +211,25 @@ defineObject {
 	editorIcon = 124,
 }
 
+cloneObject {
+	name = "eob_hive_wall",
+	baseObject = "dungeon_secret_door",
+}	
+--[[
+cloneObject {
+	name = "eob_hive_wall_star",
+	baseObject = "dungeon_wall_text",
+	replaceswall = true,
+}]]
+
+defineObject {
+	name = "eob_hive_wall_star",
+	class = "WallText",
+	model = "assets/models/env/dungeon_wall_text.fbx",
+	placement = "wall",
+	replacesWall = true,
+	editorIcon = 28,
+}
 -- carlos
 
 -- ======================== --
@@ -252,6 +273,11 @@ cloneObject{
 cloneObject {
 	name = "eob_drow_wall_text_short",
 	baseObject = "prison_wall_text",
+}
+
+cloneObject {
+	name = "eob_hive_wall_text_short",
+	baseObject = "dungeon_wall_text",
 }
 
 -- carlos
@@ -535,6 +561,21 @@ defineObject{
 	editorIcon = 8,
 }
 
+-- atempt of demon head firing dart
+defineObject{
+	name = "mouth_socket_dart",
+	class = "Alcove",
+	anchorPos = vec(0, 1.1, -0.38),
+	anchorRotation = vec(0, 0, 0), --first 90 = side, second 90 = 0 = lying, third 90 = front)
+	targetPos = vec(0, 1.1, -0.38),
+	targetSize = vec(0.3, 0.3, 0.3),
+	placement = "wall",
+	onInsertItem = function(self, item)
+		return item.name == "eob_dart" and self:getItemCount() == 0
+	end,
+	editorIcon = 92,
+}
+
 
 
 -- carlos
@@ -633,6 +674,17 @@ cloneObject{
 	particleSystem = "eob_teleporter_rats",
 }
 
+--carlos
+cloneObject{
+	-- all teleporters in EOB are pink
+	name = "eob_teleporter",
+	baseObject = "teleporter",
+	particleSystem = "eob_teleporter_rats",
+}
+
+
+--carlos
+
 -- Party Rotators (invisible teleporters) --
 cloneObject{
 	-- this object is used in party hooks --
@@ -716,7 +768,6 @@ defineObject{
 	editorIcon = 92,
 }
 
-
 -- --------------------------------------------------------------------
 -- OBJECTS FOR DWARVEN WALLSET ----------------------------------------
 -- --------------------------------------------------------------------
@@ -731,7 +782,9 @@ defineObject{
 	editorIcon = 0,
 }
 
--- carlos - wall "cube" to be used with alcoves on lvl 6 south mid seciton (the above cube doesn't match with alcoves)
+-- carlos 
+
+-- wall "cube" to be used with alcoves on lvl 6 south mid seciton (the above cube doesn't match with alcoves)
 -- also it is not visible (cause it looks exactly like floor :)
 defineObject{
 	name = "eob_dwarven_wall_cube_invisible",
@@ -743,6 +796,51 @@ defineObject{
 	editorIcon = 0,
 }
 
+-- --------------------------------------------------------------------
+-- OBJECTS FOR HIVE WALLSET ----------------------------------------
+-- --------------------------------------------------------------------
+defineObject{
+	name = "eob_hive_wall_cube_invisible",
+	class = "Blockage",
+	model = "assets/models/env/dungeon_floor_01.fbx",
+	placement = "floor",
+	repelProjectiles = true,
+	replacesFloor = true,
+	editorIcon = 0,
+}
+
+-- --------------------------------------------------------------------
+-- OBJECTS FOR SPELLS -------------------------------------------------
+-- --------------------------------------------------------------------
+
+-- this is a separate object from the spell thingy
+-- this is by coicidence defined very similary
+-- this one work with spawner, spells dont
+-- also this object uses defineParticleSystem from add_spells.lua (eg texture, color, hit effect..)
+defineObject{
+	name = "magic_missile",
+	class = "ProjectileSpell",
+	particleSystem = "magic_missile",
+	hitParticleEffect = "magic_missile_hit",
+	lightColor = vec(0.25, 0.8, 0.2), -- this is just the aura color, the projectile color is in add_spells.lua
+	lightBrightness = 4,
+	lightRange = 4,
+	lightHitBrightness = 4,
+	lightHitRange = 5,
+	launchSound = "fireball_launch",
+	projectileSound = "fireball",
+	hitSound = "lightning_bolt_hit_small",
+	particleEffect='magic_missile',
+	onHitParticleEffect='magic_missile_hit',
+	projectileSpeed = 10.0,
+	attackPower = 20,
+	damageType = "physical",
+	--cameraShake = true,
+	tags = { "spell" },
+}
+
+
+-- carlos 
 
 
 
@@ -780,21 +878,26 @@ defineObject{
 cloneObject {
 	name = "eob_ruins_net",
 	baseObject = "giant_spider_web",
-	health = 25,
+	health = 15,
+--carlos	
+	-- projectiles get caught in the web
+	repelProjectiles = false,
 	-- spider nets are higly vulnerable to fire (burn) and cold (freeze and break)
 	-- and immune to shock and poison (guess acid would work well too, but this is poison)
-	-- physical is only partialy (half) effective against sticky spider webs
--- not working so far
---[[	onDamage = function  (self,damage,damagetype) 		
-			if damagetype=="fire" or damagetype=="cold"		then self:damage=(damage * 2)
-			elseif damagetype=="poison" or damagetype=="shock" 	then self:damage=0
-			elseif damagetype=="physical" 				then self:damage=(damage / 2)
+	-- physical should only partialy (one 5th) effective against sticky spider webs - but so far no idea how to do that
+	onDamage = function  (self,damage,damagetype) 		
+			if damagetype=="fire" or damagetype=="cold"		then return true
+			elseif damagetype=="poison" 
+			or damagetype=="shock" 	or damagetype=="physical"	then return false -- no damage
 			end
 		end,
-]]
+
+--carlos
 }
 
 cloneObject {
 	name = "eob_ruins_net_torn",
 	baseObject = "giant_spider_web_broken",
 }
+
+

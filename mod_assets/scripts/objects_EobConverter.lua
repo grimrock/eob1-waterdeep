@@ -501,6 +501,7 @@ cloneObject {
 	baseObject = "dungeon_ivy_1",
 }
 
+
 -------------
 --- Floor ---
 -------------

@@ -74,6 +74,8 @@ defineParticleSystem{
 	}
 }
 
+-- carlos
+-- guess this one is not attached ?
 defineParticleSystem{
 	name = "eob_teleport_rats_screen",
 	emitters = {
@@ -157,6 +159,107 @@ defineParticleSystem{
 			lifetime = {0.1, 0.1},
 			colorAnimation = false,
 			color0 = {1, 1, 1},
+			opacity = 0.4,
+			fadeIn = 0.001,
+			fadeOut = 0.1,
+			size = {3, 3},
+			gravity = {0,0,0},
+			airResistance = 1,
+			rotationSpeed = 2,
+			blendMode = "Additive",
+			objectSpace = true,
+		}
+	}
+}
+
+-- carlos
+-- overwriting the default color with pink
+-- colors are not fine tuned
+defineParticleSystem{
+	name = "teleport_screen",
+	emitters = {
+		{
+		--stars
+			spawnBurst = true,
+			maxParticles = 300,
+			sprayAngle = {0,360},
+			velocity = {0,0.3},
+			boxMin = {-1.1,-0.9,1},
+			boxMax = {1.1,0.9,1},
+			objectSpace = true,
+			texture = "assets/textures/particles/teleporter.tga",
+			lifetime = {0.05, 0.4},
+			color0 = {0.8, 0.1, 0.1},
+			opacity = 1,
+			fadeIn = 0.001,
+			fadeOut = 0.15,
+			size = {0.005, 0.15},
+			gravity = {0,0,0},
+			airResistance = 0.5,
+			rotationSpeed = 2,
+			blendMode = "Additive",
+		},
+
+		{
+			spawnBurst = true,
+			maxParticles = 40,
+			sprayAngle = {0,360},
+			velocity = {0,0.3},
+			boxMin = {-1.1,-0.9,1},
+			boxMax = {1.1,0.9,1},
+			objectSpace = true,
+			texture = "assets/textures/particles/fog.tga",
+			lifetime = {0.15, 0.4},
+			color0 = {0.8,0.1,0.1},
+			opacity = 0.7,
+			fadeIn = 0.001,
+			fadeOut = 0.15,
+			size = {0.4, 0.8},
+			gravity = {0,0,0},
+			airResistance = 0.5,
+			rotationSpeed = 2,
+			blendMode = "Additive",
+		},
+
+		-- glow
+		{
+			spawnBurst = true,
+			emissionRate = 1,
+			emissionTime = 0,
+			maxParticles = 1,
+			boxMin = {0,0,1},
+			boxMax = {0,0,1},
+			sprayAngle = {0,30},
+			velocity = {0,0},
+			texture = "assets/textures/particles/glow.tga",
+			lifetime = {0.15, 0.4},
+			colorAnimation = false,
+			color0 = {0.05, 0.2, 0.3},
+			opacity = 0.5,
+			fadeIn = 0.001,
+			fadeOut = 0.1,
+			size = {3, 3},
+
+			gravity = {0,0,0},
+			airResistance = 1,
+			rotationSpeed = 2,
+			blendMode = "Additive",
+			objectSpace = true,
+		},
+
+		{
+			spawnBurst = true,
+			emissionRate = 1,
+			emissionTime = 0,
+			maxParticles = 1,
+			boxMin = {0,0,1},
+			boxMax = {0,0,1},
+			sprayAngle = {0,30},
+			velocity = {0,0},
+			texture = "assets/textures/particles/glow.tga",
+			lifetime = {0.1, 0.1},
+			colorAnimation = false,
+			color0 = {0.8, 0.1, 0.1},
 			opacity = 0.4,
 			fadeIn = 0.001,
 			fadeOut = 0.1,
