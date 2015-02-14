@@ -152,20 +152,6 @@ cloneObject{
 -- ==================================== --
 
 cloneObject{
-	name = "eob_stone_dagger",
-	baseObject = "dagger",
-	uiName = "Stone Dagger",
-	gfxIndex = 0,
-    gfxAtlas = "mod_assets/textures/gui/items_3.tga",
-	model = "mod_assets/models/items/stone_dagger.fbx",
-	key = true,
-	attackPower = 5,
-	accuracy = 3,
-	weight = 0.5,
-	glitterEffect = "magic_glow_blue",
-}
-
-cloneObject{
 	name = "eob_silver_key",
 	baseObject = "round_key",
 	uiName = "Silver Key",
@@ -223,11 +209,40 @@ cloneObject{
 	end,
 	weight = 0.6,
 }
+
+cloneObject{
+	-- potion of healing with blue icon --
+	name = "eob_potion_healing_u",
+	baseObject = "potion_healing",
+	uiName = "Potion.",
+	gfxIndex = 145,
+	onUseItem = function(self, champion)
+		playSound("consume_potion")
+		champion:modifyStat("health", 50)
+		return true
+	end,
+	weight = 0.6,
+}
+
 cloneObject{
 	-- potion of extra healing with blue icon --
 	name = "eob_potion_healing_extra",
 	baseObject = "potion_healing",
 	uiName = "Potion of Extra Healing",
+	gfxIndex = 145,
+	onUseItem = function(self, champion)
+		playSound("consume_potion")
+		champion:modifyStat("health", 100)
+		return true
+	end,
+	weight = 0.9,
+}
+
+cloneObject{
+	-- potion of extra healing with blue icon --
+	name = "eob_potion_healing_extra_u",
+	baseObject = "potion_healing",
+	uiName = "Potion.",
 	gfxIndex = 145,
 	onUseItem = function(self, champion)
 		playSound("consume_potion")
@@ -296,9 +311,19 @@ cloneObject{
 }
 
 cloneObject{
+	name = "eob_gem_red_u",
+	baseObject = "red_gem",
+	uiName = "Red Gem",
+}
+cloneObject{
 	name = "eob_gem_red",
 	baseObject = "red_gem",
 	uiName = "Red Gem",
+}
+cloneObject{
+	name = "eob_gem_blue_u",
+	baseObject = "blue_gem",
+	uiName = "Blue Gem",
 }
 cloneObject{
 	name = "eob_gem_blue",
@@ -362,6 +387,13 @@ cloneObject {
 	stackable = false, 
 }
 -- carlos
+
+-- ==================================== --
+-- ============= LEVEL 08 ============= --
+-- ==================================== --
+
+
+
 -- ==================================== --
 -- ====  New Items - Experimental ===== --
 -- ==================================== --
@@ -372,6 +404,184 @@ cloneObject{
 	uiName = "Sewer System Map - Level 1",
 }
 
+-- ATTEMP ON CURSED ITEMS
+
+-- Plate Mail of Great Beauty
+-- version to be found in dungeon 
+-- looks like a common armor without negative effects
+-- on equip is replaced with cursed version with negative effects
+cloneObject {
+	name = "eob_plate_mail_cursed3_u_dummy",  
+	baseObject = "plate_cuirass",
+	uiName = "Plate Mail of Great Beauty",
+	slot = "Torso",
+	protection = 12,
+	onEquipItem = function(champion, slot)
+		-- call only if item is equiped on body, not just placed in inventory
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.switchEquip(champion, slot)
+		end
+	end
+}
+
+-- cursed version with negative effects
+cloneObject {
+	name = "eob_plate_mail_cursed3_u",  
+	baseObject = "plate_cuirass",
+	uiName = "Plate Mail of Great Beauty",
+	slot = "Torso",
+	protection = -3,
+	onUnequipItem = function(champion, slot)
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+	end
+}
+
+-- identified version
+-- still cannot be put off, until dispel magic is cast
+cloneObject {
+	name = "eob_plate_mail_cursed3",
+	baseObject = "plate_cuirass",
+	uiName = "Plate Mail of Great Beauty",
+	slot = "Torso",
+	protection = -3,
+	onUnequipItem = function(champion, slot)
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+		end
+	end
+}
+
+
+-- cursed longsword
+cloneObject {
+	name = "eob_long_sword_cursed2_u_dummy",
+	baseObject = "long_sword",
+	uiName = "Longsword",
+	attackPower = 14,
+	onEquipItem = function(champion, slot)
+		-- call only if item is equiped on body, not just placed in inventory
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.switchEquip(champion, slot)
+		end
+	end
+}
+cloneObject {
+	name = "eob_long_sword_cursed2_u",
+	baseObject = "long_sword",
+	uiName = "Longsword",
+	attackPower = -1,
+	onUnequipItem = function(champion, slot)
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+	end
+}
+
+cloneObject {
+	name = "eob_long_sword_cursed2",
+	baseObject = "long_sword",
+	uiName = "Unlucky Longsword",
+	description = "It is unbelievable how hard is not to miss with this sword.",
+	attackPower = -1,
+	onUnequipItem = function(champion, slot)
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+		end
+	end
+}
+
+-- cursed axe
+cloneObject {
+	name = "eob_axe_cursed3_u_dummy", 
+	baseObject = "hand_axe",
+	uiName = "Axe",
+	attackPower = 10,
+	onEquipItem = function(champion, slot)
+		-- call only if item is equiped on body, not just placed in inventory
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.switchEquip(champion, slot)
+		end
+	end
+}
+
+cloneObject {
+	name = "eob_axe_cursed3_u", 
+	baseObject = "hand_axe",
+	uiName = "Axe",
+	attackPower = -3,
+	onUnequipItem = function(champion, slot)
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+	end
+}
+
+cloneObject {
+	name = "eob_axe_cursed3",
+	baseObject = "hand_axe",
+	uiName = "Axe Cursed -3",
+	attackPower = -3,
+	onUnequipItem = function(champion, slot)
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+		end
+	end
+}
+
+
+-- cursed sling
+cloneObject {
+	name = "eob_sling_cursed3_u_dummy", 
+	baseObject = "sling",
+	uiName = "Sling",
+	attackPower = 5,
+	onEquipItem = function(champion, slot)
+		-- call only if item is equiped on body, not just placed in inventory
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.switchEquip(champion, slot)
+		end
+	end
+}
+
+cloneObject {
+	name = "eob_sling_cursed3_u", 
+	baseObject = "sling",
+	uiName = "Sling",
+	attackPower = -3,
+	onUnequipItem = function(champion, slot)
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+	end
+}
+
+cloneObject {
+	name = "eob_sling_cursed3",
+	baseObject = "sling",
+	uiName = "Sling Cursed -3",
+	attackPower = -3,
+	onUnequipItem = function(champion, slot)
+		if slot > 0 and slot < 11 
+		then
+		--calls script by Diarmuid on level 1 29,7
+		script_entity_equipStopper.stopUnequip(champion, slot)
+		end
+	end
+}
+
+-- carlos
 -- + Wently's Notes defined in notes.lua + --
 -- --------------------------------------- --
 --	name = "wentlys_note",
@@ -762,13 +972,209 @@ defineObject{
 	weight = 1.7,
 }
 
+
+
+-- PORTAL STONE ITEMS
+
+-- Stone dagger
+cloneObject{
+	name = "eob_stone_dagger",
+	baseObject = "dagger",
+	uiName = "Stone Dagger",
+	gfxIndex = 0,
+    	gfxAtlas = "mod_assets/textures/gui/items_3.tga",
+	model = "mod_assets/models/items/stone_dagger.fbx",
+	key = true,
+	attackPower = 5,
+	accuracy = 3,
+	weight = 0.5,
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+cloneObject{
+	name = "eob_stone_dagger_u",
+	baseObject = "dagger",
+	uiName = "Stone Dagger",
+	gfxIndex = 0,
+    	gfxAtlas = "mod_assets/textures/gui/items_3.tga",
+	model = "mod_assets/models/items/stone_dagger.fbx",
+	key = true,
+	attackPower = 5,
+	accuracy = 3,
+	weight = 0.5,
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+-- Stone Gem
+cloneObject{
+	name = "eob_stone_gem_u",
+	baseObject = "blue_gem",
+	uiName = "Stone Gem",
+	glitterEffect = "magic_glow_blue",
+	stackable = false,
+}
+
 cloneObject{
 	name = "eob_stone_gem",
 	baseObject = "blue_gem",
 	uiName = "Stone Gem",
 	glitterEffect = "magic_glow_blue",
+	stackable = false,
 }
 
+
+-- Stone Scepter
+cloneObject {
+	name = "eob_stone_scepter_u",  
+	baseObject = "rock",
+	uiName = "Stone Scepter",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+cloneObject {
+	name = "eob_stone_scepter",
+	baseObject = "rock",
+	uiName = "Stone Scepter",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+ -- Stone Medallion
+cloneObject {
+	name = "eob_stone_medallion_u", 
+	baseObject = "rock",
+	uiName = "Stone Medallion",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+cloneObject {
+	name = "eob_stone_medallion",
+	baseObject = "rock",
+	uiName = "Stone Medallion",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+-- Stone Necklace
+cloneObject {
+	name = "eob_stone_necklace_u",  
+	baseObject = "rock",
+	uiName = "Stone Necklace",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+cloneObject {
+	name = "eob_stone_necklace",
+	baseObject = "rock",
+	uiName = "Stone Necklace",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+-- Stone Holy Symbol
+cloneObject {
+	name = "eob_stone_holy_symbol_u",  
+	baseObject = "rock",
+	uiName = "Stone Holy Symbol",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+cloneObject {
+	name = "eob_stone_holy_symbol",
+	baseObject = "rock",
+	uiName = "Stone Holy Symbol",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+-- Stone Orb
+cloneObject {
+	name = "eob_stone_orb_u",  
+	baseObject = "rock",
+	uiName = "Stone Orb",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+cloneObject {
+	name = "eob_stone_orb",
+	baseObject = "rock",
+	uiName = "Stone Orb",
+	stackable = false,
+	glitterEffect = "magic_glow_blue",
+}
+
+
+-- cleric scrolls
+-- d&d 2.0 1d8
+cloneObject {
+	name = "eob_cleric_scroll_cure_light_wnds_u",  
+	baseObject = "scroll",
+	uiName = "Scroll",
+	onUseItem = function(self, champion)
+		playSound("generic_spell")
+		champion:modifyStat("health", 5 * math.random(5,8) ) 
+		return true
+	end,
+}
+cloneObject {
+	name = "eob_cleric_scroll_cure_light_wnds",
+	baseObject = "scroll",
+	uiName = "Scroll of Cure Light Wounds",
+	onUseItem = function(self, champion)
+		playSound("generic_spell")
+		champion:modifyStat("health", 5 * math.random(5,8) )
+		return true
+	end,
+}
+-- d&d 2.0 2d8+1
+cloneObject {
+	name = "eob_cleric_scroll_cure_serious_wnds_u", 
+	baseObject = "scroll",
+	uiName = "Scroll",
+	onUseItem = function(self, champion)
+		playSound("generic_spell")
+		champion:modifyStat("health", 10 * math.random(5,8) ) 
+		return true
+	end,
+}
+cloneObject {
+	name = "eob_cleric_scroll_cure_serious_wnds",
+	baseObject = "scroll",
+	uiName = "Scroll of Cure Serious Wounds",
+	onUseItem = function(self, champion)
+		playSound("generic_spell")
+		champion:modifyStat("health", 10 * math.random(1,8) )
+		return true
+	end,
+}
+
+-- d&d 2.0 3d8+3
+cloneObject {
+	name = "eob_cleric_scroll_cure_critical_wnds_u",  -- Scroll
+	baseObject = "scroll",
+	uiName = "Scroll",
+	onUseItem = function(self, champion)
+		playSound("generic_spell")
+		champion:modifyStat("health", 15 * math.random(5,8) )
+		return true
+	end,
+}
+
+cloneObject {
+	name = "eob_cleric_scroll_cure_critical_wnds",
+	baseObject = "scroll",
+	uiName = "Scroll of Cure Critical Wounds",
+	onUseItem = function(self, champion)
+		playSound("generic_spell")
+		champion:modifyStat("health", 15 * math.random(1,8) )
+		return true
+	end,
+}
 
 
 

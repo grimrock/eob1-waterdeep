@@ -1,8 +1,9 @@
-v0.02.19
+v0.02.19 2015-02-14
 changes made by Carlos
-levels 1-11 are playable
+levels 1-12 are playable
 all the puzzles, keys, doors, special quests etc. should work as original
-
+or as close to original as possible
+dwarvish writings now readable only by Taghor, Dohrum and Keirgar 
 
 
 v0.02.18 

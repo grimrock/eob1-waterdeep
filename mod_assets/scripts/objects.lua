@@ -48,7 +48,6 @@ cloneObject{
 -- set close velocity to 0 and then call close() when door in the middle of opening 
 --	closeVelocity = 0,
 --	closeAcceleration = 0,
---	closeSound = "assets/samples/monsters/cube_break_free.wav",
 }
 
 cloneObject {
@@ -279,7 +278,10 @@ cloneObject {
 	name = "eob_hive_wall_text_short",
 	baseObject = "dungeon_wall_text",
 }
-
+cloneObject {
+	name = "eob_sanctum_wall_text_short",
+	baseObject = "temple_wall_text",
+}
 -- carlos
 
 -- ======================== --
@@ -469,8 +471,50 @@ cloneObject{
 }
 
 
+-- carlos 
+-- gem locks for lvl 8 and 9
+-- so far as daemon head right eye socket
 defineObject{
-	-- carlos - atempt on portal
+	name = "eob_drow_socket_gem",
+	class = "Alcove",
+	anchorPos = vec(0.21, 1.58, -0.45),
+	targetPos = vec(0.2, 1.65, -0.45),
+	targetSize = vec(0.1, 0.1, 0.1),
+	placement = "wall",
+	onInsertItem = function(self, item)
+		return item.name == "eob_gem_red" and self:getItemCount() == 0
+	end,
+	editorIcon = 92,
+}
+
+defineObject{
+	name = "eob_drow_socket_rock_glowing",
+	class = "Alcove",
+	anchorPos = vec(0.21, 1.58, -0.45),
+	targetPos = vec(0.2, 1.65, -0.45),
+	targetSize = vec(0.1, 0.1, 0.1),
+	placement = "wall",
+	onInsertItem = function(self, item)
+		return string.find(item.name,"eob_rock_glowing") and self:getItemCount() == 0
+	end,
+	editorIcon = 92,
+}
+
+
+--level 12 eye pedestals
+defineObject {
+	name = "eob_sanctum_pedestal_eye",
+	class = "Blockage",
+	model = "assets/models/env/altar.fbx",
+	placement = "floor",
+	repelProjectiles = true,
+	editorIcon = 52,
+
+}
+
+
+-- carlos - atempt on portal
+defineObject{
 	name = "eob_ruins_alcove_portal",
 	class = "Alcove",
 --	baseObject = "temple_alcove",
@@ -571,7 +615,7 @@ defineObject{
 	targetSize = vec(0.3, 0.3, 0.3),
 	placement = "wall",
 	onInsertItem = function(self, item)
-		return item.name == "eob_dart" and self:getItemCount() == 0
+		return item.name == "eob_dart" and self:getItemCount() == 0 and item:getStackSize() == 1
 	end,
 	editorIcon = 92,
 }
@@ -584,6 +628,7 @@ defineObject{
 -- ======  Locks  ======= --
 -- ======================== --
 -- ------------------------------------------------------------------- ++
+
 cloneObject{
 	name = "eob_lock_silver",
 	baseObject = "lock_round",
@@ -768,11 +813,34 @@ defineObject{
 	editorIcon = 92,
 }
 
+-- carlos
+-- keys to be entered into keyholes permanently and not go away
+defineObject{
+   name = "ornate_key_socket",
+   class = "Alcove",
+   anchorPos = vec(-0.01, 1.38, -0.13),
+   anchorRotation = vec(0,90,90),
+   targetPos = vec(-0.01, 1.37, -0.13),
+   targetSize = vec(0.3, 0.3, 0.3),
+   placement = "wall",
+   onInsertItem = function(self, item)
+	if item.name == "ornate_key" and self:getItemCount() == 0
+	then
+		playSound("key_lock")	
+		return true
+	else 	--playSound("item_drop")	
+		return false
+	end
+end,
+   editorIcon = 8,
+}
+-- carlos
+
 -- --------------------------------------------------------------------
 -- OBJECTS FOR DWARVEN WALLSET ----------------------------------------
 -- --------------------------------------------------------------------
 
--- Wall cube as decoration (sewers wallset)
+-- Wall cube as decoration (dwarven wallset)
 defineObject{
 	name = "eob_dwarven_wall_cube",
 	class = "Blockage",
@@ -796,6 +864,8 @@ defineObject{
 	editorIcon = 0,
 }
 
+
+
 -- --------------------------------------------------------------------
 -- OBJECTS FOR HIVE WALLSET ----------------------------------------
 -- --------------------------------------------------------------------
@@ -808,6 +878,21 @@ defineObject{
 	replacesFloor = true,
 	editorIcon = 0,
 }
+
+-- --------------------------------------------------------------------
+-- OBJECTS FOR SANCTUM WALLSET ----------------------------------------
+-- --------------------------------------------------------------------
+--carlos
+defineObject{
+	name = "eob_sanctum_wall_cube",
+	class = "Blockage",
+	model = "mod_assets/models/env/eob_sanctum_wall_cube.fbx",
+	placement = "floor",
+	repelProjectiles = true,
+	editorIcon = 0,
+}
+
+--carlos
 
 -- --------------------------------------------------------------------
 -- OBJECTS FOR SPELLS -------------------------------------------------

@@ -360,4 +360,17 @@ cloneObject {
 		script_entity_special_quest_10.removeBlockers()
 	     end
 }
+
+-- respawn hive mantis
+cloneObject {
+	name = "eob_mantis_dagger_respawn",
+	baseObject = "eob_mantis",
+	lootDrop = {50, "eob_dagger"},
+}
+
+cloneObject {
+	name = "eob_mantis_halbred_respawn",
+	baseObject = "eob_mantis",
+	lootDrop = {50, "eob_halberd_u"},
+}
 --carlos
