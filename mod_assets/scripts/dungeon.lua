@@ -3391,6 +3391,7 @@ spawn("script_entity", 29,7,2, "script_entity_equipStopper")
        self:destroy()\
     end\
 ")
+spawn("starting_location", 10,15,0, "starting_location_1")
 
 --- level 2 ---
 
@@ -16748,7 +16749,6 @@ spawn("eob_sanctum_wall_cube", 17,4,2, "eob_sanctum_wall_cube_1")
 spawn("eob_sanctum_wall_cube", 5,14,1, "eob_sanctum_wall_cube_2")
 spawn("eob_sanctum_wall_cube", 21,15,0, "eob_sanctum_wall_cube_3")
 spawn("eob_sanctum_wall_cube", 26,16,1, "eob_sanctum_wall_cube_4")
-spawn("starting_location", 29,14,2, "starting_location_1")
 spawn("script_entity", 27,17,1, "script_entity_85")
 	:setSource("function spiked()\
 \9hudPrint(\"You got spiked!\")\
